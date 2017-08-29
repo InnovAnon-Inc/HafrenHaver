@@ -1,0 +1,27 @@
+#!/bin/dash
+
+tmpdir=$(mktemp -d)
+trap "rm -f $tmpdir" 0
+
+FIFO=$tmpdir/fifo.ul
+mkfifo $FIFO
+
+play -q -c1 -r 8000 $FIFO &
+
+#while [ -n "$*" ]; do
+while read line ; do
+    #freq=$1; shift
+    #dur=$1;  shift
+    #dur=$(echo "$dur*(60/$tempo)"|bc -l)
+    freq=`echo $line | awk '{print $1}'`
+    dur=`echo $line | awk '{print $2}'`
+    #sox -e mu-law -r 8000 -n -t raw - synth $dur sine $freq >>$tmpdir/grubtune.ul 2> /dev/null
+    sox -e mu-law -r 8000 -n -t raw - synth $dur sine $freq
+#done > $tmpdir/grubtune.ul 2> /dev/null
+done > $FIFO 2> /dev/null
+
+#play -q -c1 -r 8000 $tmpdir/grubtune.ul
+
+wait
+
+rm -r $tmpdir
