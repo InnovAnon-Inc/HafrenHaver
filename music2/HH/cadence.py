@@ -229,6 +229,8 @@ class SongCadence (Cadence):
 		c, v = Cadence.elem (self, i)
 		#return c.uniq[v.value ()]
 		#print ("c=%s (v=%s): %s" % (c, v, c.uniq[v]))
+		short = (c == self.sc)
+		assert (not short) == (c == self.lc)
 		return c.uniq[v]
 		#return c.u (v)
 	#@jit
@@ -272,13 +274,32 @@ class SectionCadence (Cadence):
 def random_section_cadence (short=None):
 	if short is None: short = random_bool ()
 	if short is True: temp = section_db[1 - 1]
-	else:
+	elif short is False:
 		temp = randrange (2, len (section_db) + 1) - 1
 		temp = section_db[temp]
+	else: raise Exception (short)
 	sc = choice (temp)
-	return SectionCadence (sc)
+	assert sc is not None
+	assert type (sc) is tuple, nsection
+	return sc
+def random_section_cadences (nsection, short=None):
+	sc = [random_section_cadence (short) for _ in range (0, nsection)]
+	nphrase = ?
 	
+	return SectionCadence (sc, mapping)
 	
+
+	
+	min_n = max (sc) + 1
+	max_n = min_n
+	assert max_n <= nsection, "max n: %s, n section: %s" % (max_n, nsection)
+	n     = randrange (min_n, max_n + 1)
+	# TODO map from cardinalities nsection to n
+	temp0 = range (0, nsection)
+	temp1 = (randrange (0, nsection) for _ in range (0, nsection - n))
+	temp  = list (chain (temp0, temp1)) 
+	shuffle (temp)
+	return SongCadence0 (sc, temp)
 
 
 
