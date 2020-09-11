@@ -231,8 +231,10 @@ class SongCadence (Cadence):
 		#print ("c=%s (v=%s): %s" % (c, v, c.uniq[v]))
 		short = (c == self.sc)
 		assert (not short) == (c == self.lc)
-		return c.uniq[v]
+		#return c.uniq[v]
 		#return c.u (v)
+		if not short: return c.uniq[v] + len (self.sc.uniq)
+		return c.uniq[v]
 	#@jit
 	#def all (self): return (c.uniq[v.value ()] for c, v in Cadence.all (self))
 	def all (self): return (c.uniq[v] for c, v in Cadence.all (self))
@@ -284,8 +286,8 @@ def random_section_cadence (short=None):
 	return sc
 def random_section_cadences (nsection, short=None):
 	sc = [random_section_cadence (short) for _ in range (0, nsection)]
-	nphrase = ?
-	
+	#nphrase = ?
+	# TODO
 	return SectionCadence (sc, mapping)
 	
 
