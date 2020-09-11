@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 from itertools import accumulate, product
 #from numba     import jit

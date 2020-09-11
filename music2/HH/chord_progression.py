@@ -1,11 +1,393 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
+from numba     import jit
 from random    import choice, randrange
-from itertools import chain
+from itertools import accumulate, chain
 
 from random_util import subsets, random_bjorklund2, random_bool
 from song        import random_song#, apply_song
 from mode        import random_mode
+
+# song structure
+# meter
+# chord functions
+# modes (modulations)
+# modal interchange
+# chords (more borrowing, inversions, voice leading)
+# accent pattern
+# poetic meter
+# rhythm
+# CT-NCT, CT-NCT-NCT cadence
+# melody
+# contrapuntal harmony
+
+
+	
+	
+	
+	
+	
+		
+		
+		
+
+section_db = (
+	((0)),       # one   phrase
+	((0, 0),     # two   phrases, same      cadence
+	 (0, 1)),    # two   phrases, different cadence
+	((0, 0, 0),  # three phrases, same      cadence
+	 (0, 0, 1),  # three phrases, last  different
+	 (0, 1, 0),  # three phrases, mid   different
+	 (0, 1, 1)), # three phrases, first different
+)
+class SectionCadence (Cadence):
+	def __init__ (self, sc):
+		Cadence.__init__ (sc)
+def random_section_cadence (short=None):
+	if short is None: short = random_bool ()
+	if short is True: temp = section_db[1 - 1]
+	else:
+		temp = randrange (2, 3 + 1) - 1
+		temp = section_db[temp]
+	sc = choice (temp)
+	return SectionCadence (sc)
+
+phrase_db = (
+	((0)),       # one   segment
+	((0, 0),     # two   segments, same cadence
+	 (0, 1)),    # two   segments, same cadence
+	((0, 0, 0),  # three segments, same cadence
+	 (0, 0, 1),  # three segments, last  different
+	 (0, 1, 1)), # three segments, first different
+)
+class PhraseCadence (Cadence):
+	def __init__ (self, pc):
+		Cadence.__init__ (pc)
+def random_phrase_cadence ():
+	temp = choice (phrase_db)
+	pc   = choice (temp)
+	return PhraseCadence (pc)
+def random_phrase_cadences (nsection):
+	pcs = [random_phrase_cadence () for _ in range (0, nsection)]
+	# TODO
+segment_db = (
+	((0)),          # one   bar
+	((0, 0),        # two   bars, same      cadence
+	 (0, 1)),       # two   bars, different cadence
+	((0, 0, 0),     # three bars, same      cadence
+	 (0, 0, 1),     # three bars, last  different
+	 (0, 1, 1)),    # three bars, first different
+	((0, 0, 0, 1),  # four  bars, last  different
+	 (0, 0, 1, 1),  # four  bars, last two different
+	 (0, 1, 0, 1),  # four  bars, every other is different
+	 (0, 1, 1, 1)), # four  bars, first different
+)
+class SegmentCadence (Cadence):
+	def __init__ (self, sc):
+		Cadence.__init__ (sc)
+def random_segment_cadence ():
+	temp = choice (segment_db)
+	sc   = choice (temp)
+	return SegmentCadence (sc)
+
+class MeterCadence:# (Cadence):
+	def __init__ (self, ss, secc, phrc, segc, barc):
+		# TODO map bars
+		#Cadence.__init__ ()
+		self.ss   = ss
+		self.secc = secc
+		self.phrc = phrc
+		self.segc = segc
+		self.barc = barc
+def random_meter_cadence ():
+	ss          = random_song_cadence ()
+	
+	nsection    = ss.nsection ()
+	secc        = random_section_cadences (ss)
+	#ss.secc     = secc
+	
+	min_nphrase = ss.min_nphrase () # min number of distinct phrases, given section patterns: max of all
+	max_nphrase = ss.max_nphrase () # max number of distinct phrases, given section patterns: sum of maxes of all
+	nphrase     = randrange (min_nphrase, max_nphrase + 1)
+	phrc        = random_phrase_cadences (secc, nphrase)
+	#ss.phrc     = phrc
+	
+	min_nsegment = ss.min_nsegment ()
+	max_nsegment = ss.max_nsegment ()
+	nsegment     = randrange (min_nsegment, max_nsegment + 1)
+	segc         = random_segment_cadences (phrc, nsegment)
+	#ss.segc      = segc
+	
+	min_nbar     = ss.min_nbar ()
+	max_nbar     = ss.max_nbar ()
+	nbar         = randrange (min_nbar, max_nbar)
+	barc         = random_bar_cadences (segc, nbar)
+	#ss.barc      = barc
+	
+	return MeterCadence (ss, secc, phrc, segc, barc)
+def random_section_cadences_helper (uniq, min_n, max_n, short=None):
+	n        = randrange (min_n, max_n + 1)
+	sections = [random_section_cadence (short) for _ in range (0, n)]
+
+	# TODO indices := map from uniq.section to sections; nsection <= len (uniq.sections)
+	#indices  = shuffle (range (0, len (sections)))
+
+	# all combos of indices of len(uniq)
+	# 
+	indices = []
+	for _ in range (0, len (uniq)):
+		index   = ?
+		indices = indices + [index]
+	
+	assert len (indices) == len (uniq)
+	mapping  = {}
+	for section, i in zip (uniq, indices):
+		assert section not in mapping
+		mapping[section] = i
+	return sections, mapping
+def random_section_cadences (sc): # song cadence => section cadences
+	long_sections,  lm = random_section_cadences_helper (sc.long_uniq,  sc.min_nlsection (), sc.max_nlsection (), False)
+	short_sections, ls = random_section_cadences_helper (sc.short_uniq, sc.min_nssection (), sc.max_nssection (), True)
+	
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+# song structure
+# section structure
+# => nphrase_tot, nphrase_uniq
+
+
+# ~nbeat for phrase
+# phrase structure
+# => nbeat per segment
+
+# ~nbeat per segment
+# segment structure
+# => nbeat per bar, longer bars toward end
+"""
+
+class Meter:
+	def __init__ (self, mc, nbeats):
+		self.mc     = mc
+		self.nbeats = nbeats
+def random_meter (mc=None, nbeats=None):
+	if mc     is None: mc     = random_meter_cadence ()
+	if nbeats is None: nbeats = random_nbeats (mc.nbar ())
+	return Meter (mc, nbeats)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+def random_song_structure ():
+	ss = choice (song_structure_db)
+	return SongStructure (ss)
+def random_sections (ss):
+	sections = ss.uniq
+	for section in sections:
+		
+		
+		
+def random_meter ():
+	min_nbar = ?
+	max_nbar = ?
+	nbar = randrange (min_nbar, max_nbar)
+	tbar = ?
+	bars = [random_bar (tbar) for k in range (0, nbar)]
+
+
+
+
+
+
+
+
+
+
+
+class SongStructure (Mapping):
+	def __init__ (self, sections, order):
+		Mapping.__init__ (self, sections, order)
+		long_uniq      = {}
+		short_uniq     = {}
+		for i, section in zip (range (0, len (sections)), sections):
+			if section in [0, 1, 2]:
+				long_sections  = long_sections  + [section]
+				if section in long_uniq: temp = long_uniq[section]
+				else:                    temp = []
+				long_uniq[section]  = temp[i]
+			if section in [3, 4, 5]:
+				short_sections = short_sections + [section]
+				if section in short_uniq: temp = short_uniq[section]
+				else:                     temp = []
+				short_uniq[section] = temp[i]
+		self.long_uniq  = long_uniq
+		self.short_uniq = short_uniq
+		
+	def phrases (self): return chain ((     section.phrases  for section in self.order))
+	def nphrase (self): return sum   ((len (section.phrases) for section in self.order))
+	def section (self, phrase_no):
+		acc = accumulate ((len (section.phrases) for section in self.order))
+		assert len (acc) == len (self.order)
+		for i, v in zip (range (0, len (self.order)), acc):
+			if v <= phrase_no: return i
+		raise Exception ()
+		
+	def segments (self): return chain ((section.segments () for section in self.order))
+	def nsegment (self): return sum   ((section.nsegment () for section in self.order))
+	def phrase   (self, segment_no):
+		phrases = list (self.phrases ())
+		acc = accumulate ((len (phrase.segments) for phrase in phrases))
+		assert len (acc) == self.nphrase ()
+		for i, v in zip (range (0, len (phrases)), acc):
+			if v <= segment_no: return i
+		raise Exception ()
+		
+	def bars    (self): return chain ((section.bars () for section in self.order))
+	def nbar    (self): return sum   ((section.nbar () for section in self.order))
+	def segment (self, bar_no):
+		pass
+		
+	def bar (self, beat_no): pass
+	
+	#def uniq_phrases (self): 
+
+
+
+def random_song_structure ():
+	sections = choice (songs_db)
+	return SongStructure (sections)
+	
+	
+section_db = {
+	"1" : ((0)),
+	"2" : ((0, 0), (0, 1)),
+	"3" : ((0, 0, 0), (0, 0, 1), (0, 1, 1)),
+}
+class Section:
+	def __init__ (self, phrases): self.phrases = phrases
+	def segments (self): return chain (*(phrase .segments () for phrase  in self.phrases))
+	def bars     (self): return chain (*(segment.bars     () for segment in self.segments ()))
+	#def nbeat    (self): return 
+phrase_db = {
+	"1" : ((0)),
+	"2" : ((0, 0), (0, 1)),
+	"3" : ((0, 0, 0), (0, 0, 1), (0, 1, 1)),
+}
+class Phrase:
+	def __init__ (self, segments): self.segments = segments	
+	def nbeat   (self): return sum ((segment.nbeat ()   for segment in self.segments))
+	def nbar    (self): return sum ((len (segment.bars) for segment in self.segments))
+	def segment (self, i):
+		pass
+	def bar     (self, i):
+		pass
+segment_db = {
+	"1" : ((0)),
+	"2" : ((0, 0), (0, 1)),
+	"3" : ((0, 0, 0), (0, 0, 1), (0, 1, 1)),
+	"4" : ((0, 0, 0, 1), (0, 0, 1, 1), (0, 1, 0, 1), (0, 1, 1, 1)),
+}
+class Segment:
+	def __init__ (self, bars)
+		self.bars = bars
+	def nbeat (self): return sum ((bar.nbeat for bar in self.bars))
+	def bar   (self, i):
+		acc = accumulate (self.bars, lambda bar: bar.nbeat):
+		for p, n in zip (acc[:-1], acc[1:]):
+			if i >= p and i < n: return p
+		raise Exception ()
+class Bar:
+	def __init__ (self, nbeat): self.nbeat = nbeat
+
+class Meter:
+	def __init__ (self, ss, sections):
+		pass
+	"""
+	
+	
+	
+
+class Song:
+	@staticmethod
+	def init_map (sections, song_structure):
+		section_ret = []
+		for section in sections:
+			phrases, segments, bars, mappings1, mappings2 = apply_section (section)
+			phrase_ret = []
+			for phrase_no in section.phrases:
+				phrase = phrases[phrase_no]
+				segment_ret = []
+				for segment_no in phrase.segments:
+					segno = mappings1[phrase_no][segment_no]
+					segment = segments[segno]
+					bar_ret = []
+					for bar_no in segment.bars:
+						barno = mappings2[segno][bar_no]
+						bar = bars[barno]
+						bar_ret = bar_ret + [bar]
+					segment_ret = segment_ret + [bar_ret]
+				phrase_ret = phrase_ret + [segment_ret]
+			section_ret = section_ret + [phrase_ret]
+		return [(section, section_ret[section]) for section in song_structure.sections]
+	def __init__ (self, sections, song_structure):
+		self.sections       = sections
+		self.song_structure = song_structure
+		self.map            = Song.init_map (sections, song_structure)
+def random_song (song_structure=None, sections=None, long_sections=None, short_sections=None):
+	if not song_structure: song_structure = random_song_structure ()
+	if not sections:
+		if not long_sections: long_sections = [random_section (2) for _ in range (0, 3)]
+		if not short_sections:
+			#min_bar = min (bar.nbeat for phrase in long_sections for segment in phrase.segments for bar in segment.bars)
+			#max_bar = max (bar.nbeat for phrase in long_sections for segment in phrase.segments for bar in segment.bars)
+			#short_sections = [random_section (1, min_bar, max_bar) for _ in range (0, 3)]
+			short_sections = [random_section (1) for _ in range (0, 3)]
+		sections = long_sections + short_sections
+	return Song (sections, song_structure)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class Cadence:
 	def __init__ (self, cp, arr):
@@ -417,9 +799,9 @@ def random_hues (fc, nmodulation, hr=None, hc=None, mode=None):
 			# TODO modulate to enharmonic scale/mode
 			# TODO make 0s sparse
 			temp = lambda mode: mode
-			pass
 		modulations = modulations + [temp]
 		mode        = temp (mode)
+		assert mode is not None
 		modes       = modes + [mode]
 	return modes
 def random_hues1 (fc):
@@ -593,6 +975,8 @@ def random_borrow_cadence (br):
 class BorrowHue:
 	def __init__ (self, pattern): self.pattern = pattern
 def random_borrow_hue (bc, modes):
+	# TODO
+	#assert len (bc.pattern) == len (modes)
 	# given previous mode, previous chord function
 	# given current  mode, current  chord function
 	# given next     mode, next     chord function
@@ -615,7 +999,7 @@ def random_borrow_hue (bc, modes):
 		modulations = modulations + [modulation]
 	return BorrowHue (modulations)
 # TODO each layer should be able to be divided in this way		
-def random_borrow_pattern0 (sp, ss, bc=None, br=None):
+def random_borrow_pattern0 (sp, ss, bc=None, br=None): # by song
 	fc    = sp.function_cadence
 	modes = sp.modulations
 	
@@ -635,6 +1019,7 @@ def random_borrow_pattern0 (sp, ss, bc=None, br=None):
 		#	if brs[st] is None: brs[st] = random_borrow_rhythm (nchord)
 		#	bcs[st] = random_borrow_cadence (brs)
 		#	#bhs[st] = random_borrow_hue (bcs[st], modes) # TODO modes of this section
+	#print (nborrow)
 	# for v0
 	if bc is None:
 		#if br is None: br = random_borrow_rhythm (nborrow)
@@ -647,7 +1032,7 @@ def random_borrow_pattern0 (sp, ss, bc=None, br=None):
 	#	temp     = bcs[st]
 	#	mapping2 = mapping2 + temp.pattern
 	#return random_borrow_hue (mapping2, modes)
-def random_borrow_pattern1 (sp, ss, bcs=None, brs=None):
+def random_borrow_pattern1 (sp, ss, bcs=None, brs=None): # by section
 	fc    = sp.function_cadence
 	modes = sp.modulations
 	
@@ -676,6 +1061,7 @@ def random_borrow_pattern1 (sp, ss, bcs=None, brs=None):
 	mapping2 = []
 	for st, section in ss:
 		temp     = bcs[st]
+		print (temp.pattern)
 		mapping2 = mapping2 + temp.pattern
 	bc = BorrowCadence (mapping2)
 	return random_borrow_hue (bc, modes)

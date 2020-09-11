@@ -1,6 +1,9 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python3
 
-def bjorklund(steps, pulses):
+from numba import jit
+
+@jit
+def bjorklund (steps, pulses):
     steps = int(steps)
     pulses = int(pulses)
     if pulses > steps:

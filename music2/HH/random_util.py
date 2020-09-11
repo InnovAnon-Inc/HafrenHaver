@@ -1,8 +1,9 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 from math      import gcd
-#from numba     import jit
+from numba     import jit
 from random    import choice, getrandbits, randrange
+
 from bjorklund import bjorklund
 
 def random_index (array): return randrange (0, len (array))
@@ -14,11 +15,11 @@ def random_bjorklund (n):
 	k = choice (list (relative_primes (n)))
 	return bjorklund (n, k)
 # https://stackoverflow.com/questions/17350330/python-array-rotation
-#@jit
+@jit
 def rotate  (li, rot):
 	if rot == 0: return li
 	return li[rot:] + li[:rot]
-#@jit
+@jit
 def reverse (li):      return li[::-1]
 def random_bjorklund2 (n, rev=None, rot=None):
 	if rev is None: rev = random_bool ()
@@ -69,7 +70,7 @@ def printAllSubsets (arr, n, sum):
 # This code is contributed by ihritik
 
 # https://stackoverflow.com/questions/56206696/recursive-program-to-get-all-subsets-with-given-sum-includes-repetitions
-#@jit
+@jit
 def subsets (arr, _sum, c = []):
 	if sum (c) == _sum: yield c
 	else:

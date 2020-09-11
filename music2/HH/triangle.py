@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 from math import atan, atan2, pi, sin, cos, tan, gcd, sqrt, ceil
 from itertools import chain, product
@@ -1224,6 +1224,7 @@ def animation3 (width, height, gen): # circling the square
 	
 	origin = Point (0, 0)
 	#lines  = [[origin]]
+	lines = animation3a (width, height, gen)
 		
 	r = 1 / R
 	#for k in range (0, int (R)):
@@ -1234,11 +1235,11 @@ def animation3 (width, height, gen): # circling the square
 	
 	circle = Circle (origin, r)
 	temp   = [circle]
-	#penta  = [k.scale (r, r) for k in next (gen)]
-	#lines  = lines + [temp + penta]
-	lines = [temp]
+	penta  = [k.scale (r, r) for k in next (gen)]
+	lines  = lines + [temp + penta]
+	#lines = [temp]
 	
-	lines = animation3a (width, height, gen)
+	#lines = animation3a (width, height, gen)
 	
 	a      = Point (-r, -r)
 	b      = Point (-r, +r)
@@ -1250,11 +1251,15 @@ def animation3 (width, height, gen): # circling the square
 	lines  = lines + [temp + penta]
 	
 	# TODO while True ?
-	for k in range (0, int (R)):
-		k = (k + 1) * r
+	#for k in range (0, int (R)):
+	K = 0
+	while True:
+		k = (K + 1) * r
+		K = K + 1
 		sc = sqrt (2)
 		circle = circle.scale (sc, sc)
-		if circle.r > 1: break
+		#if circle.r > 1: break
+		if circle.r > sqrt (2): break
 		square = square.scale (sc, sc)
 		#temp   = temp + [[circle], [circle, square]]
 		temp   = temp + [circle]
@@ -1265,14 +1270,101 @@ def animation3 (width, height, gen): # circling the square
 		lines  = lines + [temp + penta]
 	
 	top, left, width, height = square.tlwh ()
-	sc = pow (2 / width, 1 / R)
-	for k in range (0, int (R)):
-		#k  = width + (k + 1) / R * dw
-		#sc = k / width
-		temp = [t.scale (sc, sc) for t in temp]
-		penta  = [k.scale (r * sc, r * sc) for k in next (gen)]
-		lines = lines + [temp + penta]
+	assert width  > 0
+	assert height > 0
+	#sc = pow (2 / width, 1 / R)
+	sc = pow (2 * sqrt (2) / width, 1 / R)
+	assert sc > 1, sc
+	SC = r * sc
+	while len (temp) > 0:
+		while type (temp[-1]) is Circle and temp[-1].r <= sqrt (2) or type (temp[-1]) is Quadrilateral and temp[-1].tlwh ()[2] <= 2:
+			#k  = width + (k + 1) / R * dw
+			#sc = k / width
+			temp = [t.scale (sc, sc) for t in temp]
+			penta  = [K.scale (SC, SC) for K in next (gen)]
+			if temp[0].r > 1: break
+			lines = lines + [temp + penta]
+			SC = SC * sc
+		if len (temp) > 0:
+			if type (temp[-1]) is Circle: temp = temp[:-2]
+			else:                         temp = temp[:-1]
+		if temp[0].r > 1: break
+	if len (temp) > 0 and type (temp[-1]) is Quadrilateral: temp = temp[:-1]
+	penta = list (next (gen))
+	lines = lines + [temp + penta]
+	
+	assert len (temp) == 1
+	circle = temp[0]
+	r      = circle.r / sqrt (2)
+	a      = Point (-r, -r)
+	b      = Point (-r, +r)
+	c      = Point (+r, +r)
+	d      = Point (+r, -r)
+	square = Quadrilateral (a, b, c, d)
+	penta  = [k.scale (r, r) for k in next (gen)]
+	temp   = temp + [square]
+	lines  = lines + [temp + penta]
+	
+	K = 0
+	while True:
+		k = (K + 1) * r
+		sc = 1 / sqrt (2)
+		circle = circle.scale (sc, sc)
+		#if circle.r > 1: break
+		if circle.r < 1 / R: break
+		#temp   = temp + [[circle], [circle, square]]
+		temp   = temp + [circle]
+		SC = r * pow (sc, K + 0)
+		penta  = [k.scale (SC, SC) for k in next (gen)]
+		lines  = lines + [temp + penta]
 		
+		square = square.scale (sc, sc)
+		temp   = temp + [square]
+		SC = r * pow (sc, K + 1)
+		penta  = [k.scale (SC, SC) for k in next (gen)]
+		lines  = lines + [temp + penta]
+		K = K + 1
+		
+	#square = temp[1]
+	#top, left, width, height = square.tlwh ()
+	#assert width  > 0
+	#assert height > 0
+	#sc = pow (2 / width, 1 / R)
+	#sc = pow (width / 2 / sqrt (2), 1 / R)
+	#sc = pow (2 * sqrt (2) / width, 1 / R)
+	#assert sc > 1, sc
+	sc = pow (2 * sqrt (2) / width, 1 / R)
+	r = 1 / R
+	#SC = r / sc
+	k = 1
+	while len (temp) > 0:
+		while type (temp[-1]) is Circle and temp[-1].r >= 1 / R or type (temp[-1]) is Quadrilateral and temp[-1].tlwh ()[2] >= 2 / R:
+			#k  = width + (k + 1) / R * dw
+			#sc = k / width
+			temp = [t.scale (1 / sc, 1 / sc) for t in temp]
+			if type (temp[-1]) is Circle: SC = temp[-1].r / 1
+			else:                        SC = temp[-1].tlwh ()[2] / 2
+			#SC = pow (SC, k)
+			#SC = 1 / SC
+			k = k + 1
+			penta  = [K.scale (SC, SC) for K in next (gen)]
+			#if temp[-1].r < 1: break
+			lines = lines + [temp + penta]
+			#lines = lines + [temp]
+			#SC = SC / sc
+		if len (temp) > 0:
+			if type (temp[-1]) is Circle: temp = temp[:-1]
+			else:                         temp = temp[:-1]
+		#if temp[0].r < 1: break
+	#if len (temp) > 0 and type (temp[-1]) is Quadrilateral: temp = temp[:-1]
+	#SC = temp[-1].r / 2
+	#penta  = [K.scale (SC, SC) for K in next (gen)]
+	#lines = lines + [temp + penta]
+	temp = []
+	for t in animation3a_rev (width, height, gen):
+		t = [T.scale (SC, SC) for T in t]
+		temp = temp + [t]
+	lines = lines + temp	
 	return lines
 def animation4 (r): # trinity
 	pass
@@ -1280,16 +1372,16 @@ def animations (width, height, gen):
 	return chain (animation0 (width, height, gen), animation1 (width, height))
 def animations_repeat_helper (width, height, gen):
 	return chain (animation2 (width, height), animation3 (width, height, gen))
+	#return (k for k in animation3 (width, height, gen))
 def animations_repeat (width, height, gen):
-	#return iter (animation0a (width, height))
-	#return (k for k in animation2 (width, height, gen))
-	#return chain (animation0 (width, height), animation1 (width, height))
-	#return chain (animation1 (width, height), animation2 (width, height, gen))
 	return chain (animation2c (width, height, gen), animations_repeat_helper (width, height, gen))
-	#return chain (animation2c (width, height), animations_repeat0 (width, height, gen))
+	#return animations_repeat_helper (width, height, gen)
 def animations_repeat0 (width, height, gen):
 	return chain (animations (width, height, gen), animations_repeat_helper (width, height, gen))
-
+	#return animations_repeat_helper (width, height, gen)
+	
+	
+	
 
 class Arc:
 	def __init__ (self, pt, width, height, start_angle, stop_angle):
