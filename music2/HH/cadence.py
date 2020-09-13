@@ -416,21 +416,45 @@ def random_section_cadences (ss):
 	dups = {}
 	for c in sc + lc:
 		if c in uniq:
-			dups[c]++
+			dups[c] = dups[c] + 1
 			continue
 		uniq[c] = max (c)
 		dups[c] = 1
+	#ranges = {}
+	minsum, maxsum = 0, 0
 	for c, max_c in uniq.items ():
 		ndup = dups[c]
-		cmin = max_c
-		nperm = nperm (cmin)
-		while nperm < ndup:
-			cmin = cmin + 1
-			nperm = nperm (cmin)
-		cmax = max_c * ndup
-		n = randrange (cmin, cmax)
-		phrase_ndxs = perm (range (0, n))
-		
+		#cmin = max_c
+		#cmin = max (max_c, len (phrase_ndxs))
+		cmin = max (max_c - minsum, 0) # min number to preserve uniqueness constraint
+		cmax = max_c * ndup # max number possible
+		assert cmin <= cmax
+		#if cmin > len (phrase_ndx): phrase_ndxs = range (0, cmin)
+		while True:
+			nperm = nperm (cmin + minsum) # number of unique combinations
+			#while nperm < cmax:
+			if nperm >= cmax: break
+			cmin  = cmin + 1
+			nperm = nperm (cmin + minsum)
+			assert cmin <= cmax
+		#assert cmin <= cmax
+		#ranges[c] = (cmin, cmax)
+		minsum = cmin + minsum
+		maxsum = cmax + maxsum
+	n = randrange (cmin, cmax)
+	phrase_ndxs = range (0, n)
+	while True:
+		mapping = []
+		#for c, max_c in uniq.items ():
+		for c in sc + lc
+			#ndup = dups[c]
+			while True:
+				temp = perm (phrase_ndxs, len (c))
+				if temp not in mapping: break
+			#mapping = mapping + [temp]
+			mapping = mapping + temp
+		if sorted (mapping) == phrase_ndxs: break # ensure all n indices are consumed
+	
 		
 	# TODO handle dups in mapping
 	
