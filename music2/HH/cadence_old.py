@@ -126,7 +126,7 @@ def random_song_structure ():
 class Cadence (Pattern):
 	def __init__ (self, uniq, order):
 		Pattern.__init__ (self, order)
-		self.uniq = uniq
+		self.uniq  = uniq
 	def __repr__ (self): return "Cadence [%s, uniq=%s]" % (Pattern.__repr__ (self), self.uniq)
 	#@jit
 	def elem (self, i):
@@ -167,12 +167,9 @@ sc0_db = (
 class SongCadence0 (Cadence):
 	def __init__ (self, sc, mapping): Cadence.__init__ (self, sc, mapping)
 	def __repr__ (self): return "SC0 [%s]" % Cadence.__repr__ (self)
-	def sections (self): return self.uniq.items () # TODO test
 	def section_type (self, i): return Cadence.pattern (self, i)
-	# TODO or max ?
-	def ns (self): return len (self.uniq)
 	#@jit
-	#def elem (self, i): # section_no to section
+	#def elem (self, i):
 	#	v = Cadence.elem (self, i)
 	#	return v.value ()
 	#@jit
@@ -211,22 +208,6 @@ def random_sc0 (nsection):
 	
 	
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	
 	
 class SongCadence (Cadence):
@@ -259,17 +240,16 @@ class SongCadence (Cadence):
 		self.lc = lc # long  cadence
 	def __repr__ (self): return "SongCadence [ss=%s, sc=%s, lc=%s]" % (self.ss, self.sc, self.lc)
 	#@jit
-	def elem (self, i): # section_no to section
-		c, v = self.section1d (i)
-		##return c.uniq[v.value ()]
-		##print ("c=%s (v=%s): %s" % (c, v, c.uniq[v]))
-		##short = (c == self.sc)
-		##assert short == (c != self.lc)
-		#assert (c == self.sc or c == self.lc)
-		#r = c.elem (v)
-		##assert r == c.uniq[v]
-		#return (c == self.sc, r)
-		return self.section2d (c, v)
+	def elem (self, i):
+		c, v = Cadence.elem (self, i)
+		#return c.uniq[v.value ()]
+		#print ("c=%s (v=%s): %s" % (c, v, c.uniq[v]))
+		#short = (c == self.sc)
+		#assert short == (c != self.lc)
+		assert (c == self.sc or c == self.lc)
+		r = c.elem (v)
+		assert r == c.uniq[v]
+		return (c == self.sc, r)
 		#return (c == self.sc, c.uniq[v])
 		#return (c == self.sc, c.elem (v))
 		#return c.u (v)
@@ -279,43 +259,25 @@ class SongCadence (Cadence):
 		#if short: print ("short")
 		#return c.uniq[v]
 	def section_type (self, i): return Cadence.pattern (self, i)
-	def sections (self): return self.uniq.items () # TODO test
-	def section1d (self, i): return Cadence.elem (self, i)
-	def section2d (self, c, v):
-		assert (c == self.sc or c == self.lc)
-		r = c.elem (v)
-		#assert r == c.uniq[v]
-		return (c == self.sc, r)
 	#@jit
 	#def all (self): return (c.uniq[v.value ()] for c, v in Cadence.all (self))
 	#def all (self): return ((c == self.sc, c.uniq[v]) for c, v in Cadence.all (self))
-	#def all (self): return (self.section2d (c, v) for c, v in Cadence.all (self))
-	def all (self): return map (lambda cv: self.section2d (*cv), Cadence.all (self))
-		#for c, v in Cadence.all (self):
-			##r = c.uniq[v]
-			#r = c.elem (v)
-			##assert r == c.uniq[v], "%s, %s" % (r, c.uniq[v])
-			#print ("c=%s (v=%s): %s" % (c, v, r))
-			#assert (c == self.sc or c == self.lc)
-			#yield (c == self.sc, r)
-		#	yield self.section2d (c, v)
+	def all (self):
+		for c, v in Cadence.all (self):
+			#r = c.uniq[v]
+			r = c.elem (v)
+			#assert r == c.uniq[v], "%s, %s" % (r, c.uniq[v])
+			print ("c=%s (v=%s): %s" % (c, v, r))
+			assert (c == self.sc or c == self.lc)
+			yield (c == self.sc, r)
 	#def all (self): return (c.u (v) for c, v in Cadence.all (self))
 	#def v (self, v): return Cadence.v (self, v.value ())
-	def nsc (self):
-		assert self.ss.nsc () == self.sc.ns ()
-		#return self.ss.nsc ()
-		return self.sc.ns ()
-	def nlc (self):
-		assert self.ss.nlc () == self.lc.ns ()
-		#return self.ss.nlc ()
-		return self.lc.ns ()
 def random_song_cadence (ss=None, sc=None, lc=None):
 	if ss is None: ss = random_song_structure ()
 	nsc = ss.nsc ()                      # number of short sections
 	nlc = ss.nlc ()                      # number of long  sections
 	#assert len (ss.order) == nsc + nlc, "tot: %s, short: %s, long: %s" % (len (ss.order), nsc, nlc)
 	assert len (set (ss.order)) == nsc + nlc, "tot: %s, short: %s, long: %s" % (len (set (ss.order)), nsc, nlc)
-
 	if lc is None: lc = random_sc0 (nlc) # long  sections
 	
 	# chorus (2-3) <= verse  (2-4, 3-9)
@@ -336,63 +298,34 @@ def random_song_cadence (ss=None, sc=None, lc=None):
 	
 	
 section_db = (
-	((0,),),       # one   phrase
+	((0)),       # one   phrase
 	((0, 0),     # two   phrases, same      cadence
 	 (0, 1)),    # two   phrases, different cadence
 	((0, 0, 0),  # three phrases, same      cadence
 	 (0, 0, 1),  # three phrases, last  different
 	 (0, 1, 0),  # three phrases, mid   different
 	 (0, 1, 1)), # three phrases, first different
-	 #0, 1, 2 # all different
 )
 class SectionCadence (Cadence):
-	@staticmethod
-	def mapping (sc, scs, lcs):
-		# TODO
-		order = []
-		uniq = {}
-		sci = 0
-		lci = 0
-		#phrase_no = 0
-		for section_no, cv in sc.sections ():
-			#section_type, index = cv
-			short,        index = ss.section2d (*cv)
-			assert (short, index) not in uniq
-			if short:
-				dp = len (scs[index])
-				uniq[(short, index)] = sci
-				sci = sci + 1
-			else:
-				dp = len (lcs[index])
-				uniq[(short, index)] = lci
-				lci = lci + 1
-			order = order + [(short, index)] * dp
-			#phrase_no = phrase_no + dp
-		return uniq, order
-	def __init__ (self, sc, scs, lcs):
-		Cadence.__init__ (*SectionCadence.mapping (sc, scs, lcs)) # phrase_no to section_no
-		self.sc  = sc
-		self.scs = scs
-		self.lcs = lcs
-	def __repr__ (self): return "SectionCadence [sc=%s, scs=%s, lcs=%s]" % (self.sc, self.scs, self.lcs)
-	# TODO
-	# section_type (section_no)
-	# section_index (phrase_no)
-	# section (phrase_no)
+	def __init__ (self, sc, mapping): Cadence.__init__ (sc, mapping)
+	def __repr__ (self): return "SongCadence [ss=%s, sc=%s, lc=%s]" % (self.ss, self.sc, self.lc)
 	#@jit
-	def elem (self, phrase_no):
-		section_no = Cadence.elem (self, phrase_no)
-		short, i = self.sc.elem (section_no)
-		if short: c = self.scs
-		else:     c = self.lcs
-		return c[i]
+	def elem (self, i):
+		#short, e = ???.elem (i)
+		i = sc[short][e]
+		if not short: i = i + nsc
+		return Cadence.elem (self, i)
+		
+		assert (c == self.sc or c == self.lc)
+		return (c == self.sc, c.uniq[v])
 	#@jit
+	#def all (self): return (c.uniq[v.value ()] for c, v in Cadence.all (self))
+	#def all (self): return ((c == self.sc, c.uniq[v]) for c, v in Cadence.all (self))
 	def all (self):
-		for section_no in Cadence.all (self):
-			short, i = self.sc.elem (section_no)
-			if short: c = self.scs
-			else:     c = self.lcs
-			yield c[i]
+		for c, v in Cadence.all (self):
+			#print ("c=%s (v=%s): %s" % (c, v, c.uniq[v]))
+			assert (c == self.sc or c == self.lc)
+			yield (c == self.sc, c.uniq[v])
 def random_section_cadence (short=None):
 	if short is None: short = random_bool ()
 	if short is True: temp = section_db[1 - 1]
@@ -404,37 +337,9 @@ def random_section_cadence (short=None):
 	assert sc is not None
 	assert type (sc) is tuple, nsection
 	return sc
-def random_section_cadences (ss):
-	# TODO min and max ?
-	nsc = ss.nsc ()
-	nlc = ss.nlc ()
+def random_section_cadences (nsc, nlc):
 	sc = [random_section_cadence (True)  for _ in range (0, nsc)]
-	lc = [random_section_cadence (False) for _ in range (0, nlc)]
-	
-	#wrong  for uniq: sum (max (uniq + 1 for uniq in ...) * ndup)
-	uniq = {}
-	dups = {}
-	for c in sc + lc:
-		if c in uniq:
-			dups[c]++
-			continue
-		uniq[c] = max (c)
-		dups[c] = 1
-	for c, max_c in uniq.items ():
-		ndup = dups[c]
-		cmin = max_c
-		nperm = nperm (cmin)
-		while nperm < ndup:
-			cmin = cmin + 1
-			nperm = nperm (cmin)
-		cmax = max_c * ndup
-		n = randrange (cmin, cmax)
-		phrase_ndxs = perm (range (0, n))
-		
-		
-	# TODO handle dups in mapping
-	
-	
+	lc = [random_section_cadence (False) for _ in range (0, lsc)]
 	#uniq = {
 	#	True  : sc,
 	#	False : lc,
@@ -495,7 +400,5 @@ if __name__ == "__main__":
 		sc = random_song_cadence ()
 		print (sc)
 		print (list (zip (sc.order, list (sc.all ()))))
-		sc = random_section_cadences (sc)
-		print (sc)
 	main ()
 	

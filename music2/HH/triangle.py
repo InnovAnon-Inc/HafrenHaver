@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from math import atan, atan2, pi, sin, cos, tan, gcd, sqrt, ceil
+from math import atan, atan2, pi, sin, cos, tan, gcd, sqrt, ceil, log
 from itertools import chain, product
 
 import sys
@@ -150,6 +150,9 @@ class Quadrilateral:
 		width  = br.x - tl.x
 		height = tl.y - br.y
 		return top, left, width, height
+	def rotate (self, angle):
+		abcd = (pt.rotate (angle) for pt in (self.a, self.b, self.c, self.d))
+		return Quadrilateral (*abcd)
 class Line: # connects points
 	def __init__ (self, a, b):
 		self.a  = a
@@ -1133,6 +1136,548 @@ def animation2a (r): # add axes, shrink circle (some), expand end points for fou
 	#lines = lines + [[x_axis, y_axis, arc, e, f, g, h]] * 5
 	lines = lines + [[x_axis, y_axis, arc, e, f, g, h]]
 	return lines
+	
+	
+	
+	
+	
+	
+	
+	
+	
+def animation2aa (r, gen): # four corners; scale-down-cross in circle; scale-down-point in circle; scale-down-hollow four corners with scale-up-penta; hollow four corners with scale-down-penta; cross; four corners
+	origin = Point (0, 0)
+	
+	a      = Point (-1,  0)
+	b      = Point (+1,  0)
+	c      = Point ( 0, -1)
+	d      = Point ( 0, +1)
+	x_axis = Line  ( a,  b)
+	y_axis = Line  ( c,  d)
+	
+	x = pi
+	x = x / r
+	X = x
+	e = animation1c_helper (x_axis, a, x)
+	f = animation1c_helper (x_axis, b, x)
+	g = animation1c_helper (y_axis, c, x)
+	h = animation1c_helper (y_axis, d, x)
+	
+	cross = [x_axis, y_axis, e, f, g, h]
+	max_r = 1
+	min_r = 1 - (1 + 1) / r
+	arc   = Circle (origin, min_r)
+	#four_corners = cross + [arc]
+	
+	max_w = 2
+	min_w = 2 * min_r
+	d_w   = pow (min_w / max_w, 1 / int (r))
+	d_r   = pow (max_r / min_r, 1 / int (r))
+	
+	#lines = [[cross + [arc]]
+	lines = []
+	for x in range (0, int (r)):
+		cross = [shape.scale (d_w, d_w) for shape in cross]
+		arc   = arc.scale (d_r, d_r)
+		lines = lines + [cross + [arc]]
+	
+	d_r   = pow (min_r / max_r, 1 / int (r))
+	
+	max_w = min_w
+	min_w = 2 / r / r
+	d_w   = pow (min_w / max_w, 1 / int (r))
+	for x in range (0, int (r)):
+		cross = [shape.scale (d_w, d_w) for shape in cross]
+		arc   = arc.scale (d_r, d_r)
+		
+		#a      = Point (-1,  0)
+		#b      = Point (+1,  0)
+		#c      = Point ( 0, -1)
+		#d      = Point ( 0, +1)
+		k = max_r - (x + 1) * (max_r - min_r) / r
+		a1     = Point (-k,  0)
+		b1     = Point (+k,  0)
+		c1     = Point ( 0, -k)
+		d1     = Point ( 0, +k)
+		#x_axis = Line  ( a,  b)
+		#y_axis = Line  ( c,  d)
+		x_axis1 = Line (a,  a1)
+		x_axis2 = Line (b1, b)
+		y_axis1 = Line (c,  c1)
+		y_axis2 = Line (d1, d)
+		w = (x / r) * (pi / r)
+		e = animation1c_helper (x_axis1, a, w)
+		f = animation1c_helper (x_axis2, b, w)
+		g = animation1c_helper (y_axis1, c, w)
+		h = animation1c_helper (y_axis2, d, w)
+		cross2 = [x_axis1, e, x_axis2, f, y_axis1, g, y_axis2, h]
+		lines = lines + [cross + [arc] + cross2]
+		
+		
+		
+	max_r = min_r
+	min_r = 1 / r / r
+	d_r   = pow (min_r / max_r, 1 / int (r))
+	for x in range (0, int (r)):
+		#cross = [shape.scale (d_w, d_w) for shape in cross]
+		arc   = arc.scale (d_r, d_r)
+		
+		#dp = ((x + 1) / r) * (max_r)
+		#dp = ((x + 1) / r) * (max_r - min_r)
+		#dp = pow (d_r, x + 1)
+		#dp = dp * arc.r
+		#dp = arc.r
+		#dp = log (x) / log (r)
+		#dpr = pow (1 / min_r, 1 / int (r))
+		#dpr = arc.r
+		#dp = pow (dpr, (x + 1) / r)
+		#xx = x / r
+		#dp = (x + 1) * pow (1 / r, x + 1)
+		#dp = (x + 1) / r
+		#dp = pow (d_r, (x + 1) / r)
+		#dp = pow (1 / d_r, x + 1)
+		#dp = pow (d_r, r - x - 1)
+		#dp = pow (1 / d_r, (x + 1) / r)
+		#dp = min_r * dp
+		#dp = pow (r, (x + 1) / r) / r
+		#dp = (log (1) - log (r)) / log (r)
+		#dp = arc.r
+		#dp = (x + 1) / r
+		#dp = (1 - min_r) * pow (dp, (x + 1) / r)
+		#dp = pow (arc.r / min_r, 1 / r)
+		#dp = pow (1 / (1 - min_r), 1 / r)
+		#dp = pow ((1 - min_r) / min_r, 1 / r)
+		#dp = pow ((1 - min_r) / r, 1 / r)
+		#dp = 1 / min_r
+		#dp = (1 - min_r)
+		#dp = 1 / dp
+		#dp = dp / r
+		#dp = 1 / r
+		#dp = 1 / dp
+		#dp = pow (min_r / (1 - min_r), 1 / r)
+		#dp = pow (r, x + 1) / pow (r, r)
+		#dp = pow (dp, r - x)
+		#dp = (r - x) / r
+		dp = (x + 1) / r # fuck it
+		#dp = r / (x + 1)
+		#dp = pow ((1 - min_r) / min_r, 1 / r)
+		#dp = pow (dp, x + 1)
+		#dp = dp * (1 - min_r)
+		#dp = pow (x + 1, 1 / r) / pow (r, 1 / r)
+		#dp = pow (1 / min_r, 1 / r)
+		#dp = pow (1 / min_r, 1 / r)
+		#dp = pow (dp, x + 1)
+		#dp = 1
+		dp = dp * arc.r
+		penta = [shape.scale (dp, dp) for shape in next (gen)]
+		
+		#a      = Point (-1,  0)
+		#b      = Point (+1,  0)
+		#c      = Point ( 0, -1)
+		#d      = Point ( 0, +1)
+		#k = max_r - (x) * (max_r - min_r) / r
+		k = arc.r
+		a1     = Point (-k,  0)
+		b1     = Point (+k,  0)
+		c1     = Point ( 0, -k)
+		d1     = Point ( 0, +k)
+		#x_axis = Line  ( a,  b)
+		#y_axis = Line  ( c,  d)
+		x_axis1 = Line (a,  a1)
+		x_axis2 = Line (b1, b)
+		y_axis1 = Line (c,  c1)
+		y_axis2 = Line (d1, d)
+		#w = (x / r) * (pi / r)
+		e = animation1c_helper (x_axis1, a, X)
+		f = animation1c_helper (x_axis2, b, X)
+		g = animation1c_helper (y_axis1, c, X)
+		h = animation1c_helper (y_axis2, d, X)
+		cross2 = [x_axis1, e, x_axis2, f, y_axis1, g, y_axis2, h]
+		lines = lines + [penta + [arc] + cross2]
+	
+	a      = Point (-1,  0)
+	b      = Point (+1,  0)
+	c      = Point ( 0, -1)
+	d      = Point ( 0, +1)
+	x_axis = Line  ( a,  b)
+	y_axis = Line  ( c,  d)
+	
+	x = pi
+	x = x / r
+	X = x
+	e = animation1c_helper (x_axis, a, x)
+	f = animation1c_helper (x_axis, b, x)
+	g = animation1c_helper (y_axis, c, x)
+	h = animation1c_helper (y_axis, d, x)
+	
+	cross = [x_axis, y_axis, e, f, g, h]
+	min_r = 1 / r / r
+	max_r = 1 - (1 + 1) / r
+	arc   = Circle (origin, min_r)
+	d_r   = pow (max_r / min_r, 1 / int (r))
+	for x in range (0, int (r)):
+		arc   = arc.scale (d_r, d_r)
+		lines = lines + [cross + [arc]]
+	return lines	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+def animation2ab_helper (line, pt, radius, theta):
+	angle  = line.angle ()
+	angle  = angle + pi / 2
+	angle1 = angle - theta
+	angle2 = angle + theta
+	dx1, dy1 = radius * cos (angle1), radius * sin (angle1)
+	dx2, dy2 = radius * cos (angle2), radius * sin (angle2)
+	ax1, ay1 = pt.x - dx1,            pt.y - dy1
+	#bx1, by1 = pt.x + dx1,            pt.y + dy1
+	#ax2, ay2 = pt.x - dx2,            pt.y - dy2
+	bx2, by2 = pt.x + dx2,            pt.y + dy2
+	a1      = Point (ax1, ay1)                                              # end point's perpendicular's start point
+	#b1      = Point (bx1, by1)                                              # end point's perpendicular's end   point
+	#a2      = Point (ax2, ay2)                                              # end point's perpendicular's start point
+	b2      = Point (bx2, by2)                                              # end point's perpendicular's end   point
+	dash1   = Line (pt, a1)                                                 # path end indicator
+	dash2   = Line (pt, b2)                                                 # path end indicator
+	return dash1, dash2
+def animation2ab (r): # rotate and mirror cross, midway through the rotaton, the lines should be arrows of length 1, and the circle shrinks
+	origin = Point (0, 0)
+	
+	a      = Point (-1,  0)
+	b      = Point (+1,  0)
+	c      = Point ( 0, -1)
+	d      = Point ( 0, +1)
+	x_axis = Line  ( a,  b)
+	y_axis = Line  ( c,  d)
+	
+	# radius of circle
+	max_r = 1 - (1 + 1) / r
+	min_r = 1 / r / r
+	dr    = (max_r - min_r) / (r * 2)
+	
+	# length of arrows
+	max_x = pi / r
+	min_x = 1 / r
+	dx    = (max_x - min_x) / r
+	
+	# rotation of axes
+	max_theta = pi / 2
+	min_theta = 0
+	dtheta    = (max_theta - min_theta) / r
+		
+	# rotation of arrows
+	max_theta2 = pi / 4
+	min_theta2 = 0
+	dtheta2    = (max_theta2 - min_theta2) / r
+	
+	max_w = 1
+	min_w = 1 / r / r
+	dw    = (max_w - min_w) / r
+	
+	lines = []
+	for X in range (0, int (r * 1)): # perpendiculars to arrows and rotate axes
+		print ("X=%s" % X)
+		theta  = min_theta  + X * dtheta
+		#R      = max_r      - X * dr
+		w      = min_w      + X * dw
+		x      = max_x      - X * dx
+		theta2 = min_theta2 + X * dtheta2
+		if X < r: # [0, r)
+			X2 = X
+		else:     # [r, 0)
+			X2 = X - r
+		R      = max_r      - X2 * dr
+		print ("R=%s" % R)
+		print ("x=%s" % x)
+		print ("theta1=%s" % theta)
+		print ("theta2=%s" % theta2)
+		
+		x_axis1 = x_axis.rotate ( theta)
+		y_axis1 = y_axis.rotate ( theta)
+		e1, e2 = animation2ab_helper (x_axis1, x_axis1.a, x, -theta2)
+		f1, f2 = animation2ab_helper (x_axis1, x_axis1.b, x,  theta2)
+		g1, g2 = animation2ab_helper (y_axis1, y_axis1.a, x, -theta2)
+		h1, h2 = animation2ab_helper (y_axis1, y_axis1.b, x,  theta2)
+		shape1 = [x_axis1, y_axis1, e1, e2, f1, f2, g1, g2, h1, h2]
+		
+		x_axis2 = x_axis.rotate (-theta)
+		y_axis2 = y_axis.rotate (-theta)
+		e1, e2 = animation2ab_helper (x_axis2, x_axis2.a, x, -theta2)
+		f1, f2 = animation2ab_helper (x_axis2, x_axis2.b, x,  theta2)
+		g1, g2 = animation2ab_helper (y_axis2, y_axis2.a, x, -theta2)
+		h1, h2 = animation2ab_helper (y_axis2, y_axis2.b, x,  theta2)
+		shape2 = [x_axis2, y_axis2, e1, e2, f1, f2, g1, g2, h1, h2]
+		
+		e1, e2 = animation2ab_helper (x_axis, x_axis.a, min_x, -max_theta2)
+		f1, f2 = animation2ab_helper (x_axis, x_axis.b, min_x,  max_theta2)
+		g1, g2 = animation2ab_helper (y_axis, y_axis.a, min_x, -max_theta2)
+		h1, h2 = animation2ab_helper (y_axis, y_axis.b, min_x,  max_theta2)
+		shape3  = [x_axis, y_axis, e1, e2, f1, f2, g1, g2, h1, h2]
+		shape3  = [shape.scale (w, w) for shape in shape3]
+		
+		arc = Circle (origin, R)
+		
+		lines = lines + [[arc] + shape1 + shape2 + shape3]
+		#lines = lines + [shape1]
+		#lines = lines + [shape2]
+		
+	max_theta = pi / 4
+	min_theta = 0
+	dtheta    = (max_theta - min_theta) / r
+		
+	for X in range (0, int (r * 1)):
+		print ("X=%s" % X)
+		theta  = min_theta  + X * dtheta
+		#R      = max_r      - X * dr
+		w      = min_w      + X * dw
+		#x      = max_x      - X * dx
+		x = min_x
+		#theta2 = min_theta2 + X * dtheta2
+		theta2 = max_theta2
+		if X < r: # [0, r)
+			X2 = r + X
+		else:     # [r, 0)
+			X2 = X
+		R      = max_r      - X2 * dr
+		print ("R=%s" % R)
+		print ("x=%s" % x)
+		print ("theta1=%s" % theta)
+		print ("theta2=%s" % theta2)
+		
+		x_axis1 = x_axis.rotate ( theta)
+		y_axis1 = y_axis.rotate ( theta)
+		e1, e2 = animation2ab_helper (x_axis1, x_axis1.a, x, -theta2)
+		f1, f2 = animation2ab_helper (x_axis1, x_axis1.b, x,  theta2)
+		g1, g2 = animation2ab_helper (y_axis1, y_axis1.a, x, -theta2)
+		h1, h2 = animation2ab_helper (y_axis1, y_axis1.b, x,  theta2)
+		shape1 = [x_axis1, y_axis1, e1, e2, f1, f2, g1, g2, h1, h2]
+		
+		x_axis2 = x_axis.rotate (-theta)
+		y_axis2 = y_axis.rotate (-theta)
+		e1, e2 = animation2ab_helper (x_axis2, x_axis2.a, x, -theta2)
+		f1, f2 = animation2ab_helper (x_axis2, x_axis2.b, x,  theta2)
+		g1, g2 = animation2ab_helper (y_axis2, y_axis2.a, x, -theta2)
+		h1, h2 = animation2ab_helper (y_axis2, y_axis2.b, x,  theta2)
+		shape2 = [x_axis2, y_axis2, e1, e2, f1, f2, g1, g2, h1, h2]
+
+		e1, e2 = animation2ab_helper (x_axis, x_axis.a, min_x, -max_theta2)
+		f1, f2 = animation2ab_helper (x_axis, x_axis.b, min_x,  max_theta2)
+		g1, g2 = animation2ab_helper (y_axis, y_axis.a, min_x, -max_theta2)
+		h1, h2 = animation2ab_helper (y_axis, y_axis.b, min_x,  max_theta2)
+		shape3  = [x_axis, y_axis, e1, e2, f1, f2, g1, g2, h1, h2]
+		#shape3  = [shape.scale (w, w) for shape in shape3]
+
+		x_axis3 = x_axis.rotate (pi / 4)
+		y_axis3 = y_axis.rotate (pi / 4)
+		e1, e2 = animation2ab_helper (x_axis3, x_axis3.a, min_x, -max_theta2)
+		f1, f2 = animation2ab_helper (x_axis3, x_axis3.b, min_x,  max_theta2)
+		g1, g2 = animation2ab_helper (y_axis3, y_axis3.a, min_x, -max_theta2)
+		h1, h2 = animation2ab_helper (y_axis3, y_axis3.b, min_x,  max_theta2)
+		shape4  = [x_axis3, y_axis3, e1, e2, f1, f2, g1, g2, h1, h2]
+		shape4  = [shape.scale (w, w) for shape in shape4]
+		
+		arc = Circle (origin, R)
+		
+		lines = lines + [[arc] + shape1 + shape2 + shape3 + shape4]
+
+	max_r = 1
+	dr    = (max_r - min_r) / (r * 1)
+	
+	max_theta = pi / 4
+	min_theta = 0
+	dtheta    = (max_theta - min_theta) / r
+
+	for flag in [0, 1, 2, 3]:
+		for X in range (0, int (r * 1)):
+			print ("X=%s" % X)
+			theta  = min_theta  + X * dtheta
+			#if flag: R = max_r
+			if   flag == 1: R = max_r
+			elif flag == 2: R = max_r - X * dr
+			else:           R = min_r      + X * dr
+			w      = min_w      + X * dw
+			#x      = max_x      - X * dx
+			x = min_x
+			#theta2 = min_theta2 + X * dtheta2
+			theta2 = max_theta2
+			if X < r: # [0, r)
+				X2 = r + X
+			else:     # [r, 0)
+				X2 = X
+			#R      = max_r      - X2 * dr
+			print ("R=%s" % R)
+			print ("x=%s" % x)
+			print ("theta1=%s" % theta)
+			print ("theta2=%s" % theta2)
+			
+			x_axis1 = x_axis.rotate ( theta)
+			y_axis1 = y_axis.rotate ( theta)
+			e1, e2 = animation2ab_helper (x_axis1, x_axis1.a, x, -theta2)
+			f1, f2 = animation2ab_helper (x_axis1, x_axis1.b, x,  theta2)
+			g1, g2 = animation2ab_helper (y_axis1, y_axis1.a, x, -theta2)
+			h1, h2 = animation2ab_helper (y_axis1, y_axis1.b, x,  theta2)
+			shape1 = [x_axis1, y_axis1, e1, e2, f1, f2, g1, g2, h1, h2]
+			if flag > 1: shape1  = [shape.scale (R, R) for shape in shape1]
+			
+			x_axis2 = x_axis.rotate (-theta)
+			y_axis2 = y_axis.rotate (-theta)
+			e1, e2 = animation2ab_helper (x_axis2, x_axis2.a, x, -theta2)
+			f1, f2 = animation2ab_helper (x_axis2, x_axis2.b, x,  theta2)
+			g1, g2 = animation2ab_helper (y_axis2, y_axis2.a, x, -theta2)
+			h1, h2 = animation2ab_helper (y_axis2, y_axis2.b, x,  theta2)
+			shape2 = [x_axis2, y_axis2, e1, e2, f1, f2, g1, g2, h1, h2]
+			if flag > 1: shape2  = [shape.scale (R, R) for shape in shape2]
+			
+			x_axis1 = x_axis.rotate (pi / 4 + theta)
+			y_axis1 = y_axis.rotate (pi / 4 + theta)
+			e1, e2 = animation2ab_helper (x_axis1, x_axis1.a, x, -theta2)
+			f1, f2 = animation2ab_helper (x_axis1, x_axis1.b, x,  theta2)
+			g1, g2 = animation2ab_helper (y_axis1, y_axis1.a, x, -theta2)
+			h1, h2 = animation2ab_helper (y_axis1, y_axis1.b, x,  theta2)
+			shape3 = [x_axis1, y_axis1, e1, e2, f1, f2, g1, g2, h1, h2]
+			if flag > 1: shape3  = [shape.scale (R, R) for shape in shape3]
+			
+			x_axis2 = x_axis.rotate (pi / 4 -theta)
+			y_axis2 = y_axis.rotate (pi / 4 -theta)
+			e1, e2 = animation2ab_helper (x_axis2, x_axis2.a, x, -theta2)
+			f1, f2 = animation2ab_helper (x_axis2, x_axis2.b, x,  theta2)
+			g1, g2 = animation2ab_helper (y_axis2, y_axis2.a, x, -theta2)
+			h1, h2 = animation2ab_helper (y_axis2, y_axis2.b, x,  theta2)
+			shape4 = [x_axis2, y_axis2, e1, e2, f1, f2, g1, g2, h1, h2]
+			if flag > 1: shape4  = [shape.scale (R, R) for shape in shape4]
+			#shape4 = []
+
+			e1, e2 = animation2ab_helper (x_axis, x_axis.a, min_x, -max_theta2)
+			f1, f2 = animation2ab_helper (x_axis, x_axis.b, min_x,  max_theta2)
+			g1, g2 = animation2ab_helper (y_axis, y_axis.a, min_x, -max_theta2)
+			h1, h2 = animation2ab_helper (y_axis, y_axis.b, min_x,  max_theta2)
+			shape5  = [x_axis, y_axis, e1, e2, f1, f2, g1, g2, h1, h2]
+			#shape3  = [shape.scale (w, w) for shape in shape3]
+
+			x_axis3 = x_axis.rotate (pi / 4)
+			y_axis3 = y_axis.rotate (pi / 4)
+			e1, e2 = animation2ab_helper (x_axis3, x_axis3.a, min_x, -max_theta2)
+			f1, f2 = animation2ab_helper (x_axis3, x_axis3.b, min_x,  max_theta2)
+			g1, g2 = animation2ab_helper (y_axis3, y_axis3.a, min_x, -max_theta2)
+			h1, h2 = animation2ab_helper (y_axis3, y_axis3.b, min_x,  max_theta2)
+			shape6  = [x_axis3, y_axis3, e1, e2, f1, f2, g1, g2, h1, h2]
+			
+			arc = Circle (origin, R)
+			
+			lines = lines + [[arc] + shape1 + shape2 + shape3 + shape4 + shape5 + shape6]
+		#lines = lines + [[arc] + shape3 + shape4 + shape5 + shape6]
+			
+	# primary axes morph into cross
+	# diag axes shrink to point
+	# 4 diag spinning
+	# circle shrinks to cross
+	
+	# radius of circle
+	min_r = 1 - (1 + 1) / r
+	max_r = 1
+	dr    = (max_r - min_r) / (r * 1)
+	
+	# length of arrows
+	max_x = pi / r
+	min_x = 1 / r
+	dx    = (max_x - min_x) / r
+	
+	# rotation of axes
+	max_theta = pi / 4
+	min_theta = 0
+	dtheta    = (max_theta - min_theta) / r
+		
+	# rotation of arrows
+	max_theta2 = pi / 4
+	min_theta2 = 0
+	dtheta2    = (max_theta2 - min_theta2) / r
+	
+	max_w = 1
+	min_w = 1 / r / r
+	dw    = (max_w - min_w) / r
+	
+	for flag in [0, 1]:
+		for X in range (0, int (r * 1)):
+			print ("X=%s" % X)
+			theta  = min_theta  + X * dtheta
+			if flag: R = min_r
+			else:    R      = max_r      - X * dr
+			w      = max_w      - X * dw
+			#x      = max_x      - X * dx
+			if flag: x2 = max_x
+			else:    x2      = min_x      + X * dx
+			x = min_x
+			#theta2 = min_theta2 + X * dtheta2
+			if flag: theta3 = min_theta2
+			else:    theta3 = max_theta2 - X * dtheta2
+			theta2 = max_theta2
+			print ("R=%s" % R)
+			print ("x=%s" % x)
+			print ("theta1=%s" % theta)
+			print ("theta2=%s" % theta2)
+			
+			x_axis1 = x_axis.rotate ( theta)
+			y_axis1 = y_axis.rotate ( theta)
+			e1, e2 = animation2ab_helper (x_axis1, x_axis1.a, x, -theta2)
+			f1, f2 = animation2ab_helper (x_axis1, x_axis1.b, x,  theta2)
+			g1, g2 = animation2ab_helper (y_axis1, y_axis1.a, x, -theta2)
+			h1, h2 = animation2ab_helper (y_axis1, y_axis1.b, x,  theta2)
+			shape1 = [x_axis1, y_axis1, e1, e2, f1, f2, g1, g2, h1, h2]
+			shape1 = [shape.scale (R, R) for shape in shape1]
+			#if flag == 2: shape1 = [shape.scale (w, w) for shape in shape1]
+			if flag == 1: shape1 = []
+			
+			x_axis2 = x_axis.rotate (-theta)
+			y_axis2 = y_axis.rotate (-theta)
+			e1, e2 = animation2ab_helper (x_axis2, x_axis2.a, x, -theta2)
+			f1, f2 = animation2ab_helper (x_axis2, x_axis2.b, x,  theta2)
+			g1, g2 = animation2ab_helper (y_axis2, y_axis2.a, x, -theta2)
+			h1, h2 = animation2ab_helper (y_axis2, y_axis2.b, x,  theta2)
+			shape2 = [x_axis2, y_axis2, e1, e2, f1, f2, g1, g2, h1, h2]
+			shape2 = [shape.scale (R, R) for shape in shape2]
+			#if flag == 2: shape2 = [shape.scale (w, w) for shape in shape2]
+			if flag == 1: shape2 = []
+			
+			e1, e2 = animation2ab_helper (x_axis, x_axis.a, x2, -theta3)
+			f1, f2 = animation2ab_helper (x_axis, x_axis.b, x2,  theta3)
+			g1, g2 = animation2ab_helper (y_axis, y_axis.a, x2, -theta3)
+			h1, h2 = animation2ab_helper (y_axis, y_axis.b, x2,  theta3)
+			shape3  = [x_axis, y_axis, e1, e2, f1, f2, g1, g2, h1, h2]
+			#shape3  = [shape.scale (R, R) for shape in shape3]
+
+			x_axis3 = x_axis.rotate (pi / 4)
+			y_axis3 = y_axis.rotate (pi / 4)
+			e1, e2 = animation2ab_helper (x_axis3, x_axis3.a, min_x, -max_theta2)
+			f1, f2 = animation2ab_helper (x_axis3, x_axis3.b, min_x,  max_theta2)
+			g1, g2 = animation2ab_helper (y_axis3, y_axis3.a, min_x, -max_theta2)
+			h1, h2 = animation2ab_helper (y_axis3, y_axis3.b, min_x,  max_theta2)
+			shape4  = [x_axis3, y_axis3, e1, e2, f1, f2, g1, g2, h1, h2]
+			shape4  = [shape.scale (R, R) for shape in shape4]
+			shape4  = [shape.scale (w, w) for shape in shape4]
+			
+			arc = Circle (origin, R)
+			
+			lines = lines + [[arc] + shape1 + shape2 + shape3 + shape4]
+		
+	return lines
+	
+	
+	
 def animation2b (r): # shrink circle (completely), shrink and remove end points of sigil, leaving only axes, then shrink axes to 0d
 	origin = Point ( 0 , 0)
 	a      = Point (-1,  0)
@@ -1177,9 +1722,10 @@ def animation1 (width, height):
 	return animation1a (r) + animation1b (r)
 	#return animation1c (r) + animation1d (r)
 	#return animation1d (r)
-def animation2 (width, height):
+def animation2 (width, height, gen):
 	r = min (width, height)
-	return animation2a (r) + animation2b (r)
+	return animation2a (r) + animation2aa (r, gen) + animation2ab (r) + animation2b (r)
+	#return animation2ab (r)
 def animation3a (width, height, gen):
 	R = min (width, height)
 	
@@ -1232,12 +1778,32 @@ def animation3 (width, height, gen): # circling the square
 	#	circle = Circle (origin, k)
 	#	penta  = [K.scale (k, k) for K in next (gen)]
 	#	lines = lines + [[circle] + penta]
+
+	draw_arcs = False	
+	#for kk in range (0, int (R)):
+	#	tt = kk / R * pi / 2
+	#	aa = Arc (origin, r, r, 0, tt)
+	#	bb = aa.rotate (pi / 2)
+	#	cc = bb.rotate (pi / 2)
+	#	dd = cc.rotate (pi / 2)
+	#	penta  = [k.scale (r, r) for k in next (gen)]
+	#	lines = lines + [[aa, bb, cc, dd] + penta]
 	
 	circle = Circle (origin, r)
 	temp   = [circle]
 	penta  = [k.scale (r, r) for k in next (gen)]
 	lines  = lines + [temp + penta]
 	#lines = [temp]
+	
+	if draw_arcs:
+		for kk in range (0, int (R)):
+			ss = kk / R * r
+			aa = Line (Point (-r, -ss), Point (-r, +ss))
+			bb = Line (Point (+r, -ss), Point (+r, +ss))
+			cc = Line (Point (-ss, -r), Point (+ss, -r))
+			dd = Line (Point (-ss, +r), Point (+ss, +r))
+			penta  = [k.scale (r, r) for k in next (gen)]
+			lines = lines + [temp + [aa, bb, cc, dd] + penta]
 	
 	#lines = animation3a (width, height, gen)
 	
@@ -1257,39 +1823,167 @@ def animation3 (width, height, gen): # circling the square
 		k = (K + 1) * r
 		K = K + 1
 		sc = sqrt (2)
+		
+		if draw_arcs:
+			for kk in range (0, int (R)):
+				tt = kk / R * pi / 2
+				TT = (R - kk) / R * pi / 4
+				rr = r * pow (sc, K)
+				aa = Arc (origin, rr, rr, TT, TT + tt)
+				bb = aa.rotate (pi / 2)
+				cc = bb.rotate (pi / 2)
+				dd = cc.rotate (pi / 2)
+				penta  = [k.scale (r, r) for k in next (gen)]
+				lines = lines + [temp + [aa, bb, cc, dd] + penta]
+		
 		circle = circle.scale (sc, sc)
-		#if circle.r > 1: break
-		if circle.r > sqrt (2): break
-		square = square.scale (sc, sc)
-		#temp   = temp + [[circle], [circle, square]]
+		if circle.r > 1: break
+		#if circle.r > sqrt (2): break
 		temp   = temp + [circle]
-		penta  = [k.scale (r, r) for k in next (gen)]
-		lines  = lines + [temp + penta]
+		
+		square = square.scale (sc, sc)
+		top, left, width, height = square.tlwh ()
+		if width > R * 2: break
+
+		if draw_arcs:
+			for kk in range (0, int (R)):
+				rr = r * pow (sc, K)
+				ss = kk / R * rr
+				aa = Line (Point (-rr, -ss), Point (-rr, +ss))
+				bb = Line (Point (+rr, -ss), Point (+rr, +ss))
+				cc = Line (Point (-ss, -rr), Point (+ss, -rr))
+				dd = Line (Point (-ss, +rr), Point (+ss, +rr))
+				penta  = [k.scale (r, r) for k in next (gen)]
+				lines = lines + [temp + [aa, bb, cc, dd] + penta]
+		
+		#temp   = temp + [[circle], [circle, square]]	
+		#temp   = temp + [circle]
+		#penta  = [k.scale (r, r) for k in next (gen)]
+		#lines  = lines + [temp + penta]
 		temp   = temp + [square]
-		penta  = [k.scale (r, r) for k in next (gen)]
-		lines  = lines + [temp + penta]
+		#penta  = [k.scale (r, r) for k in next (gen)]
+		#lines  = lines + [temp + penta]
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	top, left, width, height = square.tlwh ()
 	assert width  > 0
 	assert height > 0
 	#sc = pow (2 / width, 1 / R)
-	sc = pow (2 * sqrt (2) / width, 1 / R)
+	#sc = pow (2 * sqrt (2) / width, 1 / R)
+	#sc = pow (2 / width, 1 / R)
+	sc = pow (1 / temp[0].r, 1 / R / (len (temp) // 2))
 	assert sc > 1, sc
 	SC = r * sc
+	dthetas = []
+	kkk = 0
+	squares = list (filter (lambda shape: type (shape) is Quadrilateral, temp))
+	for square in squares:
+		#dtheta  = kkk + 1
+		#dtheta  = len (squares) - kkk # shape number
+		#print ("nrot: %s" % dtheta)
+		#dtheta = dtheta / len (squares) # rotation frequency
+		#dtheta  = 1 / dtheta          # number of rotations
+		#print (" rot: %s" % dtheta)
+		
+		#dtheta = dtheta * len (squares)
+		
+		#dtheta = 1 / len (squares)
+		#dtheta = (len (squares) - kkk) * dtheta # outer squares rotate more quickly
+		#dtheta = (kkk + 1) * dtheta
+		#dtheta = len (squares) / (kkk + 1)
+		#dtheta = len (squares) / (len (squares) - kkk)
+		#dtheta = len (squares) / (len (squares) - kkk)
+		#dtheta = (len (squares) - kkk) / len (squares)
+		#dtheta = (kkk + 1) / len (squares)
+		# [1, 1/2, 1/3, 1/4]
+		dtheta = 1 / (kkk + 1)
+		
+		#rrr = R - 1
+		rrr = R
+		#rrr = R + 1
+		#rrr     = log (1 / r) / log (sc) - 1
+		#rrr     = log (1 / temp[0].r) / log (sc) 
+		#rrr     = log (sc) / (log (1) - log (r)) + 1
+		print ("nani: %s" % rrr)
+		dtheta  = dtheta / rrr      # animation increments
+		#dtheta  = dtheta * rrr
+		print ("anim: %s" % dtheta)
+		
+		
+		#dtheta  = dtheta * (pi)   # number of radians
+		dtheta  = dtheta * (pi / 2)   # number of radians
+		print ("nrad: %s" % dtheta)
+		if kkk % 2 != 0: dtheta = -dtheta # reverse direction
+		dthetas = dthetas + [dtheta]
+		kkk = kkk + 1
+	#dthetas = dthetas[::-1]
+	assert kkk == len (squares)
+	print ("dthetas=%s" % dthetas)
+	RRR = 0
 	while len (temp) > 0:
+		RR = 0
 		while type (temp[-1]) is Circle and temp[-1].r <= sqrt (2) or type (temp[-1]) is Quadrilateral and temp[-1].tlwh ()[2] <= 2:
+		#while type (temp[-1]) is Circle and temp[-1].r <= 1 or type (temp[-1]) is Quadrilateral and temp[-1].tlwh ()[2] <= 2:
+			kkk = 0
+			temp2 = []
+			for shape in temp:
+				if type (shape) is Quadrilateral:
+					shape = shape.rotate (dthetas[kkk])
+					#print ("shape=%s" % shape)
+					kkk = kkk + 1
+				temp2 = temp2 + [shape]
+			assert kkk == len (dthetas)
+			temp = temp2
 			#k  = width + (k + 1) / R * dw
 			#sc = k / width
 			temp = [t.scale (sc, sc) for t in temp]
-			penta  = [K.scale (SC, SC) for K in next (gen)]
 			if temp[0].r > 1: break
+			penta  = [K.scale (SC, SC) for K in next (gen)]
 			lines = lines + [temp + penta]
 			SC = SC * sc
+			RR = RR + 1
+		print ("RR: %s" % RR)
 		if len (temp) > 0:
 			if type (temp[-1]) is Circle: temp = temp[:-2]
 			else:                         temp = temp[:-1]
-		if temp[0].r > 1: break
+			dthetas = dthetas[:-1]
+		RRR = RRR + 1
+		#assert RR == R, "RR: %s, R: %s" % (RR, R)
+	#assert RRR == R, "RRR: %s, R: %s" % (RRR, R)
+	print ("RRR: %s" % RRR)
+		#if temp[0].r > 1: break
 	if len (temp) > 0 and type (temp[-1]) is Quadrilateral: temp = temp[:-1]
+	if len (temp) == 0: temp = [Circle (origin, 1)]
 	penta = list (next (gen))
 	lines = lines + [temp + penta]
 	
@@ -1371,14 +2065,15 @@ def animation4 (r): # trinity
 def animations (width, height, gen):
 	return chain (animation0 (width, height, gen), animation1 (width, height))
 def animations_repeat_helper (width, height, gen):
-	return chain (animation2 (width, height), animation3 (width, height, gen))
+	return chain (animation2 (width, height, gen), animation3 (width, height, gen))
 	#return (k for k in animation3 (width, height, gen))
+	#return (k for k in animation2 (width, height, gen))
 def animations_repeat (width, height, gen):
-	return chain (animation2c (width, height, gen), animations_repeat_helper (width, height, gen))
-	#return animations_repeat_helper (width, height, gen)
+	#return chain (animation2c (width, height, gen), animations_repeat_helper (width, height, gen))
+	return animations_repeat_helper (width, height, gen)
 def animations_repeat0 (width, height, gen):
-	return chain (animations (width, height, gen), animations_repeat_helper (width, height, gen))
-	#return animations_repeat_helper (width, height, gen)
+	#return chain (animations (width, height, gen), animations_repeat_helper (width, height, gen))
+	return animations_repeat_helper (width, height, gen)
 	
 	
 	
@@ -1451,6 +2146,11 @@ class Arc:
 		height = self.height * 2
 		rect = pygame.Rect (left, top, width, height)
 		pygame.draw.arc (screen, color, rect, self.start_angle, self.stop_angle)
+	def rotate (self, angle):
+		pt          = self.pt.rotate (angle)
+		start_angle = self.start_angle + angle
+		stop_angle  = self. stop_angle + angle
+		return Arc (pt, self.width, self.height, start_angle, stop_angle)
 """
 class Eye:
 	def __init__ (self, arcs, lines):
@@ -1647,6 +2347,7 @@ def main ():
 		pygame.display.flip ()
 		#clock.tick (.1)
 		#clock.tick (1)
+		#clock.tick (3)
 		#clock.tick (10)
 		#clock.tick (60)
 		clock.tick (7.83)
