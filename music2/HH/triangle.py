@@ -1770,7 +1770,9 @@ def animation3 (width, height, gen): # circling the square
 	
 	origin = Point (0, 0)
 	#lines  = [[origin]]
-	lines = animation3a (width, height, gen)
+	#lines = animation3a (width, height, gen)
+	intro = animation3a (width, height, gen)
+	lines = []
 		
 	r = 1 / R
 	#for k in range (0, int (R)):
@@ -1778,32 +1780,61 @@ def animation3 (width, height, gen): # circling the square
 	#	circle = Circle (origin, k)
 	#	penta  = [K.scale (k, k) for K in next (gen)]
 	#	lines = lines + [[circle] + penta]
-
-	draw_arcs = False	
-	#for kk in range (0, int (R)):
-	#	tt = kk / R * pi / 2
-	#	aa = Arc (origin, r, r, 0, tt)
-	#	bb = aa.rotate (pi / 2)
-	#	cc = bb.rotate (pi / 2)
-	#	dd = cc.rotate (pi / 2)
-	#	penta  = [k.scale (r, r) for k in next (gen)]
-	#	lines = lines + [[aa, bb, cc, dd] + penta]
 	
-	circle = Circle (origin, r)
-	temp   = [circle]
-	penta  = [k.scale (r, r) for k in next (gen)]
-	lines  = lines + [temp + penta]
-	#lines = [temp]
+	#arck = 2 * log (R) / log (2)
+	#arck = int (arck)
+	arck = int (R)
 	
-	if draw_arcs:
-		for kk in range (0, int (R)):
-			ss = kk / R * r
+	draw_arcs = True # TODO testing
+	if draw_arcs:	
+		for kk in range (0, arck):
+			#tt = kk / R * pi / 2
+			tt = kk / arck * pi / 2
+			#TT = (R - kk) / R * pi / 4
+			TT = (arck - kk) / arck * pi / 4
+			#rr = r * pow (sc, K)
+			rr = r
+			aa = Arc (origin, rr, rr, TT, TT + tt)
+			bb = aa.rotate (pi / 2)
+			cc = bb.rotate (pi / 2)
+			dd = cc.rotate (pi / 2)
+			temp = [aa, bb, cc, dd]
+			
+			#ss = kk / R * r
+			ss = kk /arck * r
+			aa = Line (Point (-r, -ss), Point (-r, +ss))
+			bb = Line (Point (+r, -ss), Point (+r, +ss))
+			cc = Line (Point (-ss, -r), Point (+ss, -r))
+			dd = Line (Point (-ss, +r), Point (+ss, +r))
+			temp = temp + [aa, bb, cc, dd]
+			#try:
+			if len (intro) == 0: penta  = [k.scale (r, r) for k in next (gen)]
+			else:
+				penta = intro[0]
+				intro = intro[1:]
+			#except:
+			#intro_done = True
+			lines = lines + [temp + penta]
+			
+	"""	
+	if draw_arcs and False:
+		#for kk in range (0, int (R)):
+		for kk in range (0, arck):
+			#ss = kk / R * r
+			ss = kk /arck * r
 			aa = Line (Point (-r, -ss), Point (-r, +ss))
 			bb = Line (Point (+r, -ss), Point (+r, +ss))
 			cc = Line (Point (-ss, -r), Point (+ss, -r))
 			dd = Line (Point (-ss, +r), Point (+ss, +r))
 			penta  = [k.scale (r, r) for k in next (gen)]
 			lines = lines + [temp + [aa, bb, cc, dd] + penta]
+	"""	
+	circle = Circle (origin, r)
+	temp   = [circle]
+	#penta  = [k.scale (r, r) for k in next (gen)]
+	#lines  = lines + [temp + penta]
+	#lines = [temp]
+	
 	
 	#lines = animation3a (width, height, gen)
 	
@@ -1812,7 +1843,13 @@ def animation3 (width, height, gen): # circling the square
 	c      = Point (+r, +r)
 	d      = Point (+r, -r)
 	square = Quadrilateral (a, b, c, d)
-	penta  = [k.scale (r, r) for k in next (gen)]
+	if len (intro) == 0: penta  = [k.scale (r, r) for k in next (gen)]
+	else:
+		#try
+		penta = intro[0]
+		intro = intro[1:]
+		#except
+		#intro_done = True
 	temp   = temp + [square]
 	lines  = lines + [temp + penta]
 	
@@ -1824,42 +1861,61 @@ def animation3 (width, height, gen): # circling the square
 		K = K + 1
 		sc = sqrt (2)
 		
+		lines_tempa = []
 		if draw_arcs:
-			for kk in range (0, int (R)):
-				tt = kk / R * pi / 2
-				TT = (R - kk) / R * pi / 4
+			#for kk in range (0, int (R)):
+			for kk in range (0, arck):
+				#tt = kk / R * pi / 2
+				tt = kk / arck * pi / 2
+				#TT = (R - kk) / R * pi / 4
+				TT = (arck - kk) / arck * pi / 4
 				rr = r * pow (sc, K)
 				aa = Arc (origin, rr, rr, TT, TT + tt)
 				bb = aa.rotate (pi / 2)
 				cc = bb.rotate (pi / 2)
 				dd = cc.rotate (pi / 2)
 				penta  = [k.scale (r, r) for k in next (gen)]
-				lines = lines + [temp + [aa, bb, cc, dd] + penta]
+				#lines = lines + [temp + [aa, bb, cc, dd] + penta]
+				lines_tempa = lines_tempa + [temp + [aa, bb, cc, dd] + penta]
 		
 		circle = circle.scale (sc, sc)
-		if circle.r > 1: break
+		if circle.r > 1:
+			lines = lines + lines_tempa
+			break
 		#if circle.r > sqrt (2): break
-		temp   = temp + [circle]
+		
 		
 		square = square.scale (sc, sc)
 		top, left, width, height = square.tlwh ()
-		if width > R * 2: break
+		if width > R * 2:
+			#penta  = [k.scale (r, r) for k in next (gen)]
+			#lines = lines + [temp + penta] + lines_tempa
+			lines = lines + lines_tempa
+			temp   = temp + [circle]
+			break
+		
 
+		lines_tempb = []
 		if draw_arcs:
-			for kk in range (0, int (R)):
+			#for kk in range (0, int (R)):
+			for kk in range (0, arck):
 				rr = r * pow (sc, K)
-				ss = kk / R * rr
+				#ss = kk / R * rr
+				ss = kk / arck * rr
 				aa = Line (Point (-rr, -ss), Point (-rr, +ss))
 				bb = Line (Point (+rr, -ss), Point (+rr, +ss))
 				cc = Line (Point (-ss, -rr), Point (+ss, -rr))
 				dd = Line (Point (-ss, +rr), Point (+ss, +rr))
-				penta  = [k.scale (r, r) for k in next (gen)]
-				lines = lines + [temp + [aa, bb, cc, dd] + penta]
-		
+				#penta  = [k.scale (r, r) for k in next (gen)]
+				#lines = lines + [temp + [aa, bb, cc, dd] + penta]
+				lines_tempb = lines_tempb + [temp + [aa, bb, cc, dd]]
+		lines_temp = [aaa + bbb for aaa, bbb in zip (lines_tempa, lines_tempb)]
+		lines = lines + lines_temp
 		#temp   = temp + [[circle], [circle, square]]	
 		#temp   = temp + [circle]
 		#penta  = [k.scale (r, r) for k in next (gen)]
 		#lines  = lines + [temp + penta]
+		temp   = temp + [circle]
 		temp   = temp + [square]
 		#penta  = [k.scale (r, r) for k in next (gen)]
 		#lines  = lines + [temp + penta]

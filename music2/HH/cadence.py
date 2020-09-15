@@ -43,6 +43,17 @@ class Pattern:
 		self.order = order
 		#self.rev   = rev
 	def __repr__ (self): return "Pattern [order=%s]" % (self.order,)
+	# TODO __str__
+	def __len__ (self): return len (self.order)
+	def __getitem__  (self, key): return self.order[key]
+	def __iter__     (self):       return iter     (self.order)
+	def __reversed__ (self):       return reversed (self.order)
+	def __contains__ (self, item): return item in self.order
+	def uniq_elements (self): return tuple (set (self.order))
+	def nuniq         (self): return len (self.uniq_elements ())
+	
+	
+	"""
 	#@jit
 	def elem (self, i): return self.order[i]
 	#@jit
@@ -55,7 +66,7 @@ class Pattern:
 		I = zip (I, self.order)
 		I = filter (lambda iv: v == k, I)
 		return (i for i, v in I)
-
+	"""
 
 	
 song_structure_db = (
@@ -103,10 +114,21 @@ song_structure_db = (
 class SongStructure (Pattern):
 	def __init__ (self, ss): Pattern.__init__ (self, ss)
 	def __repr__ (self): return "SongStructure [%s]" % Pattern.__repr__ (self)
-	#def nsc (self): return len (set (filter (short_section, self.all ())))
-	def nsc (self): return len (set (filter (short_section, Pattern.all (self))))
-	#def nlc (self): return len (set (filter ( long_section, self.all ())))
-	def nlc (self): return len (set (filter ( long_section, Pattern.all (self))))
+	
+	def section_type        (self, i): return self[i]
+	def nsection            (self): return len (self)
+	def nuniq_section       (self): return self.nuniq ()
+	def uniq_sections       (self): return self.uniq_elements ()
+	
+	def nuniq_short_section (self): return len (self.uniq_short_sections ())
+	def nuniq_long_section  (self): return len (self.uniq_long_sections ())
+	def uniq_short_sections (self): return tuple (filter (short_section, self.uniq_elements ()))
+	def uniq_long_sections  (self): return tuple (filter (long_section,  self.uniq_elements ()))
+	
+	#def nuniq (self): return len (self. uniq ())
+	#def nsc (self): return len (set (filter (short_section, Pattern.all (self))))
+	#def nlc (self): return len (set (filter ( long_section, Pattern.all (self))))
+	
 	#@jit
 	#def elem (self, i):
 	#	v = Pattern.elem (self, i)
@@ -131,15 +153,14 @@ class Cadence (Pattern):
 		self.uniq = uniq
 	def __repr__ (self): return "Cadence [%s, uniq=%s]" % (Pattern.__repr__ (self), self.uniq)
 	#@jit
-	def elem (self, i):
-		#v = Pattern.elem (self, i)
-		v = self.pattern (i)
-		#return self.u (v)
-		return self.uniq[v]
-	def pattern (self, i): return Pattern.elem (self, i)
+	def __getitem__ (self, i):
+		#v = self.pattern (i)
+		#return self.uniq[v]
+		return self.uniq[i]
+	def pattern (self, i): return Pattern.__getitem__ (self, i)
 	#@jit
 	#def all (self): return (self.u (v) for v in Pattern.all (self))
-	def all (self): return (self.uniq[v] for v in Pattern.all (self))
+	#def all (self): return (self.uniq[v] for v in Pattern.all (self))
 	#@jit
 	#def v (self, v): return v
 	#@jit
@@ -147,7 +168,19 @@ class Cadence (Pattern):
 	#	v = self.v (v)
 	#	return self.uniq[v]
 	# TODO indices for which elem() is k	
+	#def nuniq ()
+	
+	
+	def nuniq (self):
+		assert len (self.uniq) == Pattern.nuniq (self)
+		return len (self.uniq)
+	def uniq_elements (self):
+		#assert Pattern.uniq_elements (self) == tuple (self.uniq), "%s, %s, %s" % (Pattern.uniq_elements (self), self.uniq, self)
+		return self.uniq
 
+	def __iter__     (self):       return (self[i] for i in Pattern.__iter__ (self))
+	def __reversed__ (self):       return (self[i] for i in Pattern.__reversed__ (self))
+	def __contains__ (self, item): return item in self.uniq
 
 
 
@@ -166,14 +199,16 @@ sc0_db = (
 	 (0, 1, 1),   # three sections, first     section cadence  different
 	 (0, 1, 2),), # three sections, all       section cadences different
 )
-class SongCadence0 (Cadence):
-	def __init__ (self, sc, mapping): Cadence.__init__ (self, sc, mapping)
-	def __repr__ (self): return "SC0 [%s]" % Cadence.__repr__ (self)
-	def sections (self): return self.uniq.items () # TODO test
-	def section_type (self, i): return Cadence.pattern (self, i)
+class SongCadence0 (Pattern):
+	def __init__ (self, sc): Pattern.__init__ (self, sc)
+	def __repr__ (self): return "SC0 [%s]" % Pattern.__repr__ (self)
+	#def sections (self): return self.uniq.items () # TODO test
+	#def section_type (self, i): return Cadence.pattern (self, i)
+	#def section_type (self, i): return self.pattern (i)
 	# TODO or max ?
-	def ns (self): return len (self.uniq)
-	def nuniq (self): return len (set (self.uniq))
+	#def ns (self): return len (self.uniq)
+	#def nuniq (self): return len (set (self.uniq))
+	def nsection (self): return len (self)
 	#@jit
 	#def elem (self, i): # section_no to section
 	#	v = Cadence.elem (self, i)
@@ -193,24 +228,28 @@ def reduce_map (m, min_n, max_n): # map from cardinality m to n, where n in [min
 	temp  = tuple (temp)
 	return temp
 def random_sc0 (nsection):
-	if nsection == 0: return SongCadence0 ([], {})
+	if nsection == 0: return SongCadence0 (())
 	temp  = sc0_db[nsection - 1]
 	#temp  = sc0_db[nsection]
 	assert temp is not None
 	sc    = choice (temp)
 	assert sc is not None
 	assert type (sc) is tuple, nsection
-	min_n = max (sc) + 1
-	max_n = min_n
-	assert max_n <= nsection, "max n: %s, n section: %s" % (max_n, nsection)
+	#min_n = max (sc) + 1
+	#min_n = len (set (sc))
+	#max_n = min_n
+	m = len (set (sc))
+	#assert max_n <= nsection, "max n: %s, n section: %s" % (max_n, nsection)
+	assert m <= nsection
 	#n     = randrange (min_n, max_n + 1)
 	## TODO map from cardinalities nsection to n
 	#temp0 = range (0, nsection)
 	#temp1 = (randrange (0, nsection) for _ in range (0, nsection - n)) # TODO maybe just increment-modulo by a relatively prime amount
 	#temp  = list (chain (temp0, temp1)) 
 	#shuffle (temp)
-	temp = reduce_map (nsection, min_n, max_n)
-	return SongCadence0 (sc, temp)
+	#temp = reduce_map (nsection, min_n, max_n)
+	#temp = reduce_map (nsection, m, m)
+	return SongCadence0 (sc)
 	
 	
 	
@@ -231,6 +270,29 @@ def random_sc0 (nsection):
 
 
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 class SongCadence (Cadence):
@@ -241,8 +303,8 @@ class SongCadence (Cadence):
 		sci  = 0
 		lci  = 0
 		#lci = len (sc.uniq)
-		for s in ss.order:
-			if s in uniq: continue
+		for s in ss.uniq_elements ():
+			#if s in uniq: continue
 			assert long_section (s) or short_section (s)
 			if short_section (s):
 				i   = (sc, sci)
@@ -253,46 +315,47 @@ class SongCadence (Cadence):
 				lci = lci + 1
 				assert not short_section (s)
 			uniq[s] = i
-		assert sci == len (sc.uniq)
-		assert lci == len (lc.uniq)
-		#print ("uniq: %s" % uniq)
+		#assert sci == len (sc.uniq)
+		#assert lci == len (lc.uniq)
+		assert sci == len (sc)
+		assert lci == len (lc)
 		return uniq
 	def __init__ (self, ss, sc, lc):
-		Cadence.__init__ (self, SongCadence.init_uniq (ss, sc, lc), ss.order)
+		Cadence.__init__ (self, SongCadence.init_uniq (ss, sc, lc), ss)
 		self.ss = ss # song  cadence
 		self.sc = sc # short cadence
 		self.lc = lc # long  cadence
 	def __repr__ (self): return "SongCadence [%s, ss=%s, sc=%s, lc=%s]" % (Cadence.__repr__ (self), self.ss, self.sc, self.lc)
 	#@jit
-	def elem (self, i): # section_no to section
-		c, v = self.section1d (i)
-		##return c.uniq[v.value ()]
-		##print ("c=%s (v=%s): %s" % (c, v, c.uniq[v]))
-		##short = (c == self.sc)
-		##assert short == (c != self.lc)
-		#assert (c == self.sc or c == self.lc)
-		#r = c.elem (v)
-		##assert r == c.uniq[v]
-		#return (c == self.sc, r)
-		return self.section2d (c, v)
-		#return (c == self.sc, c.uniq[v])
-		#return (c == self.sc, c.elem (v))
-		#return c.u (v)
-		#if not short:
-		#	print ("long")
-		#	return c.uniq[v] + len (self.sc.uniq)
-		#if short: print ("short")
-		#return c.uniq[v]
-	def section_type (self, i): return Cadence.pattern (self, i)
+#	def __getitem__ (self, i): # section_no to section
+#		c, v = self.section1d (i)
+#		return self.section2d (c, v)
+	
+	#def section_type (self, i): return self.pattern (i)
 	#def sections (self): return self.uniq.items () # TODO test
 	#def sections (self): return self.ss.uniq.items () # TODO test
-	def sections (self): return set (self.all ())
-	def section1d (self, i): return Cadence.elem (self, i)
+	# TODO
+	#def sections (self): return set (self.all ())
+	def uniq_section_types (self): return self.ss.uniq_sections ()
+	def uniq_short_sections (self): return ((True,  i) for i in self.sc.uniq_elements ())
+	def uniq_long_sections  (self): return ((False, i) for i in self.lc.uniq_elements ())
+	def uniq_sections (self): return chain (self.uniq_short_sections (), self.uniq_long_sections ())
+		#kvs = self.uniq_elements ()
+		#for section_type, index in kvs.values ():
+		#	print ("%s[%s]: %s" % (section_type == self.sc, index, section_type[index]))
+		#	yield section_type == self.sc, section_type[index]
+	
+	#def sections (self): return set (self)
+	#def section1d (self, i): return Cadence.elem (self, i)
+	"""
+	def section1d (self, i): return Cadence.__getitem__ (self, i)
 	def section2d (self, c, v):
 		assert (c == self.sc or c == self.lc)
-		r = c.elem (v)
+		#r = c.elem (v)
+		r = c[v]
 		#assert r == c.uniq[v]
 		return (c == self.sc, r)
+		"""
 	#@jit
 	#def all (self): return (c.uniq[v.value ()] for c, v in Cadence.all (self))
 	#def all (self): return ((c == self.sc, c.uniq[v]) for c, v in Cadence.all (self))
@@ -300,20 +363,46 @@ class SongCadence (Cadence):
 	#def all (self): return map (lambda cv: self.section2d (*cv), Cadence.all (self))
 	
 	
+	#def __getitem__ (self, i): # section_no to section
+		# v = self.pattern (i) # section type
+		# return self.uniq[v]  # is_short, index
+		
+		# section_no to section_type, index
+			
+		
+		#c, v = self.pattern (i)
+		#return self.section2d (c, v)
+	#def pattern (self, i): return Cadence.__getitem__ (self, i)
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	def section_type (self, i): 
+		a = Cadence.pattern (self, i)
+		b = self.ss.section_type (i)
+		assert a == b, "%s != %s" % (a, b)
+		return a
+
+#	def __getitem__ (self, i):
+#		section_type, index = Cadence.__getitem__ (self, i)
+#		return section_type == self.sc, section_type[index]
+#	#def __iter__ (self):
+#	#	# (self[st] for st in Pattern.__iter__ (self))
+#	#	return (self
+#	def section_index (self, i):
+#		st = Pattern.__getitem__ (self, i)
+#		return self[st]
+#	def __iter__ (self):
+#		test = tuple (self.section_index (i) for i in range (0, len (self)))
+#		assert test == tuple (Cadence.__iter__ (self))
+#		return Cadence.__iter__ (self)
+	def __getitem__ (self, i):
+		st = Pattern.__getitem__ (self, i)
+		return self.section_index (st)
+	def section_index (self, st):
+		section_type, index = Cadence.__getitem__ (self, st)
+		return section_type == self.sc, section_type[index]
+	def __iter__ (self): return (self.section_index (st) for st in Pattern.__iter__ (self))
+	def all_sections (self):
+		assert len (list (iter (self))) == self.nsection ()
+		return iter (self)
 	
 	
 	
@@ -330,10 +419,11 @@ class SongCadence (Cadence):
 	
 	
 	# TODO Cadence.all (self)
-	def all (self):
-		for s in self.ss.order:
-			c, ci = self.uniq[s]
-			yield self.section2d (c, ci)
+	#def all (self):
+	#	return iter (self)
+#		for s in self.ss.order:
+#			c, ci = self.uniq[s]
+#			yield self.section2d (c, ci)
 		#for c, v in Cadence.all (self):
 			##r = c.uniq[v]
 			#r = c.elem (v)
@@ -344,43 +434,63 @@ class SongCadence (Cadence):
 		#	yield self.section2d (c, v)
 	#def all (self): return (c.u (v) for c, v in Cadence.all (self))
 	#def v (self, v): return Cadence.v (self, v.value ())
-	def nsc (self):
+	
+	
+	
+	
+	
+	
+	def nsection (self):
+		assert self.ss.nsection () == len (self)
+		return len (self)
+	def nshort_section (self):
 		assert self.ss.nsc () == self.sc.ns ()
 		#return self.ss.nsc ()
 		return self.sc.ns ()
-	def nlc (self):
+	def nlong_section (self):
 		assert self.ss.nlc () == self.lc.ns ()
 		#return self.ss.nlc ()
 		return self.lc.ns ()
 	#def ns (self): return self.nsc () + self.nlc ()
-	def ns (self): return len (tuple (self.all ()))
-	def nsuniq (self): return self.sc.nuniq ()
-	def nluniq (self): return self.lc.nuniq ()
-	def nuniq (self): return self.nsuniq () + self.nluniq ()
-	def first_section  (self): return 0, tuple (self.all ())[ 0]
+	#def ns (self): return len (tuple (self.all ()))
+	def nuniq_short_section (self): return self.sc.nuniq ()
+	def nuniq_long_section (self): return self.lc.nuniq ()
+	def nsection_type (self): return Cadence.nuniq (self)
+	def nuniq (self): return self.nuniq_short_section () + self.nuniq_long_section ()
+	def first_section  (self): return 0, self[0] # return 0, self.section_index (0) # return 0, tuple (self.all ())[ 0]
 	def  last_section  (self):
-		temp = tuple (self.all ())
-		return len (temp) - 1, temp[-1]
+		#temp = tuple (self.all ())
+		#return len (temp) - 1, temp[-1]
+		a = self[-1]
+		n = self.nsection ()
+		b = self[n - 1]
+		assert a == b, "%s != %s" % (a, b)
+		return len (self) - 1, self[-1] #self.section_index (-1)
 	def   pre_sections (self):
-		sections = tuple (self.all ())
+		#sections = tuple (self.all ())
+		sections = self
 		n        = len (sections)
-		for i, section in zip (range (1, n), sections[1:]):
+		#for i, section in zip (range (1, n), sections[1:]):
+		for i in range (1, n):
 			st = self.section_type (i)
 			if st != CHORUS: continue
-			yield i - 1, self.elem (i - 1)
+			yield i - 1, self[i - 1]
 	def chorii (self):
-		sections = tuple (self.all ())
+		#sections = tuple (self.all ())
+		sections = self
 		n        = len (sections)
 		for i, section in zip (range (0, n), sections):
 			st = self.section_type (i)
 			if st != CHORUS: continue
-			yield i, self.elem (i)
+			yield i, section
 def random_song_cadence (ss=None, sc=None, lc=None):
 	if ss is None: ss = random_song_structure ()
-	nsc = ss.nsc ()                      # number of short sections
-	nlc = ss.nlc ()                      # number of long  sections
+	nsc = ss.nuniq_short_section ()
+	nlc = ss.nuniq_long_section ()
+	#nsc = ss.nsc ()                      # number of short sections
+	#nlc = ss.nlc ()                      # number of long  sections
 	#assert len (ss.order) == nsc + nlc, "tot: %s, short: %s, long: %s" % (len (ss.order), nsc, nlc)
-	assert len (set (ss.order)) == nsc + nlc, "tot: %s, short: %s, long: %s" % (len (set (ss.order)), nsc, nlc)
+	#assert len (set (ss.order)) == nsc + nlc, "tot: %s, short: %s, long: %s" % (len (set (ss.order)), nsc, nlc)
 
 	if lc is None: lc = random_sc0 (nlc) # long  sections
 	
@@ -391,13 +501,44 @@ def random_song_cadence (ss=None, sc=None, lc=None):
 	# TODO pre   < chorus    (1-1, 1-2)
 	#      outro < bridge ?  
 	if sc is None: sc = random_sc0 (nsc) # short sections
-	assert len (sc.uniq) == nsc # TODO len (sc.uniq) ?
-	assert len (lc.uniq) == nlc
+	#assert len (sc) == nsc
+	#assert len (lc) == nlc
+	#assert len (sc.uniq) == nsc # TODO len (sc.uniq) ?
+	#assert len (lc.uniq) == nlc
 	#assert sc.nuniq () == nsc
 	#assert lc.nuniq () == nlc
-	assert sc.ns () == nsc
-	assert lc.ns () == nlc
+	#assert sc.nsection () == nsc, "%s, %s, %s" % (sc.nsection (), nsc, ss)
+	#assert lc.nsection () == nlc, "%s, %s, %s" % (lc.nsection (), nlc, ss)
+	#assert sc.nuniq () == nsc
+	#assert lc.nuniq () == nlc
 	return SongCadence (ss, sc, lc)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -417,13 +558,14 @@ section_db = (
 	),
 	 
 # TODO allow for longer sections (including longer short sections)
-	((0, 0, 0, 0),
-	 (0, 0, 0, 1),
-	 (0, 0, 1, 0),
-	 (0, 1, 0, 0),
-	 (0, 0, 1, 1),
-	 (0, 1, 0, 1),
-	 (0, 1, 1, 1),),
+#	((0, 0, 0, 0),
+#	 (0, 0, 0, 1),
+#	 (0, 0, 1, 0),
+#	 (0, 1, 0, 0),
+#	 (0, 0, 1, 1),
+#	 (0, 1, 0, 1),
+#	 (0, 1, 1, 1),
+#	 (0, 1, 2, 1),),
 )
 class SectionCadence (Cadence):
 	@staticmethod
@@ -432,30 +574,41 @@ class SectionCadence (Cadence):
 		uniq = {}
 		sci = 0
 		lci = 0
+		assert len (list (sc.all_sections ())) == sc.nsection ()
 		#for section_no, cv in sc.sections ():
-		#for short, index in sc.all ():
-		for short, index in sc.sections ():
+		for short, index in sc.all_sections ():
+		##for short, index in sc.uniq_sections ():
+		#for F in range (0, sc.nsection ()):
+			#short, index = sc[F]
+			if (short, index) in uniq: continue
 			#section_type, index = cv
 			#short,        index = sc.section2d (*cv)
-			#print ("short: %s, index: %s" % (short, index))
 			assert (short, index) not in uniq
 			if short:
-				uniq[(short, index)] = short, sci
+				#uniq[(short, index)] = short, sci
+				uniq[(short, index)] = scs[sci]
+				#assert type (scs[sci]) is not tuple, "scs[%s]: %s" % (sci, scs[sci])
 				sci = sci + 1
 			else:
-				uniq[(short, index)] = short, lci
+				#uniq[(short, index)] = short, lci
+				uniq[(short, index)] = lcs[lci]
+				#assert type (lcs[lci]) is not tuple, "lcs[%s]: %s" % (lci, lcs[lci])
 				lci = lci + 1
+		assert lci == len (lcs)
+		assert sci == len (scs)
 		order = []
 		#phrase_no = 0
 		#section_no = 0
 		#spmap = []
-		for short, index in sc.all ():
-			if short:
-				#print ("scs[%s]: %s" % (index, scs[index]))
-				dp = len (scs[index])
-			else:
-				#print ("lcs[%s]: %s" % (index, lcs[index]))
-				dp = len (lcs[index])
+		for short, index in sc.all_sections ():
+		#for F in range (0, sc.nsection ()):
+		#	short, index = sc[F]
+			assert (short, index) in uniq
+			#if short:
+				#dp = len (scs[index])
+			#else:
+				#dp = len (lcs[index])
+			dp = len (uniq[(short, index)])
 			for k in range (0, dp):
 				#order = order + [(short, index, k)]
 				order = order + [(short, index)]
@@ -466,21 +619,25 @@ class SectionCadence (Cadence):
 		order = tuple (order)
 		
 		for short, index in order:        assert (short, index) in uniq,  "short: %s, index: %s, uniq: %s" % (short, index, uniq)
-		for short, index in uniq.keys (): assert (short, index) in order, "short: %s, index: %s, uniq: %s" % (short, index, uniq)
+		for short, index in uniq.keys (): assert (short, index) in order, "short: %s, index: %s, uniq: %s, order: %s" % (short, index, uniq, order)
 		
 		#spmap = tuple (spmap)
-		#print ("uniq =%s" % (uniq,))
-		#print ("order=%s" % (order,))
+		print ("uniq: %s" % (uniq,))
+		print ("order: %s" % (order,))
 		return uniq, order
 	@staticmethod
-	def init_psmap (sc, scs, lcs):
+	def init_psmap (sc, scs, lcs, uniq):
 		phrase_no = 0
 		section_no = 0
 		#spmap = []
 		psmap = []
-		for short, index in sc.all ():
-			if short: dp = len (scs[index])
-			else:     dp = len (lcs[index])
+		for short, index in sc.all_sections ():
+		#for F in range (0, sc.nsection ()):
+		#	short, index = sc[F]
+			#if short: dp = len (scs[index])
+			#else:     dp = len (lcs[index])
+			dp = len (uniq[(short, index)])
+			#print ("short: %s, index: %s, dp: %s" % (short, index, dp))
 			for k in range (0, dp):
 				#order = order + [(short, index, k)]
 				#order = order + [(short, index)]
@@ -492,26 +649,28 @@ class SectionCadence (Cadence):
 		#spmap = tuple (spmap)
 		psmap = tuple (psmap)
 		assert len (psmap) == phrase_no
+		print ("psmap: %s" % (psmap,))
 		return psmap
 	@staticmethod
-	def init_spmap (sc, scs, lcs):
+	def init_spmap (sc, scs, lcs, uniq):
 		phrase_no = 0
 		section_no = 0
 		spmap = []
-		#print ("all: %s" % list (sc.all ()))
-		for short, index in sc.all ():
-			if short:
-				dp = len (scs[index])
-				#print ("scs[%s]: %s" % (index, scs[index]))
-			else:
-				dp = len (lcs[index])
-				#print ("lcs[%s]: %s" % (index, lcs[index]))
+		for short, index in sc.all_sections ():
+		#for F in range (0, sc.nsection ()):
+		#	short, index = sc[F]
+			#if short:
+			#	dp = len (scs[index])
+			#else:
+			#	dp = len (lcs[index])
+			dp = len (uniq[(short, index)])
 			#dp = dp + 1
 			spmap = spmap + [tuple (range (phrase_no, phrase_no + dp))]
 			phrase_no = phrase_no + dp
 			section_no = section_no + 1
 		spmap = tuple (spmap)
 		assert len (spmap) == section_no
+		print ("spmap: %s" % (spmap,))
 		return spmap
 		
 	def __init__ (self, sc, scs, lcs):
@@ -521,10 +680,12 @@ class SectionCadence (Cadence):
 		self.scs = scs
 		self.lcs = lcs
 		#self.sp, self.ps = SectionCadence.init_spmap (sc, scs, lcs)
-		self.ps = SectionCadence.init_psmap (sc, scs, lcs)
-		self.sp = SectionCadence.init_spmap (sc, scs, lcs)
+		self.ps = SectionCadence.init_psmap (sc, scs, lcs, self.uniq)
+		self.sp = SectionCadence.init_spmap (sc, scs, lcs, self.uniq)
+		assert len (self.sp) == self.nsection ()
+		print ("all sections: %s" % (list (self.all_sections ()),))
+		assert len (self.ps) == self.nphrase (), "%s != %s, %s" % (len (self.ps), self.nphrase (), self.all_phrases ())
 		#print ("sp: %s" % (self.sp,))
-		#print ("ps: %s" % (self.ps,))
 	def __repr__ (self): return "SectionCadence [%s, sc=%s, scs=%s, lcs=%s]" % (Cadence.__repr__ (self), self.sc, self.scs, self.lcs)
 	# TODO
 	# section_type (section_no)
@@ -533,128 +694,228 @@ class SectionCadence (Cadence):
 	def first_section  (self):
 		section_no, si = self.sc.first_section ()
 		short, i = si
-		return section_no, self.section0 (short, i)
+		return section_no, self[(short, i)]
 	def  last_section  (self):
 		section_no, si = self.sc.last_section ()
 		short, i = si
-		return section_no, self.section0 (short, i)
+		return section_no, self[(short, i)]
 	def   pre_sections (self):
 		sis = self.sc.pre_sections ()
 		for section_no, si in sis:
 			short, i = si
-			yield section_no, self.section0 (short, i)
+			yield section_no, self[(short, i)]
 	def chorii (self):
 		sis = self.sc.chorii ()
 		for section_no, si in sis:
 			short, i = si
-			yield section_no, self.section0 (short, i)
+			yield section_no, self[(short, i)]
 	def first_phrase (self):
 		section_no, si = self.first_section ()
+		return section_no, si[0]
 		#print ("section_no: %s, si: %s" % (section_no, si))
-		phrase_nos = self.sp[section_no]
+#		phrase_nos = self.sp[section_no]
 		#print ("sp: %s" % (self.sp,))
 		#print ("ps: %s" % (self.ps,))
 		#print ("phrase_nos: %s" % (phrase_nos,))
-		phrase_no  = phrase_nos[0]
-		assert phrase_no == 0
+#		phrase_no  = phrase_nos[0]
+#		assert phrase_no == 0
 		#print (phrase_no)
 		#print (type (phrase_no))
-		phrase     = self.elem (phrase_no)
-		assert phrase == tuple (self.all ())[0], "phrase: %s, %s" % (phrase, tuple (self.all ())[0])
-		return 0, phrase
+		#phrase     = self.elem (phrase_no)
+#		phrase = self[phrase_no]
+		#assert phrase == tuple (self.all ())[0], "phrase: %s, %s" % (phrase, tuple (self.all ())[0])
+#		return 0, phrase
+#		short, i = self.phrase_index (0)
+#		return self[(short, i)]
 	def  last_phrase (self):
 		section_no, si = self.last_section ()
+		a = si[-1]
+		b = self.all_phrases ()[-1]
+		#b = b[-1]
+		assert a == b, "%s != %s\n%s != %s" % (a, b, si, self.all_phrases ())
+		n = self.nphrase ()
+		c = self.all_phrases ()[n - 1]
+		#c = c[-1]
+		assert a == c, "%s != %s, %s" % (a, c, n)
+		return section_no, si[-1]
 		#print ("section_no: %s, si: %s" % (section_no, si))
-		phrase_nos = self.sp[section_no]
+#		phrase_nos = self.sp[section_no]
 		#print ("sp: %s" % (self.sp,))
 		#print ("ps: %s" % (self.ps,))
 		#print ("phrase_nos: %s" % (phrase_nos,))
-		phrase_no  = phrase_nos[-1]
+#		phrase_no  = phrase_nos[-1]
 		#print (phrase_no)
 		#print (type (phrase_no))		
-		phrase     = self.elem (phrase_no)
+		#phrase     = self.elem (phrase_no)
+#		phrase = self[phrase_no]
 		#print ("phrase: %s" % (phrase,))
-		assert phrase == tuple (self.all ())[-1], "phrase: %s, %s" % (phrase, tuple (self.all ())[-1],)
-		assert phrase_no + 1 == len (tuple (self.all ())), "phrase_no: %s, len: %s" % (phrase_no, len (tuple (self.all ())))
-		return phrase_no, phrase
-	def pre_phrases (self):
-		for section_no, si in self.pre_sections ():
-			phrase_nos = self.sp[section_no]
-			phrase_no  = phrase_nos[-1]
-			phrase     = self.elem (phrase_no)
-			#assert phrase == tuple (self.all ())[-1], "phrase: %s, %s" % (phrase, tuple (self.all ())[-1],)
-			#assert phrase_no + 1 == len (tuple (self.all ())), "phrase_no: %s, len: %s" % (phrase_no, len (tuple (self.all ())))
-			yield phrase_no, phrase
+#		assert phrase == tuple (self.all ())[-1], "phrase: %s, %s" % (phrase, tuple (self.all ())[-1],)
+#		assert phrase_no + 1 == len (tuple (self.all ())), "phrase_no: %s, len: %s" % (phrase_no, len (tuple (self.all ())))
+#		return phrase_no, phrase
+#		short, i = self.phrase_index (-1)
+#		return self[(short, i)]
+#		return self.phrase_elem (-1)
+	def pre_phrases (self): return ((section_no, section[-1]) for section_no, section in self.pre_sections ())
+#		for section_no, si in self.pre_sections ():
+#			phrase_nos = self.sp[section_no]
+#			phrase_no  = phrase_nos[-1]
+#			#phrase     = self.elem (phrase_no)
+#			phrase = self[phrase_no]
+#			#assert phrase == tuple (self.all ())[-1], "phrase: %s, %s" % (phrase, tuple (self.all ())[-1],)
+#			#assert phrase_no + 1 == len (tuple (self.all ())), "phrase_no: %s, len: %s" % (phrase_no, len (tuple (self.all ())))
+#			yield (phrase_no, phrase)
 
 
 
-
+	
+#	def section0 (self, short, i):
+#		if short: c = self.scs
+#		else:     c = self.lcs
+#		#print ("c: %s, c[i=%s]: %s" % (c, i, c[i]))
+#		return c[i]
 
 
 	# TODO Cadence.elem ()
 	#@jit
-	def section (self, phrase_no): # phrase_no to section
+#	def section (self, phrase_no): # phrase_no to section
 		#section_no, k = self.psmap[phrase_no]
 		#section_no, k = Cadence.elem (self, phrase_no)
 		#return self.section0 (section_no, k)
 		#section = c[i]
 		#return section[k]
 		#short, i    = Cadence.elem (self, phrase_no)
-		short, i = self.order [phrase_no]
+#		short, i = self.order [phrase_no]
 		#print ("short: %s, i: %s" % (short, i))
-		return self.section0 (short, i)
-	def section0 (self, short, i):
-		if short: c = self.scs
-		else:     c = self.lcs
-		#print ("c: %s, c[i=%s]: %s" % (c, i, c[i]))
-		return c[i]
-	def elem (self, phrase_no): # phrase_no to phrase
+#		return self.section0 (short, i)
+	
+#	def elem (self, phrase_no): # phrase_no to phrase
 		#print ("phrase_no: %s" % (phrase_no,))
 		#print (type (phrase_no))
-		section = self.section (phrase_no)
+#		section = self.section (phrase_no)
 		#print ("section: %s" % (section,))
-		sk      = self.ps[phrase_no]
-		section_no, k = sk
+#		sk      = self.ps[phrase_no]
+#		section_no, k = sk
 		#print ("section_no: %s, k: %s" % (section_no, k))
-		assert self.sp[section_no][k] == phrase_no, "%s, %s" % (self.sp[section_no][k], phrase_no)
+#		assert self.sp[section_no][k] == phrase_no, "%s, %s" % (self.sp[section_no][k], phrase_no)
 		#print (k)
-		return section[k]
+#		return section[k]
 	#@jit
-	# TODO Cadence.all (self)
-	def all_sections (self):
-		#print ("parent: %s" % list (Cadence.all (self)))
-		#k = 0
-		#for short, i in Cadence.all (self):
-		for short, i in self.sc.all ():
-			section = self.section0 (short, i)
-			#k       = 
-			#yield section[k]
-			#k = k + 1
-			yield section
-	def all (self): return chain (*self.all_sections ())
 	
 	
-	def all_phrases (self): return chain (*self.all_sections ())
+	
+	
+	
+#	def __getitem__ (self, i):
+#		st = Pattern.__getitem__ (self, i)
+#		return self.section_index (st)
+#	def section_index (self, st):
+#		section_type, index = Cadence.__getitem__ (self, st)
+#		return section_type == self.sc, section_type[index]
+#	def __iter__ (self): return (self.section_index (st) for st in Pattern.__iter__ (self))
+	
+	
+	
+	
+	
+	
+	
+	
+
+	def section_elems (self, section_no):
+		short, i = self.order[section_no]
+		section  = self.uniq[short, i]
+		#print ("sn: %s, short: %s, i: %s, section: %s" % (section_no, short, i, section))
+		return section
+		#print ("%s[%s]" % (list (self), section_no))
+		#print ("section elem: %s" % (self[section_no],))
+		#return tuple (self)[section_no]
 	def phrase_elem (self, phrase_no):
-		return self.elem (phrase_no)
-	def section_elem (self, section_no):
-		#print (section_no)
-		#phrase_nos = self.sp[section_no]
-		#return (self.phrase_elem (phrase_no) for phrase_no in phrase_nos)
-		return tuple (self.all_sections ())[section_no]
+		section_no, k = self.ps[phrase_no]
+		short, i = self.order[section_no]
+		section  = self.uniq[short, i]
+		#section = self[section_no]
+		return section[k]
+	def all_sections (self):
+		#return tuple (map (self.section_elems, range (0, self.nsection ())))
+		for k in range (0, self.nsection ()):
+			yield self.section_elems (k)
+	def all_phrases (self): return tuple (chain (*self.all_sections ()))
+		
+#	def phrase_elem (self, phrase_no):
+#		print ("ps: %s, phrase_no: %s" % (self.ps, phrase_no))
+#		section_no, k = self.ps[phrase_no]
+#		print ("sn: %s, k: %s" % (section_no, k))
+#		short, i = self.order[section_no]
+#		print ("short: %s, i: %s" % (short, i))
+#		section  = self.uniq[short, i]
+#		#section = self[section_no]
+#		print ("section: %s, k: %s, pn: %s" % (section,k,phrase_no))
+#		return section[k]
 	
-	def nsc    (self): return self.sc.nsc    () # number of      short sections
-	def nlc    (self): return self.sc.nlc    () # number of      long  sections
-	def ns     (self): return self.sc.ns     () # number of            sections
-	def nsuniq (self): return self.sc.nsuniq () # number of uniq short sections
-	def nluniq (self): return self.sc.nluniq () # number of uniq long  sections
-	def nuniq  (self): return self.sc.nuniq  () # number of uniq       sections
-	def np (self):
-		s = sum (len (section) for section in self.all_sections ())
-		assert s == len (tuple (self.all ()))
-		return s
+#	def phrase_index (self, i):
+	#	print ("sc: %s" % (self.sc,))
+	#	print ("i : %s" % (i,))
+		#return self.sc[i] # => short, i
+		# TODO
+	#	return self.ps[i]
+#		return self.pattern (i)
+#	def phrase_elem  (self, phrase_no):
+#		#print ("phrase_no: %s" % (phrase_no,))
+#		short, i = self.phrase_index (phrase_no)
+#		#print ("self[short: %s, i: %s]: %s" % (short, i, self[(short, i)]))
+#		assert type (self[(short, i)]) is not tuple
+#		return self[(short, i)]	
+	
+	#def __iter__ (self): return (phrase_elem (phrase_no) for phrase_no in range (0, self.nphrase ()))
+	# TODO Cadence.all (self)
+#	def all_sections (self):
+		#assert self.nsection () == len (list (iter (self))), "%s != %s, %s" % (self.nsection (), len (self), list (self))
+		#return iter (self)
+#		return tuple (self.section_elems (k) for k in range (0, self.nsection ()))
+		#for section_no in range (0, self.nsection ()):
+			
+#	def all_phrases (self): return tuple (chain (*self.all_sections ()))
+#	def phrase_elem (self, phrase_no):
+#		return self.elem (phrase_no)
+#	def section_elems (self, section_no): #return tuple (map (self.phrase_elem, self.section_indices (section_no)))
+#		#print (section_no)
+#		phrase_nos = self.sp[section_no]
+#		return tuple (self.phrase_elem (phrase_no) for phrase_no in phrase_nos)
+#		#return tuple (self.all_sections ())[section_no]
+#	def section_indices (self, section_no):
+#		#print ("section_no: %s" % (section_no,))
+#		#print ("sp: %s" % (self.sp,))
+#		assert section_no < len (self.sp), "%s >= %s: %s" % (section_no, len (self.sp), self.sp)
+#		#assert section_no in self.sp, "%s not in %s" % (section_no, self.sp)
+#		#print ("sp[%s]: %s" % (section_no, self.sp[section_no]))
+#		return self.sp[section_no]
+	
+	
+	def nshort_section    (self): return self.sc.nshort_section    () # number of      short sections
+	def nlong_section    (self): return self.sc.nlong_section    () # number of      long  sections
+	def nsection     (self): return self.sc.nsection () # number of            sections
+	def nuniq_short_section (self): return self.sc.nuniq_short_section () # number of uniq short sections
+	def nuniq_long_section (self): return self.sc.nuniq_long_section () # number of uniq long  sections
+	def nuniq_section  (self):
+		assert self.sc.nuniq () == self.nuniq ()
+		return self.sc.nuniq  () # number of uniq       sections
+	#def nphrase (self): return len (self)
+	# TODO
+	def nphrase (self):
+		#a = len (self)
+		b = len (self.all_phrases ())
+		#assert a == b, "%s != %s" % (a, b)
+		#return a
+		return b
+#		s = sum (len (section) for section in self.all_sections ())
+#		#assert s == len (tuple (self.all ()))
+#		assert s == len (self)
+#		return len (self)
+		#return s
 	#def npuniq (self): return len (set (self.uniq.values ()))
-	def npuniq (self): return len (set (self.all ()))
+	def nuniq_phrase (self):
+		#return self.nuniq ()
+		return len (set (self.all_phrases ()))
 def random_section_cadence (maxsc=None):
 	#if short is None: short = random_bool ()
 	if maxsc is None:
@@ -776,8 +1037,8 @@ def cadence_helper5 (m, s):
 	return m2
 def random_section_cadences (ss=None, ss_arg=None, sc=None, lc=None):
 	if ss is None: ss = random_song_cadence (*ss_arg)
-	nsc = ss.nsuniq ()
-	nlc = ss.nluniq ()
+	nsc = ss.nuniq_short_section ()
+	nlc = ss.nuniq_long_section ()
 	print ("nsc : %s" % nsc)
 	print ("nlc : %s" % nlc)
 	if lc is None: lc = tuple ((random_section_cadence () for _ in range (0, nlc)))
@@ -810,6 +1071,7 @@ def random_section_cadences (ss=None, ss_arg=None, sc=None, lc=None):
 	else:          msc2 = ()
 	if False in m: mlc2 = m[False]
 	else:          mlc2 = ()
+	print ("mlc2: %s" % (mlc2,))
 	return SectionCadence (ss, msc2, mlc2)
 	
 
@@ -853,176 +1115,178 @@ def random_section_cadences (ss=None, ss_arg=None, sc=None, lc=None):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 phrase_db = (
-	((0,),),     # one   segment
+	#((0,),),     # one   segment
 	((0, 0),     # two   segments, same cadence
-	 (0, 1)),    # two   segments, same cadence
+	 (0, 1),),    # two   segments, same cadence
 	((0, 0, 0),  # three segments, same cadence
 	 (0, 0, 1),  # three segments, last  different
-	 (0, 1, 1)), # three segments, first different
+	 (0, 1, 0),
+	 (0, 1, 1),), # three segments, first different
 )
 class PhraseCadence (Cadence):
+	@staticmethod
+	def init_spmap (sc, m):
+		segment_no = 0
+		spmap = []
+		for phrase_no in sc.all_phrases ():
+			print ("phrase_no: %s" % (phrase_no,))
+			phrase = m[phrase_no]
+			dp = len (phrase)
+			temp  = [(phrase_no, k) for k in range (0, dp)]
+			spmap = spmap + temp
+			segment_no = segment_no + dp
+			phrase_no = phrase_no + 1
+		spmap = tuple (spmap)
+		assert len (spmap) == segment_no
+		return spmap
 	def __init__ (self, sc, m):
-		Cadence.__init__ (self, m, tuple (sc.all ()))
+		Cadence.__init__ (self, m, sc.all_phrases ())
+		print ("fuck: %s" % (sc.all_phrases(),))
+		print ("m: %s" % (m,))
+		print ("uniq: %s" % (self.uniq,))
 		#print ("m: %s" % (m,))
 		#print ("sc: %s" % list (sc.all ()))
 		self.sc = sc
-	def __repr__ (self): return "PhraseCadence [%s]" % (Cadence.__repr__ (self))
+		self.sp = PhraseCadence.init_spmap (sc, m)
+		print ("sp: %s" % (self.sp,))
+	def __repr__ (self): return "PhraseCadence [%s, sc=%s]" % (Cadence.__repr__ (self), self.sc)
+	
+	def nsection (self): return self.sc.nsection ()
+	def nphrase (self): return self.sc.nphrase ()
+	def nsegment (self): return len (self.all_segments ())
+	#def nuniq (self): return len (self.uniq) # TODO
+	def nuniq (self): return len (set (self.all_segments ()))
+	def nuniq_phrase (self): return self.sc.nuniq_phrase ()
+	def nuniq_section (self): return self.sc.nuniq_section ()
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	#def elem (self, segment_no): # phrase cadence
 	#def phrase_elem (self, phrase_no): # section cadence
 	#	return self.uniq[phrase_no]
-	def phrase_elem (self, phrase_no): return Cadence.elem (self, phrase_no)
-	def all_phrases (self): return Cadence.all (self)
+	def phrase_elems (self, phrase_no):
+		#print ("phrase_no: %s" % (phrase_no,))
+		#phrase = self.sc.phrase_elem (phrase_no)
+		phrase = self.pattern (phrase_no)
+		#print ("phrase: %s" % (phrase,))
+		#print ("uniq: %s" % (self.uniq,))
+		#return self[phrase] #Cadence.__getitem__ (self, phrase_no)
+		fuck = self.uniq[phrase]
+		#print ("fuck: %s" % (fuck,))
+		return fuck
+		#return tuple (self[i] for i in phrase)
+	def all_phrases (self): return iter (self) # return Cadence.all (self)
 	#def all_phrases (self): return (self.uniq[phrase_no] for phrase_no in self.sc.all ())
 	def segment_elem (self, segment_no):
-		#phrase_no = self.sp[segment_no]
+		phrase_no, i = self.sp[segment_no]
+		phrase = self.phrase_elems (phrase_no)
+		#phrase = self[phrase_no]
+		return phrase[i]
 		#phrase    = self.phrase_elem (phrase_no)
 		#segno     = self.ss[segment_no]
 		#return phrase[segno]
-		return tuple (self.all_segments ())[segment_no]
-	def all_segments (self): return chain (*self.all_phrases ())
+		# TODO
+		#return tuple (self.all_segments ())[segment_no]
+	def all_segments (self): return tuple (chain (*self.all_phrases ()))
 	def section_elem (self, section_no):
 		#print (section_no)
-		phrase_nos = self.sc.section_elem (section_no)
-		return (self.phrase_elem (phrase_no) for phrase_no in phrase_nos)
+		phrase_nos = self.sc.section_elems (section_no)
+		phrase_nos = chain (*phrase_nos)
+		#print ("phrase_nos: %s" % (phrase_nos,))
+		#return (self.phrase_elem (phrase_no) for phrase_no in phrase_nos)
+		return tuple (map (lambda x: self[x], phrase_nos))
+		#return tuple (map (self.phrase_elem, self.sc.section_elems (section_no)))
 	def all_sections (self):
-		for section_no in chain (*self.sc.all_sections ()):
-			yield tuple (self.section_elem (section_no))
+		#for section_no in chain (*self.sc.all_sections ()):
+		#	yield tuple (self.section_elem (section_no))
+		#temp = (tuple (self.section_elem (section_no)) for section_no in chain (*self.sc.all_sections ()))
+#		temp = (tuple (self.section_elem (section_no)) for section in self.sc.all_sections ())
+#		temp = tuple (temp)
+#		t1 = tuple (chain (*temp))
+#		t2 = tuple (self.all_phrases ())
+		#assert t1 == t2, "%s\n\n%s" % (t1, t2) 
+#		return temp
+		#return tuple (tuple (map (self.phrase_elem, section)) for section in self.sc.all_sections ())
+		#print ("fuck all sections: %s" % (tuple (self.sc.all_sections ()),))
+		#print ("fuck all sections: %s" % (tuple (self.sc.all_sections ()),))
+		for section in self.sc.all_sections ():
+			section = tuple (section)
+			#print ("fuck section: %s" % (section,))
+			#yield tuple (map (self.phrase_elem, section))
+			yield tuple (map (lambda x: self[x], section))
+			
 	#def all_sections (self): return chain (*self.all_sections0 ())
 	def first_section (self): return 0, tuple (self.section_elem (0))
-	def nsection (self): return self.sc.ns ()
+	
 	def  last_section (self):
 		n = self.nsection ()
 		assert tuple (self.section_elem (n - 1)) == tuple (self.section_elem (-1)), "%s, %s" % (tuple (self.section_elem (n - 1)), tuple (self.section_elem (-1)))
 		return n - 1, tuple (self.section_elem (-1))
-	def first_phrase (self): return 0, tuple (self.phrase_elem (0))
-	def nphrase (self): return self.sc.np ()
+	def first_phrase (self): return 0, tuple (self.phrase_elems (0))
+	
+	
+	
 	def  last_phrase (self):
 		n = self.nphrase ()
-		assert self.phrase_elem (n - 1) == self.phrase_elem (-1)
-		return n - 1, tuple (self.phrase_elem (-1))
+		print ("n: %s" % (n,))
+		a = self.phrase_elems (n - 1)
+		b = self.phrase_elems (  - 1)
+		assert tuple (a) == tuple (b), "%s != %s" % (a, b)
+		return n - 1, tuple (self.phrase_elems (-1))
 	def first_segment (self): return 0, self.segment_elem (0)
-	def nsegment (self): return len (tuple (self.all_segments ()))
+	
 	def last_segment (self):
 		n = self.nsegment ()
-		assert self.segment_elem (n - 1) == self.segment_elem (-1)
+		a = self.segment_elem (n - 1)
+		b = self.segment_elem (-1)
+		assert a == b, "%s != %b" % (a, b)
 		return n - 1, self.segment_elem (-1)
-	"""
-	def first_section  (self):
-		section_no, si = self.sc.first_section ()
-		short, i = si
-		return section_no, self.section0 (short, i)
-	def  last_section  (self):
-		section_no, si = self.sc.last_section ()
-		short, i = si
-		return section_no, self.section0 (short, i)
-	def   pre_sections (self):
-		sis = self.sc.pre_sections ()
-		for section_no, si in sis:
-			short, i = si
-			yield section_no, self.section0 (short, i)
 	def chorii (self):
-		sis = self.sc.chorii ()
-		for section_no, si in sis:
-			short, i = si
-			yield section_no, self.section0 (short, i)
-	def first_phrase (self):
-		section_no, si = self.first_section ()
-		#print ("section_no: %s, si: %s" % (section_no, si))
-		phrase_nos = self.sp[section_no]
-		#print ("sp: %s" % (self.sp,))
-		#print ("ps: %s" % (self.ps,))
-		#print ("phrase_nos: %s" % (phrase_nos,))
-		phrase_no  = phrase_nos[0]
-		assert phrase_no == 0
-		#print (phrase_no)
-		#print (type (phrase_no))
-		phrase     = self.elem (phrase_no)
-		assert phrase == tuple (self.all ())[0], "phrase: %s, %s" % (phrase, tuple (self.all ())[0])
-		return 0, phrase
-	def  last_phrase (self):
-		section_no, si = self.last_section ()
-		#print ("section_no: %s, si: %s" % (section_no, si))
-		phrase_nos = self.sp[section_no]
-		#print ("sp: %s" % (self.sp,))
-		#print ("ps: %s" % (self.ps,))
-		#print ("phrase_nos: %s" % (phrase_nos,))
-		phrase_no  = phrase_nos[-1]
-		#print (phrase_no)
-		#print (type (phrase_no))		
-		phrase     = self.elem (phrase_no)
-		#print ("phrase: %s" % (phrase,))
-		assert phrase == tuple (self.all ())[-1], "phrase: %s, %s" % (phrase, tuple (self.all ())[-1],)
-		assert phrase_no + 1 == len (tuple (self.all ())), "phrase_no: %s, len: %s" % (phrase_no, len (tuple (self.all ())))
-		return phrase_no, phrase
+		temp = self.sc.chorii ()
+		for section_no, phrases in temp:
+			yield section_no, tuple (self.phrase_elems (phrase_no) for phrase_no in phrases)
 	def pre_phrases (self):
-		for section_no, si in self.pre_sections ():
-			phrase_nos = self.sp[section_no]
-			phrase_no  = phrase_nos[-1]
-			phrase     = self.elem (phrase_no)
-			#assert phrase == tuple (self.all ())[-1], "phrase: %s, %s" % (phrase, tuple (self.all ())[-1],)
-			#assert phrase_no + 1 == len (tuple (self.all ())), "phrase_no: %s, len: %s" % (phrase_no, len (tuple (self.all ())))
-			yield phrase_no, phrase
-	"""
+		temp = tuple (self.sc.pre_phrases ())
+		for section_no, phrases in temp:
+			# TODO
+			#print (section_no)
+			#print (phrases)
+			yield section_no, tuple (self.phrase_elems (phrase_no) for phrase_no in phrases)
 	
-	"""
-	def elem (self, segment_no):
-		phrase_no = self.sp[segment_no]
-		
-
-	#@jit
-	def section (self, phrase_no): # phrase_no to section
-		#section_no, k = self.psmap[phrase_no]
-		#section_no, k = Cadence.elem (self, phrase_no)
-		#return self.section0 (section_no, k)
-		#section = c[i]
-		#return section[k]
-		#short, i    = Cadence.elem (self, phrase_no)
-		short, i = self.order [phrase_no]
-		#print ("short: %s, i: %s" % (short, i))
-		return self.section0 (short, i)
-	def section0 (self, short, i):
-		if short: c = self.scs
-		else:     c = self.lcs
-		#print ("c: %s, c[i=%s]: %s" % (c, i, c[i]))
-		return c[i]
-	def elem (self, phrase_no): # phrase_no to phrase
-		#print ("phrase_no: %s" % (phrase_no,))
-		#print (type (phrase_no))
-		section = self.section (phrase_no)
-		#print ("section: %s" % (section,))
-		sk      = self.ps[phrase_no]
-		section_no, k = sk
-		#print ("section_no: %s, k: %s" % (section_no, k))
-		assert self.sp[section_no][k] == phrase_no, "%s, %s" % (self.sp[section_no][k], phrase_no)
-		#print (k)
-		return section[k]
-	#@jit
-	def all_sections (self):
-		#print ("parent: %s" % list (Cadence.all (self)))
-		#k = 0
-		#for short, i in Cadence.all (self):
-		for short, i in self.sc.all ():
-			section = self.section0 (short, i)
-			#k       = 
-			#yield section[k]
-			#k = k + 1
-			yield section
-	def all (self): return chain (*self.all_sections ())
-	def nsc    (self): return self.sc.nsc    () # number of      short sections
-	def nlc    (self): return self.sc.nlc    () # number of      long  sections
-	def ns     (self): return self.sc.ns     () # number of            sections
-	def nsuniq (self): return self.sc.nsuniq () # number of uniq short sections
-	def nluniq (self): return self.sc.nluniq () # number of uniq long  sections
-	def nuniq  (self): return self.sc.nuniq  () # number of uniq       sections
-	def np (self):
-		s = sum (len (section) for section in self.all_sections ())
-		assert s == len (tuple (self.all ()))
-		return s
-	#def npuniq (self): return len (set (self.uniq.values ()))
-	def npuniq (self): return len (set (self.all ()))		
-		"""
-		
+			
 		
 		
 		
@@ -1037,7 +1301,7 @@ def random_phrase_cadence (nseg=None):
 	return choice (temp)
 def random_phrase_cadences (sc=None, sc_args=None, pc=None):
 	if sc is None: sc = random_section_cadences (*sc_args)
-	np = sc.npuniq ()
+	np = sc.nuniq_phrase ()
 	if pc is None: pc = tuple ((random_phrase_cadence () for _ in range (0, np)))
 	assert np == len (pc)
 	
@@ -1061,41 +1325,68 @@ def random_phrase_cadences (sc=None, sc_args=None, pc=None):
 	
 if __name__ == "__main__":
 	def main ():
-		#for nsection in range (0, 3 + 1):
-		#	sc = random_sc0 (nsection)
-		#	print (sc)
-		#	print (list (sc.all ()))
-		#print ()
-		sc = random_song_cadence ()
+		for nsection in range (0, 3 + 1):
+			sc = random_sc0 (nsection)
+			print (sc)
+		print ()
+		ss = random_song_structure ()
+		print ("song structure: %s" % ss)
+		print ("all           : %s" % list (ss))
+		print ("uniq          : %s" % list (ss.uniq_elements ()))
+		print ("nsc           : %s" % ss.nuniq_short_section   ())
+		print ("nlc           : %s" % ss.nuniq_long_section   ())
+		print ("suniq         : %s" % list (ss.uniq_short_sections ()))
+		print ("luniq         : %s" % list (ss.uniq_long_sections ()))
+		print ()
+		sc = random_song_cadence (ss)
+		ssc = sc.sc
+		lsc = sc.lc
+		print ("ssc           : %s" % ssc)
+		#print ("ssc           : %s" % list (ssc))
+		print ("lsc           : %s" % lsc)
+		#print ("lsc           : %s" % list (lsc))
 		print ("song cadence  : %s" % sc)
-		print ("sections      : %s" % list (sc.all ()))
-		print (list (zip (sc.order, list (sc.all ()))))
+		print ("sections      : %s" % list (sc))
+		print (list (zip (sc.order, list (sc))))
 		print ("first section : %s" % (sc.first_section (),))
 		print ("last  section : %s" % (sc. last_section (),))
 		print ("pre   sections: %s" % list (sc.  pre_sections ()))
 		print ("chorii        : %s" % list (sc.  chorii       ()))
-		print ("nsection      : %s" % sc.ns    ())
+		print ("nsection      : %s" % sc.nsection ())
 		print ("uniq          : %s" % sc.nuniq ())
+		print ()
 		sc = random_section_cadences (sc)
 		print ("section cadence: %s" % sc)
 		print ("all sections  : %s" % list (sc.all_sections ()))
-		print ("all phrases   : %s" % list (sc.all          ()))
+		print ("all phrases   : %s" % list (sc.all_phrases ()))
 		print ("first section : %s" % (sc.first_section (),))
 		print ("last  section : %s" % (sc. last_section (),))
 		print ("pre   sections: %s" % list (sc.  pre_sections ()))
 		print ("chorii        : %s" % list (sc.  chorii       ()))
-		print ("nsection      : %s" % sc.ns     ())
+		print ("nsection      : %s" % sc.nsection     ())
 		print ("uniq          : %s" % sc.nuniq  ())
-		print ("nphrase       : %s" % sc.np     ())
-		print ("uniq          : %s" % sc.npuniq ())
+		print ("nphrase       : %s" % sc.nphrase     ())
+		print ("uniq phrase   : %s" % sc.nuniq_phrase ())
 		print ("first phrase  : %s" % (sc.first_phrase (),))
 		print ("last  phrase  : %s" % (sc. last_phrase (),))
 		print ("pre   phrases : %s" % list (sc.  pre_phrases (),))
+		print ()
+		for k in range (0, sc.nsection ()): print (sc.section_elems (k))
+		for k in range (0, sc.nphrase  ()): print (sc.phrase_elem   (k))
+		print ()
 		pc = random_phrase_cadences (sc)
 		print ("phrase cadence: %s" % pc)
 		print ("all sections  : %s" % (list (pc.all_sections ())))
 		print ("all phrases   : %s" % (list (pc.all_phrases  ())))
 		print ("all segments  : %s" % (list (pc.all_segments ())))
+
+		print ("nsection      : %s" % pc.nsection ())
+		print ("uniq          : %s" % pc.nuniq_section    ())
+		print ("nphrase       : %s" % pc.nphrase  ())
+		print ("uniq phrase   : %s" % pc.nuniq_phrase   ())
+		print ("nsegment      : %s" % pc.nsegment ())
+		print ("uniq segment  : %s" % pc.nuniq   ())
+		
 		print ("first section : %s" % (pc.first_section (),))
 		print ("first phrase  : %s" % (pc.first_phrase  (),))
 		print ("first segment : %s" % (pc.first_segment (),))
@@ -1103,14 +1394,12 @@ if __name__ == "__main__":
 		print ("last  phrase  : %s" % (pc. last_phrase  (),))
 		print ("last  segment : %s" % (pc. last_segment (),))
 		print ("chorii        : %s" % list (pc.  chorii       ()))
-		print ("nsection      : %s" % pc.nsection ())
-		print ("uniq          : %s" % pc.nuniq    ())
-		print ("nphrase       : %s" % pc.nphrase  ())
-		print ("uniq          : %s" % pc.npuniq   ())
-		print ("nsegment      : %s" % pc.nsegment ())
-		print ("uniq          : %s" % pc.nsuniq   ())
-		print ("first phrase  : %s" % (pc.first_phrase (),))
-		print ("last  phrase  : %s" % (pc. last_phrase (),))
+		print ("pre  sections : %s" % list (pc.  pre_sections (),))
 		print ("pre   phrases : %s" % list (pc.  pre_phrases (),))
+		print ("pre  segments : %s" % list (pc.  pre_segments (),))
+		print ()
+		for k in range (0, pc.nsection ()): print (pc.section_elems (k))
+		for k in range (0, pc.nphrase  ()): print (pc.phrase_elems  (k))
+		for k in range (0, sc.nsegment ()): print (sc.segment_elem  (k))
 	main ()
 	
