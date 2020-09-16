@@ -8,7 +8,7 @@ from itertools import accumulate, chain, permutations
 from math import factorial
 
 from section_type import SectionType, short_section, long_section
-#from random_util import subsets, random_bjorklund2, random_bool
+from random_util import subsets, random_bjorklund2, random_bool
 #from song        import random_song#, apply_song
 #from mode        import random_mode
 
@@ -720,7 +720,9 @@ class SectionCadence (Cadence):
 			yield section_no, self[(short, i)]
 	def first_phrase (self):
 		section_no, si = self.first_section ()
-		return section_no, si[0]
+		phrase_nos = self.sp[section_no]
+		phrase_no  = phrase_nos[0]
+		return phrase_no, si[0]
 		#print ("section_no: %s, si: %s" % (section_no, si))
 #		phrase_nos = self.sp[section_no]
 		#print ("sp: %s" % (self.sp,))
@@ -746,7 +748,11 @@ class SectionCadence (Cadence):
 		c = self.all_phrases ()[n - 1]
 		#c = c[-1]
 		assert a == c, "%s != %s, %s" % (a, c, n)
-		return section_no, si[-1]
+		
+		phrase_nos = self.sp[section_no]
+		phrase_no  = phrase_nos[-1]
+		
+		return phrase_no, si[-1]
 		#print ("section_no: %s, si: %s" % (section_no, si))
 #		phrase_nos = self.sp[section_no]
 		#print ("sp: %s" % (self.sp,))
@@ -764,7 +770,11 @@ class SectionCadence (Cadence):
 #		short, i = self.phrase_index (-1)
 #		return self[(short, i)]
 #		return self.phrase_elem (-1)
-	def pre_phrases (self): return ((section_no, section[-1]) for section_no, section in self.pre_sections ())
+	def pre_phrases (self):
+		for section_no, section in self.pre_sections ():
+			phrase_nos = self.sp[section_no]
+			phrase_no  = phrase_nos[-1]
+			yield phrase_no, section[-1]
 #		for section_no, si in self.pre_sections ():
 #			phrase_nos = self.sp[section_no]
 #			phrase_no  = phrase_nos[-1]
@@ -1183,6 +1193,21 @@ class PhraseCadence (Cadence):
 		spmap = tuple (spmap)
 		assert len (spmap) == segment_no
 		return spmap
+	@staticmethod
+	def init_psmap (sc, m):
+		segment_no = 0
+		pn  = 0
+		psmap = []
+		for phrase_no in sc.all_phrases ():
+			phrase = m[phrase_no]
+			dp     = len(phrase)
+			temp = tuple (range (segment_no, segment_no + dp))
+			psmap = psmap + [temp]
+			segment_no = segment_no + dp
+			pn = pn + 1
+		psmap = tuple (psmap)
+		assert len (psmap) == pn
+		return psmap
 	def __init__ (self, sc, m):
 		Cadence.__init__ (self, m, sc.all_phrases ())
 		#print ("fuck: %s" % (sc.all_phrases(),))
@@ -1192,8 +1217,10 @@ class PhraseCadence (Cadence):
 		#print ("sc: %s" % list (sc.all ()))
 		self.sc = sc
 		self.sp = PhraseCadence.init_spmap (sc, m)
-		#print ("sp: %s" % (self.sp,))
+		self.ps = PhraseCadence.init_psmap (sc, m)
+		print ("sp: %s" % (self.sp,))
 		assert len (self.sp) == self.nsegment ()
+		assert len (self.ps) == self.nphrase ()
 	def __repr__ (self): return "PhraseCadence [%s, sc=%s]" % (Cadence.__repr__ (self), self.sc)
 	
 	def nsection (self): return self.sc.nsection ()
@@ -1236,9 +1263,13 @@ class PhraseCadence (Cadence):
 	def all_phrases (self): return iter (self) # return Cadence.all (self)
 	#def all_phrases (self): return (self.uniq[phrase_no] for phrase_no in self.sc.all ())
 	def segment_elem (self, segment_no):
+		assert segment_no < self.nsegment ()
 		phrase_no, i = self.sp[segment_no]
-		phrase = self.phrase_elems (phrase_no)
+		assert phrase_no < self.nphrase ()
+		#phrase = self.phrase_elems (phrase_no)
+		phrase = self.uniq[phrase_no]
 		#phrase = self[phrase_no]
+		assert i < len (phrase), "\ni: %s\nphrase: %s\nsp: %s\nps: %s" % (i, phrase, self.sp, self.ps)
 		return phrase[i]
 		#phrase    = self.phrase_elem (phrase_no)
 		#segno     = self.ss[segment_no]
@@ -1249,7 +1280,7 @@ class PhraseCadence (Cadence):
 	def section_elem (self, section_no):
 		#print (section_no)
 		phrase_nos = self.sc.section_elems (section_no)
-		print ("phrase_nos: %s" % (phrase_nos,))
+		#print ("phrase_nos: %s" % (phrase_nos,))
 		#phrase_nos = chain (*phrase_nos)
 		#print ("phrase_nos: %s" % (phrase_nos,))
 		#return (self.phrase_elem (phrase_no) for phrase_no in phrase_nos)
@@ -1287,7 +1318,7 @@ class PhraseCadence (Cadence):
 	
 	def  last_phrase (self):
 		n = self.nphrase ()
-		print ("n: %s" % (n,))
+		#print ("n: %s" % (n,))
 		a = self.phrase_elems (n - 1)
 		b = self.phrase_elems (  - 1)
 		assert tuple (a) == tuple (b), "%s != %s" % (a, b)
@@ -1303,17 +1334,30 @@ class PhraseCadence (Cadence):
 	def chorii (self):
 		temp = self.sc.chorii ()
 		for section_no, phrases in temp:
-			yield section_no, tuple (self.phrase_elems (phrase_no) for phrase_no in phrases)
+			#yield section_no, tuple (self.phrase_elems (phrase_no) for phrase_no in phrases)
+			yield (section_no, tuple (map (lambda x: self.uniq[x], phrases)))
 	def pre_phrases (self):
 		temp = tuple (self.sc.pre_phrases ())
 		for section_no, phrases in temp:
 			# TODO
 			#print (section_no)
 			#print (phrases)
-			yield section_no, tuple (self.phrase_elems (phrase_no) for phrase_no in phrases)
+			#yield section_no, tuple (self.phrase_elems (phrase_no) for phrase_no in phrases)
+			yield section_no, self.uniq[phrases]
 	
+	def pre_sections (self):
+		sections = tuple (self.sc.pre_sections ())
+		for section_no, phrases in sections:
+			#print (section_no)
+			#print (phrases)
+			yield (section_no, tuple (map (lambda x: self.uniq[x], phrases)))
 			
-		
+	def pre_segments (self):
+		temp = tuple (self.sc.pre_phrases ())
+		for phrase_no, phrases in temp:
+			segment_nos = self.ps[phrase_no]
+			segment_no  = segment_nos[-1]
+			yield segment_no, self.uniq[phrases][-1]
 		
 		
 		
@@ -1348,6 +1392,454 @@ def random_phrase_cadences (sc=None, sc_args=None, pc=None):
 # segment cadence: ~2 bars/measures
 # one more layer of hash function will map from the segment cadence's bars to actual measure lengths
 # segment_no => hash => bar_no
+
+
+
+
+
+
+
+
+
+
+
+segment_db = (
+	((0,),),          # one   bar
+	((0, 0),        # two   bars, same      cadence
+	 (0, 1),),       # two   bars, different cadence
+	((0, 0, 0),     # three bars, same      cadence
+	 (0, 0, 1),     # three bars, last  different
+	 (0, 1, 1),),    # three bars, first different
+	((0, 0, 0, 1),  # four  bars, last  different
+	 (0, 0, 1, 1),  # four  bars, last two different
+	 (0, 1, 0, 1),  # four  bars, every other is different
+	 (0, 1, 1, 1),), # four  bars, first different
+)
+class SegmentCadence (Cadence):
+	@staticmethod
+	def init_spmap (sc, m):
+		segment_no = 0
+		spmap = []
+		for phrase_no in sc.all_segments ():
+			#print ("phrase_no: %s" % (phrase_no,))
+			phrase = m[phrase_no]
+			dp = len (phrase)
+			temp  = [(phrase_no, k) for k in range (0, dp)]
+			spmap = spmap + temp
+			segment_no = segment_no + dp
+			phrase_no = phrase_no + 1
+		spmap = tuple (spmap)
+		assert len (spmap) == segment_no
+		return spmap
+	@staticmethod
+	def init_psmap (sc, m):
+		segment_no = 0
+		pn  = 0
+		psmap = []
+		for phrase_no in sc.all_segments ():
+			phrase = m[phrase_no]
+			dp     = len(phrase)
+			temp = tuple (range (segment_no, segment_no + dp))
+			psmap = psmap + [temp]
+			segment_no = segment_no + dp
+			pn = pn + 1
+		psmap = tuple (psmap)
+		assert len (psmap) == pn
+		return psmap
+	def __init__ (self, pc, m):
+		Cadence.__init__ (self, m, pc.all_segments ())
+		self.pc = pc
+		self.bs = SegmentCadence.init_spmap (pc, m)
+		self.sb = SegmentCadence.init_psmap (pc, m)
+		assert len (self.bs) == self.nbar ()
+		assert len (self.sb) == self.nsegment ()	
+	def __repr__ (self): return "SegmentCadence [%s, pc=%s]" % (Cadence.__repr__ (self), self.pc)
+	
+	def nsection (self): return self.pc.nsection ()
+	def nphrase (self): return self.pc.nphrase ()
+	def nsegment (self): return self.pc.nsegment ()
+	def nuniq_segment (self): return self.pc.nuniq_segment ()
+	def nuniq_phrase (self): return self.pc.nuniq_phrase ()
+	def nuniq_section (self): return self.pc.nuniq_section ()	
+	
+	def nbar (self): return len (self.all_bars ())
+	def nuniq_bar (self): return len (set (self.all_bars ()))
+		
+	def segment_elems (self, phrase_no):
+		phrase = self.pattern (phrase_no)
+		fuck = self.uniq[phrase]
+		return fuck
+	def all_segments (self): return iter (self) # return Cadence.all (self)
+	def bar_elem (self, segment_no):
+		assert segment_no < self.nbar ()
+		phrase_no, i = self.bs[segment_no]
+		assert phrase_no < self.nsegment ()
+		phrase = self.uniq[phrase_no]
+		assert i < len (phrase)
+		return phrase[i]
+	def all_bars (self): return tuple (chain (*self.all_segments ()))
+	def phrase_elem (self, section_no):
+		phrase_nos = self.pc.phrase_elems (section_no)
+		return tuple (map (lambda x: self.uniq[x], phrase_nos))
+	def all_phrases (self):
+		for section in self.pc.all_phrases ():
+			section = tuple (section)
+			yield tuple (map (lambda x: self[x], section))
+
+	def all_sections (self):
+		for section in self.pc.all_sections ():
+			yield tuple (tuple (map (lambda x: self[x], phrase)) for phrase in section)
+	def section_elem (self, section_no):	
+		section = self.pc.section_elem (section_no)
+		return tuple (tuple (map (lambda x: self[x], phrase)) for phrase in section)
+		
+	def first_section (self): return 0, tuple (self.section_elem (0))
+	def  last_section (self):
+		n = self.nsection ()
+		assert tuple (self.section_elem (n - 1)) == tuple (self.section_elem (-1)), "%s, %s" % (tuple (self.section_elem (n - 1)), tuple (self.section_elem (-1)))
+		return n - 1, tuple (self.section_elem (-1))
+	def first_phrase (self): return 0, tuple (self.phrase_elem (0))
+	def  last_phrase (self):
+		n = self.nphrase ()
+		#print ("n: %s" % (n,))
+		a = self.phrase_elem (n - 1)
+		b = self.phrase_elem (  - 1)
+		assert tuple (a) == tuple (b), "%s != %s" % (a, b)
+		return n - 1, tuple (self.phrase_elem (-1))
+	def first_segment (self): return 0, self.segment_elems (0)
+	def last_segment (self):
+		n = self.nsegment ()
+		a = self.segment_elems (n - 1)
+		b = self.segment_elems (-1)
+		assert a == b, "%s != %b" % (a, b)
+		return n - 1, self.segment_elems (-1)
+		
+	def first_bar (self): return 0, self.bar_elem (0)
+	def  last_bar (self):
+		n = self.nbar ()
+		a = self.bar_elem (n - 1)
+		b = self.bar_elem ( - 1)
+		assert a == b, "%s != %b" % (a, b)
+		return n - 1, self.bar_elem (-1)
+	
+	def chorii (self):
+		temp = self.pc.chorii ()
+		for section_no, phrases in temp:
+			#for phrase in phrases:
+				#for segment in phrase:
+				#	self.uniq[segment]
+				#map (lambda x: self.uniq[x], phrase)
+			#map (lambda x: self.uniq[x], phrase) for phrase in segments
+			yield section_no, tuple (tuple (map (lambda x: self.uniq[x], segments)) for segments in phrases)
+			
+	#def pre_phrases (self):
+	#	temp = tuple (self.pc.pre_phrases ())
+	#	for section_no, phrases in temp:
+	#		#for phrase in phrases:
+	#		#	for segment in phrase:
+	#		yield section_no, tuple (tuple (map (lambda x: self.uniq[x], segments)) for segments in phrases)
+			
+	def pre_sections (self):
+		sections = tuple (self.pc.pre_sections ())
+		for section_no, phrases in sections:
+			#print (section_no)
+			#print (phrases)
+			yield section_no, tuple (tuple (map (lambda x: self.uniq[x], segments)) for segments in phrases)
+			
+	def pre_phrases (self):
+		phrases = tuple (self.pc.pre_phrases ())
+		for phrase_no, phrase in phrases:
+			#yield phrase_no, tuple (map (lambda x: self.uniq[x], segment) for segment in phrase)
+			yield phrase_no, tuple (self.uniq[segment] for segment in phrase)
+			
+	def pre_segments (self):
+		temp = tuple (self.pc.pre_segments ())
+		for segment_no, segment in temp:
+			yield segment_no, self.uniq[segment]
+
+	def pre_bars (self):
+		temp = tuple (self.pc.pre_segments ())
+		for segment_no, segment in temp:
+			bar_nos = self.sb[segment_no]
+			bar_no  = bar_nos[-1]
+			yield bar_no, self.uniq[segment][-1]	
+		
+		
+def random_segment_cadence ():
+	temp = choice (segment_db)
+	return choice (temp)
+def random_segment_cadences (pc=None, pc_args=None, sc=None):
+	if pc is None: pc = random_phrase_cadences (*pc_args)
+	ns = pc.nuniq_segment ()
+	if sc is None: sc = tuple ((random_segment_cadence () for _ in range (0, ns)))
+	assert ns == len (sc)
+	
+	cs = { True : sc }
+	uniq, dups     = cadence_helper0 (cs)
+	minsum, maxsum = cadence_helper1 (uniq, dups)
+	mapping, n     = cadence_helper2 (cs, minsum, maxsum)
+	mapuniq        = cadence_helper3 (mapping)
+	msc            = cadence_helper4 (mapping, mapuniq)
+	m              = cadence_helper5 (msc, cs)
+	msc2 = m[True] 
+	return SegmentCadence (pc, msc2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class BarCadence (Cadence):
+	def __init__ (self, sc, m):
+		Cadence.__init__ (self, m, sc.all_bars ())
+		self.sc = sc
+	def __repr__ (self): return "BarCadence [%s, sc=%s]" % (Cadence.__repr__ (self), self.sc)
+	
+	def nsection (self): return self.sc.nsection ()
+	def nphrase (self): return self.sc.nphrase ()
+	def nsegment (self): return self.sc.nsegment ()
+	def nuniq_segment (self): return self.sc.nuniq_segment ()
+	def nuniq_phrase (self): return self.sc.nuniq_phrase ()
+	def nuniq_section (self): return self.sc.nuniq_section ()	
+	def nbar (self): return self.sc.nbar ()
+	def nuniq_bar (self): return self.sc.nuniq_bar ()
+
+	def segment_elems (self, segment_no): return tuple (self.uniq[barno] for barno in self.sc.segment_elems (segment_no))
+	def all_segments (self): return tuple (tuple (self.segment_elems (segno)) for segno in range (0, self.nsegment ()))
+	def bar_elem (self, barno):
+		barno = self.order[barno]
+		return self.uniq[barno]
+	def all_bars (self): return iter (self)
+	def phrase_elem (self, pno):
+		phrase = self.sc.phrase_elem (pno)
+		for segment in phrase: yield tuple (self.uniq[barno] for barno in segment)
+	def all_phrases (self):
+		for pno in range (0, self.nphrase ()): yield tuple (self.phrase_elem (pno))
+	def section_elem (self, section_no):	
+		section = self.sc.section_elem (section_no)
+		for phrase in section:
+			yield tuple (tuple (self.uniq[barno] for barno in segment) for segment in phrase)
+	def all_sections (self):
+		for sno in range (0, self.nsection ()): yield tuple (self.section_elem (sno))
+			
+	def first_section (self): return 0, tuple (self.section_elem (0))
+	def  last_section (self):
+		n = self.nsection ()
+		assert tuple (self.section_elem (n - 1)) == tuple (self.section_elem (-1)), "%s, %s" % (tuple (self.section_elem (n - 1)), tuple (self.section_elem (-1)))
+		return n - 1, tuple (self.section_elem (-1))
+	def first_phrase (self): return 0, tuple (self.phrase_elem (0))
+	def  last_phrase (self):
+		n = self.nphrase ()
+		#print ("n: %s" % (n,))
+		a = self.phrase_elem (n - 1)
+		b = self.phrase_elem (  - 1)
+		assert tuple (a) == tuple (b), "%s != %s" % (a, b)
+		return n - 1, tuple (self.phrase_elem (-1))
+	def first_segment (self): return 0, self.segment_elems (0)
+	def last_segment (self):
+		n = self.nsegment ()
+		a = self.segment_elems (n - 1)
+		b = self.segment_elems (-1)
+		assert a == b, "%s != %s" % (a, b)
+		return n - 1, self.segment_elems (-1)
+	def first_bar (self): return 0, self.bar_elem (0)
+	def  last_bar (self):
+		n = self.nbar ()
+		a = self.bar_elem (n - 1)
+		b = self.bar_elem ( - 1)
+		assert a == b, "%s != %s" % (a, b)
+		return n - 1, self.bar_elem (-1)
+	
+	
+	
+	
+	
+	def chorii (self):
+		temp = self.sc.chorii ()
+		for section_no, phrases in temp:
+			yield section_no, tuple (tuple (map (lambda x: self.uniq[x], segments)) for segments in phrases)
+			
+	def pre_sections (self):
+		sections = tuple (self.sc.pre_sections ())
+		for section_no, phrases in sections:
+			#print (section_no)
+			#print (phrases)
+			yield section_no, tuple (tuple (map (lambda x: self.uniq[x], segments)) for segments in phrases)
+			
+	def pre_phrases (self):
+		phrases = tuple (self.sc.pre_phrases ())
+		for phrase_no, phrase in phrases:
+			#yield phrase_no, tuple (map (lambda x: self.uniq[x], segment) for segment in phrase)
+			yield phrase_no, tuple (self.uniq[segment] for segment in phrase)
+			
+	def pre_segments (self):
+		temp = tuple (self.sc.pre_segments ())
+		for segment_no, segment in temp:
+			yield segment_no, self.uniq[segment]
+
+	def pre_bars (self):
+		temp = tuple (self.sc.pre_segments ())
+		for segment_no, segment in temp:
+			bar_nos = self.sb[segment_no]
+			bar_no  = bar_nos[-1]
+			yield bar_no, self.uniq[segment][-1]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def random_bar_cadence (sc=None, sc_arg=None):
+	if sc is None: sc = random_segment_cadences (*sc_arg)
+	
+	bar_min = 1
+	bar_max = 3
+	bar_rng = bar_max - bar_min + 1
+	
+	phrase_min = 16 / 2
+	phrase_max = 16 * 2
+	flag = False
+	while not flag:
+		flag = True
+		pmins = []
+		pmaxs = []
+		for phrase in tuple (sc.all_phrases ()):
+			bars = tuple (chain (*phrase))
+			#pmin = sum (bar_min for bar_no in bars)
+			#pmax = sum (bar_max for bar_no in bars)
+			pmin = sum (bar_max for bar_no in bars)
+			pmax = sum (bar_min for bar_no in bars)
+			pmins = pmins + [pmin]
+			pmaxs = pmaxs + [pmax]
+		for pmin, pmax in zip (pmins, pmaxs):
+			#if pmin >= pmax: continue		
+			if pmin < phrase_min:
+				#bar_min = bar_min + 1
+				bar_max = bar_max + 1
+				flag = False
+				break
+		#for pmin, pmax in zip (pmins, pmaxs):
+		#	#if pmin >= pmax: continue		
+		#	if pmax < phrase_min:
+		#		#bar_min = bar_min + 1
+		#		bar_min = bar_min + 1
+		#		flag = False
+		#		break
+		#for pmin, pmax in zip (pmins, pmaxs):
+		#	if pmax > phrase_max:
+		#		#bar_max = bar_max - 1
+		#		bar_min = bar_min - 1
+		#		flag = False
+		#		break
+		if bar_min > bar_max:
+			temp = bar_min
+			bar_min = bar_max
+			bar_max = temp
+			exit (2)
+		#print (pmin)
+		#print (pmax)
+		#print (bar_min)
+		#print (bar_max)
+		#print ()
+	#exit (2)
+		
+	nbar = sc.nuniq_bar ()
+	#barlens = [bar_min] * nbar
+	#barlens = [bar_max] * nbar
+	barlens = [randrange (bar_min, bar_max + 1) for _ in range (0, nbar)]
+	#for k in range (0, nbar): barlens[k] = (k + 1) % (bar_rng) + bar_min
+	#for k in range (0, nbar): barlens[k] = bar_min
+
+	flag = False
+	pas  = random_bool ()
+	while not flag:
+		flag = True
+		phrases = tuple (sc.all_phrases ())
+		if pas: phrases = phrases[::-1]
+		pas = not pas
+		for phrase in phrases:
+			bars = tuple (chain (*phrase))
+			nbeat = sum (barlens[bar_no] for bar_no in bars)
+			if nbeat < phrase_min:
+				for bar in bars[::-1]:
+					if barlens[bar] < bar_max:
+						barlens[bar] = barlens[bar] + 1
+						flag = False
+						break
+				if not flag: continue
+				
+			if nbeat > phrase_max:
+				for bar in bars:
+					if barlens[bar] > bar_min:
+						barlens[bar] = barlens[bar] - 1
+						flag = False
+				if not flag: continue
+		# TODO check uniq segments for duplicate barlen combos
+	
+	print ("barlens: %s" % (barlens,))
+	
+	# TODO how to determine lengths of bars
+	return BarCadence (sc, barlens)
+
+
+class Meter ():
+	def __init__ (self, bc, tm):
+		self.bc = bc # bar cadence
+		self.tm = tm # temporal modulations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	
 if __name__ == "__main__":
@@ -1419,6 +1911,10 @@ if __name__ == "__main__":
 		print ("pre   sections: %s" % list (sc.  pre_sections ()))
 		print ("chorii        : %s" % list (sc.  chorii       ()))
 		print ()
+		print ("first phrase  : %s" % (sc.first_phrase (),))
+		print ("last  phrase  : %s" % (sc. last_phrase (),))
+		print ("pre   phrases : %s" % list (sc.  pre_phrases (),))
+		print ()
 		print ("nsection      : %s" % sc.nsection     ())
 		print ("nshort section: %s" % sc.nshort_section ())
 		print ("nlong_section : %s" % sc.nlong_section ())
@@ -1429,10 +1925,7 @@ if __name__ == "__main__":
 		print ("nphrase       : %s" % sc.nphrase     ())
 		print ("uniq phrase   : %s" % sc.nuniq_phrase ())
 		print ()
-		print ("first phrase  : %s" % (sc.first_phrase (),))
-		print ("last  phrase  : %s" % (sc. last_phrase (),))
-		print ("pre   phrases : %s" % list (sc.  pre_phrases (),))
-		print ()
+		
 		for k in range (0, sc.nsection ()): print (sc.section_elems (k))
 		print ()
 		for k in range (0, sc.nphrase  ()): print (sc.phrase_elem   (k))
@@ -1443,6 +1936,19 @@ if __name__ == "__main__":
 		print ("all sections  : %s" % (list (pc.all_sections ())))
 		print ("all phrases   : %s" % (list (pc.all_phrases  ())))
 		print ("all segments  : %s" % (list (pc.all_segments ())))
+		
+		k = tuple (pc.all_sections ())
+		assert len (k) == pc.nsection ()
+		k = set (k)
+		assert len (k) == pc.nuniq_section ()
+		k = tuple (pc.all_phrases ())
+		assert len (k) == pc.nphrase ()
+		k = set (k)
+		assert len (k) == pc.nuniq_phrase ()
+		k = tuple (pc.all_segments ())
+		assert len (k) == pc.nsegment ()
+		k = set (k)
+		assert len (k) == pc.nuniq_segment ()
 
 		print ("nsection      : %s" % pc.nsection ())
 		print ("uniq          : %s" % pc.nuniq_section    ())
@@ -1462,8 +1968,116 @@ if __name__ == "__main__":
 		print ("pre   phrases : %s" % list (pc.  pre_phrases (),))
 		print ("pre  segments : %s" % list (pc.  pre_segments (),))
 		print ()
-		for k in range (0, pc.nsection ()): print (pc.section_elems (k))
-		for k in range (0, pc.nphrase  ()): print (pc.phrase_elems  (k))
-		for k in range (0, sc.nsegment ()): print (sc.segment_elem  (k))
+		for k in range (0, pc.nsection ()): print (pc.section_elem (k))
+		print (tuple (pc.phrase_elems (k) for k in range (0, pc.nphrase  ())))
+		print (tuple (pc.segment_elem (k) for k in range (0, pc.nsegment ())))
+		print ("\n\n")
+		
+		sc = random_segment_cadences (pc)
+		print ("segment cadence : %s\n" % (sc,))
+		print ("all sections  : %s" % (list (sc.all_sections ())))
+		print ("all phrases   : %s" % (list (sc.all_phrases  ())))
+		print ("all segments  : %s" % (list (sc.all_segments ())))
+		print ("all bars      : %s" % (list (sc.all_bars ())))
+		
+		k = tuple (sc.all_sections ())
+		assert len (k) == sc.nsection ()
+		k = set (k)
+		assert len (k) == sc.nuniq_section ()
+		k = tuple (sc.all_phrases ())
+		assert len (k) == sc.nphrase ()
+		k = set (k)
+		assert len (k) == sc.nuniq_phrase ()
+		k = tuple (sc.all_segments ())
+		assert len (k) == sc.nsegment ()
+		k = set (k)
+		assert len (k) == sc.nuniq_segment ()
+		k = tuple (sc.all_bars ())
+		assert len (k) == sc.nbar ()
+		k = set (k)
+		assert len (k) == sc.nuniq_bar ()
+		
+		print ("nsection      : %s" % sc.nsection ())
+		print ("uniq          : %s" % sc.nuniq_section    ())
+		print ("nphrase       : %s" % sc.nphrase  ())
+		print ("uniq phrase   : %s" % sc.nuniq_phrase   ())
+		print ("nsegment      : %s" % sc.nsegment ())
+		print ("uniq segment  : %s" % sc.nuniq   ())
+		print ("nbar          : %s" % sc.nbar ())
+		print ("uniq bar      : %s" % sc.nuniq_bar ())
+		
+		print ("first section : %s" % (sc.first_section (),))
+		print ("first phrase  : %s" % (sc.first_phrase  (),))
+		print ("first segment : %s" % (sc.first_segment (),))
+		print ("first bar     : %s" % (sc.first_bar (),))
+		print ("last  section : %s" % (sc. last_section (),))
+		print ("last  phrase  : %s" % (sc. last_phrase  (),))
+		print ("last  segment : %s" % (sc. last_segment (),))
+		print ("last  bar     : %s" % (sc.last_bar (),))
+		print ("chorii        : %s" % list (sc.  chorii       ()))
+		print ("pre  sections : %s" % list (sc.  pre_sections (),))
+		print ("pre   phrases : %s" % list (sc.  pre_phrases (),))
+		print ("pre  segments : %s" % list (sc.  pre_segments (),))
+		print ("pre      bars : %s" % list (sc.pre_bars (),))
+		print ()
+		for k in range (0, sc.nsection ()): print (sc.section_elem (k))
+		print (tuple (sc.phrase_elem (k) for k in range (0, sc.nphrase  ())))
+		print (tuple (sc.segment_elems (k) for k in range (0, sc.nsegment ())))
+		print (tuple (sc.bar_elem (k) for k in range (0, sc.nbar ())))
+		print ("\n\n")
+		
+		bc = random_bar_cadence (sc)
+		print ("bar cadence : %s\n" % (bc,))
+		print ("all sections  : %s" % (list (bc.all_sections ())))
+		print ("all phrases   : %s" % (list (bc.all_phrases  ())))
+		print ("all segments  : %s" % (list (bc.all_segments ())))
+		print ("all bars      : %s" % (list (bc.all_bars ())))
+		
+		#k = tuple (bc.all_sections ())
+		#assert len (k) == bc.nsection ()
+		#k = set (k)
+		#assert len (k) == bc.nuniq_section ()
+		#k = tuple (bc.all_phrases ())
+		#assert len (k) == bc.nphrase ()
+		#k = set (k)
+		#assert len (k) == bc.nuniq_phrase ()
+		#k = tuple (bc.all_segments ())
+		#assert len (k) == bc.nsegment ()
+		#k = set (k)
+		#assert len (k) == bc.nuniq_segment ()
+		#k = tuple (bc.all_bars ())
+		#assert len (k) == bc.nbar ()
+		# TODO
+		#k = set (k)
+		#assert len (k) == bc.nuniq_bar ()
+		
+		print ("nsection      : %s" % bc.nsection ())
+		print ("uniq          : %s" % bc.nuniq_section    ())
+		print ("nphrase       : %s" % bc.nphrase  ())
+		print ("uniq phrase   : %s" % bc.nuniq_phrase   ())
+		print ("nsegment      : %s" % bc.nsegment ())
+		print ("uniq segment  : %s" % bc.nuniq   ())
+		print ("nbar          : %s" % bc.nbar ())
+		print ("uniq bar      : %s" % bc.nuniq_bar ())
+		
+		print ("first section : %s" % (bc.first_section (),))
+		print ("first phrase  : %s" % (bc.first_phrase  (),))
+		print ("first segment : %s" % (bc.first_segment (),))
+		print ("first bar     : %s" % (bc.first_bar (),))
+		print ("last  section : %s" % (bc. last_section (),))
+		print ("last  phrase  : %s" % (bc. last_phrase  (),))
+		print ("last  segment : %s" % (bc. last_segment (),))
+		print ("last  bar     : %s" % (bc.last_bar (),))
+		print ("chorii        : %s" % list (bc.  chorii       ()))
+		print ("pre  sections : %s" % list (bc.  pre_sections (),))
+		print ("pre   phrases : %s" % list (bc.  pre_phrases (),))
+		print ("pre  segments : %s" % list (bc.  pre_segments (),))
+		print ("pre      bars : %s" % list (bc.pre_bars (),))
+		print ()
+		for k in range (0, bc.nsection ()): print (bc.section_elem (k))
+		print (tuple (bc.phrase_elem (k) for k in range (0, bc.nphrase  ())))
+		print (tuple (bc.segment_elems (k) for k in range (0, bc.nsegment ())))
+		print (tuple (bc.bar_elem (k) for k in range (0, bc.nbar ())))
+		print ("\n\n")
 	main ()
 	
