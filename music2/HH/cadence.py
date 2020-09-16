@@ -1173,7 +1173,7 @@ class PhraseCadence (Cadence):
 		segment_no = 0
 		spmap = []
 		for phrase_no in sc.all_phrases ():
-			print ("phrase_no: %s" % (phrase_no,))
+			#print ("phrase_no: %s" % (phrase_no,))
 			phrase = m[phrase_no]
 			dp = len (phrase)
 			temp  = [(phrase_no, k) for k in range (0, dp)]
@@ -1185,21 +1185,22 @@ class PhraseCadence (Cadence):
 		return spmap
 	def __init__ (self, sc, m):
 		Cadence.__init__ (self, m, sc.all_phrases ())
-		print ("fuck: %s" % (sc.all_phrases(),))
-		print ("m: %s" % (m,))
-		print ("uniq: %s" % (self.uniq,))
+		#print ("fuck: %s" % (sc.all_phrases(),))
+		#print ("m: %s" % (m,))
+		#print ("uniq: %s" % (self.uniq,))
 		#print ("m: %s" % (m,))
 		#print ("sc: %s" % list (sc.all ()))
 		self.sc = sc
 		self.sp = PhraseCadence.init_spmap (sc, m)
-		print ("sp: %s" % (self.sp,))
+		#print ("sp: %s" % (self.sp,))
+		assert len (self.sp) == self.nsegment ()
 	def __repr__ (self): return "PhraseCadence [%s, sc=%s]" % (Cadence.__repr__ (self), self.sc)
 	
 	def nsection (self): return self.sc.nsection ()
 	def nphrase (self): return self.sc.nphrase ()
 	def nsegment (self): return len (self.all_segments ())
 	#def nuniq (self): return len (self.uniq) # TODO
-	def nuniq (self): return len (set (self.all_segments ()))
+	def nuniq_segment (self): return len (set (self.all_segments ()))
 	def nuniq_phrase (self): return self.sc.nuniq_phrase ()
 	def nuniq_section (self): return self.sc.nuniq_section ()
 	
@@ -1223,15 +1224,15 @@ class PhraseCadence (Cadence):
 	def phrase_elems (self, phrase_no):
 		#print ("phrase_no: %s" % (phrase_no,))
 		#phrase = self.sc.phrase_elem (phrase_no)
-		#phrase = self.pattern (phrase_no)
+		phrase = self.pattern (phrase_no)
 		#print ("phrase: %s" % (phrase,))
 		#print ("uniq: %s" % (self.uniq,))
 		#return self[phrase] #Cadence.__getitem__ (self, phrase_no)
-		#fuck = self.uniq[phrase]
+		fuck = self.uniq[phrase]
 		#print ("fuck: %s" % (fuck,))
-		#return fuck
+		return fuck
 		#return tuple (self[i] for i in phrase)
-		return self[phrase_no]
+		#return self[phrase_no]
 	def all_phrases (self): return iter (self) # return Cadence.all (self)
 	#def all_phrases (self): return (self.uniq[phrase_no] for phrase_no in self.sc.all ())
 	def segment_elem (self, segment_no):
@@ -1248,11 +1249,11 @@ class PhraseCadence (Cadence):
 	def section_elem (self, section_no):
 		#print (section_no)
 		phrase_nos = self.sc.section_elems (section_no)
-		print ("phrase_nos: %s" % phrase_nos)
-		phrase_nos = chain (*phrase_nos)
+		print ("phrase_nos: %s" % (phrase_nos,))
+		#phrase_nos = chain (*phrase_nos)
 		#print ("phrase_nos: %s" % (phrase_nos,))
 		#return (self.phrase_elem (phrase_no) for phrase_no in phrase_nos)
-		return tuple (map (lambda x: self[x], phrase_nos))
+		return tuple (map (lambda x: self.uniq[x], phrase_nos))
 		#return tuple (map (self.phrase_elem, self.sc.section_elems (section_no)))
 	def all_sections (self):
 		#for section_no in chain (*self.sc.all_sections ()):
