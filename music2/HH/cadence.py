@@ -1223,14 +1223,15 @@ class PhraseCadence (Cadence):
 	def phrase_elems (self, phrase_no):
 		#print ("phrase_no: %s" % (phrase_no,))
 		#phrase = self.sc.phrase_elem (phrase_no)
-		phrase = self.pattern (phrase_no)
+		#phrase = self.pattern (phrase_no)
 		#print ("phrase: %s" % (phrase,))
 		#print ("uniq: %s" % (self.uniq,))
 		#return self[phrase] #Cadence.__getitem__ (self, phrase_no)
-		fuck = self.uniq[phrase]
+		#fuck = self.uniq[phrase]
 		#print ("fuck: %s" % (fuck,))
-		return fuck
+		#return fuck
 		#return tuple (self[i] for i in phrase)
+		return self[phrase_no]
 	def all_phrases (self): return iter (self) # return Cadence.all (self)
 	#def all_phrases (self): return (self.uniq[phrase_no] for phrase_no in self.sc.all ())
 	def segment_elem (self, segment_no):
