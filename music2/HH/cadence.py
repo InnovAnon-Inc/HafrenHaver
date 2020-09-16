@@ -598,6 +598,7 @@ class SectionCadence (Cadence):
 				lci = lci + 1
 		assert lci == len (lcs)
 		assert sci == len (scs)
+		#print ("\nlcs: %s\nscs: %s\n\n" % (lcs, scs))
 		order = []
 		#phrase_no = 0
 		#section_no = 0
@@ -611,9 +612,10 @@ class SectionCadence (Cadence):
 			#else:
 				#dp = len (lcs[index])
 			dp = len (uniq[(short, index)])
-			for k in range (0, dp):
+			order = order + [(short, index)]
+#			for k in range (0, dp):
 				#order = order + [(short, index, k)]
-				order = order + [(short, index)]
+#				order = order + [(short, index)]
 				#phrase_no = phrase_no + 1
 			#spmap[section_no] = spma
 			#phrase_no = phrase_no + dp
@@ -691,6 +693,7 @@ class SectionCadence (Cadence):
 		assert len (self.sp) == self.nsection ()
 		print ("all sections: %s" % (list (self.all_sections ()),))
 		assert len (self.ps) == self.nphrase (), "%s != %s, %s" % (len (self.ps), self.nphrase (), self.all_phrases ())
+		assert len (self.order) == len (self.sp)
 		#print ("sp: %s" % (self.sp,))
 	def __repr__ (self): return "SectionCadence [%s, sc=%s, scs=%s, lcs=%s]" % (Cadence.__repr__ (self), self.sc, self.scs, self.lcs)
 	# TODO
@@ -829,7 +832,7 @@ class SectionCadence (Cadence):
 
 	def section_elems (self, section_no):
 		short, i = self.order[section_no]
-		section  = self.uniq[short, i]
+		section  = self.uniq[(short, i)]
 		#print ("sn: %s, short: %s, i: %s, section: %s" % (section_no, short, i, section))
 		return section
 		#print ("%s[%s]" % (list (self), section_no))
@@ -838,13 +841,21 @@ class SectionCadence (Cadence):
 	def phrase_elem (self, phrase_no):
 		section_no, k = self.ps[phrase_no]
 		short, i = self.order[section_no]
-		section  = self.uniq[short, i]
+		section  = self.uniq[(short, i)]
 		#section = self[section_no]
 		return section[k]
 	def all_sections (self):
 		#return tuple (map (self.section_elems, range (0, self.nsection ())))
-		for k in range (0, self.nsection ()):
-			yield self.section_elems (k)
+		#for k in range (0, self.nsection ()):
+		#	yield self.section_elems (k)
+		ret = []
+		ns = 0
+		for short, i in self.order:
+			section = self.uniq[(short, i)]
+			ret = ret + [section]
+			ns = ns + 1
+		assert ns == self.nsection (), "%s != %s" % (ns, self.nsection ())
+		return ret
 	def all_phrases (self): return tuple (chain (*self.all_sections ()))
 		
 #	def phrase_elem (self, phrase_no):
@@ -1236,6 +1247,7 @@ class PhraseCadence (Cadence):
 	def section_elem (self, section_no):
 		#print (section_no)
 		phrase_nos = self.sc.section_elems (section_no)
+		print ("phrase_nos: %s" % phrase_nos)
 		phrase_nos = chain (*phrase_nos)
 		#print ("phrase_nos: %s" % (phrase_nos,))
 		#return (self.phrase_elem (phrase_no) for phrase_no in phrase_nos)
@@ -1393,6 +1405,7 @@ if __name__ == "__main__":
 		print ("nuniq s section: %s" % sc.nuniq_short_section ())
 		print ("nuniq l section: %s" % sc.nuniq_long_section ())
 		print ("\n\n")
+		assert (tuple (sc)) ==  (tuple (sc.all_sections ()))
 		
 		sc = random_section_cadences (sc)
 		print ("section cadence: %s\n" % sc)

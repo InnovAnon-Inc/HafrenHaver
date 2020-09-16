@@ -97,7 +97,7 @@ class Circle:
 		width  = self.r * 2
 		height = self.r * 2
 		rect = pygame.Rect (left, top, width, height)
-		pygame.draw.arc (screen, color, rect, 0, 2 * pi)
+		pygame.draw.arc (screen, color, rect, 0, 2 * pi + 1)
 class Quadrilateral:
 	def __init__ (self, a, b, c, d):
 		self.a = a
@@ -2240,7 +2240,7 @@ def main ():
 	width     = 500
 	height    = 500
 	pygame.display.set_caption (title, icontitle)
-	screen = pygame.display.set_mode ([width, height])
+	screen = pygame.display.set_mode ([width + 1, height + 1])
 	rect   = screen.get_rect ()
 	ss     = screen.subsurface (rect)
 	#ss     = pygame.transform.flip (ss, False, True)
