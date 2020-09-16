@@ -111,6 +111,7 @@ song_structure_db = (
 	(INTRO, VERSE,      CHORUS, VERSE,      CHORUS, BRIDGE, CHORUS, VERSE,      CHORUS, OUTRO),            #                                32
 	(INTRO, VERSE, PRE, CHORUS, VERSE, PRE, CHORUS, BRIDGE, CHORUS, VERSE, PRE, CHORUS, OUTRO),            #                                33
 )
+# which section types, which order
 class SongStructure (Pattern):
 	def __init__ (self, ss): Pattern.__init__ (self, ss)
 	def __repr__ (self): return "SongStructure [%s]" % Pattern.__repr__ (self)
@@ -119,6 +120,8 @@ class SongStructure (Pattern):
 	def nsection            (self): return len (self)
 	def nuniq_section       (self): return self.nuniq ()
 	def uniq_sections       (self): return self.uniq_elements ()
+	def nshort_section      (self): return len (tuple (filter (short_section, self)))
+	def  nlong_section      (self): return len (tuple (filter (long_section,  self)))
 	
 	def nuniq_short_section (self): return len (self.uniq_short_sections ())
 	def nuniq_long_section  (self): return len (self.uniq_long_sections ())
@@ -199,6 +202,7 @@ sc0_db = (
 	 (0, 1, 1),   # three sections, first     section cadence  different
 	 (0, 1, 2),), # three sections, all       section cadences different
 )
+# which sections have the same meter
 class SongCadence0 (Pattern):
 	def __init__ (self, sc): Pattern.__init__ (self, sc)
 	def __repr__ (self): return "SC0 [%s]" % Pattern.__repr__ (self)
@@ -294,7 +298,8 @@ def random_sc0 (nsection):
 	
 	
 	
-	
+# which section types, which order, and which ones have the same meter
+# this layer separates short sections and long sections, which is necessary for random-generation constraints
 class SongCadence (Cadence):
 	#@jit
 	@staticmethod
@@ -443,14 +448,10 @@ class SongCadence (Cadence):
 	def nsection (self):
 		assert self.ss.nsection () == len (self)
 		return len (self)
-	def nshort_section (self):
-		assert self.ss.nsc () == self.sc.ns ()
-		#return self.ss.nsc ()
-		return self.sc.ns ()
-	def nlong_section (self):
-		assert self.ss.nlc () == self.lc.ns ()
-		#return self.ss.nlc ()
-		return self.lc.ns ()
+	def nshort_section (self): return self.ss.nshort_section ()
+	def nshort_section_types (self): return self.sc.nsection ()
+	def nlong_section (self): return self.ss.nlong_section ()
+	def nlong_section_types (self): return self.lc.nsection ()
 	#def ns (self): return self.nsc () + self.nlc ()
 	#def ns (self): return len (tuple (self.all ()))
 	def nuniq_short_section (self): return self.sc.nuniq ()
@@ -555,9 +556,7 @@ section_db = (
 	 (0, 1, 0),  # three phrases, mid   different
 	 (0, 1, 1), # three phrases, first different
 	 #(0, 1, 2),
-	),
-	 
-# TODO allow for longer sections (including longer short sections)
+	),	 
 #	((0, 0, 0, 0),
 #	 (0, 0, 0, 1),
 #	 (0, 0, 1, 0),
@@ -567,6 +566,9 @@ section_db = (
 #	 (0, 1, 1, 1),
 #	 (0, 1, 2, 1),),
 )
+# the number of phrases in each section;
+# long phrases and short phrases are handled separately
+# section_no => hash => phrase_no
 class SectionCadence (Cadence):
 	@staticmethod
 	def mapping (sc, scs, lcs):
@@ -649,6 +651,8 @@ class SectionCadence (Cadence):
 		#spmap = tuple (spmap)
 		psmap = tuple (psmap)
 		assert len (psmap) == phrase_no
+		assert section_no == sc.nsection ()
+		#assert phrase_no == sc.nphrase ()
 		print ("psmap: %s" % (psmap,))
 		return psmap
 	@staticmethod
@@ -669,6 +673,8 @@ class SectionCadence (Cadence):
 			phrase_no = phrase_no + dp
 			section_no = section_no + 1
 		spmap = tuple (spmap)
+		assert section_no == sc.nsection ()
+		#assert phrase_no == sc.nphrase ()
 		assert len (spmap) == section_no
 		print ("spmap: %s" % (spmap,))
 		return spmap
@@ -1144,6 +1150,12 @@ phrase_db = (
 	 (0, 1, 0),
 	 (0, 1, 1),), # three segments, first different
 )
+# for a standard verse there are two phrases,
+# A A1
+# A A2
+# where A, A1 and A2 are segments
+# phrase_no => hash => segment_no
+# (no longer need to worry about long vs short section types)
 class PhraseCadence (Cadence):
 	@staticmethod
 	def init_spmap (sc, m):
@@ -1319,8 +1331,9 @@ def random_phrase_cadences (sc=None, sc_args=None, pc=None):
 	
 	
 	
-	
-	
+# segment cadence: ~2 bars/measures
+# one more layer of hash function will map from the segment cadence's bars to actual measure lengths
+# segment_no => hash => bar_no
 	
 	
 if __name__ == "__main__":
@@ -1328,52 +1341,88 @@ if __name__ == "__main__":
 		for nsection in range (0, 3 + 1):
 			sc = random_sc0 (nsection)
 			print (sc)
-		print ()
+		print ("\n\n")
+		
 		ss = random_song_structure ()
-		print ("song structure: %s" % ss)
-		print ("all           : %s" % list (ss))
-		print ("uniq          : %s" % list (ss.uniq_elements ()))
-		print ("nsc           : %s" % ss.nuniq_short_section   ())
-		print ("nlc           : %s" % ss.nuniq_long_section   ())
+		print ("song structure: %s\n" % ss)
+		print ("all           : %s\n" % list (ss))
+		print ("uniq          : %s\n" % list (ss.uniq_elements ()))
+		print ("nsection      : %s" % ss.nsection ())
+		print ("nuniq section : %s" % ss.nuniq_section ())
+		print ("nshort section: %s" % ss.nuniq_short_section   ())
+		print ("nlong  section: %s" % ss.nuniq_long_section   ())
 		print ("suniq         : %s" % list (ss.uniq_short_sections ()))
-		print ("luniq         : %s" % list (ss.uniq_long_sections ()))
-		print ()
+		print ("luniq         : %s" % list (ss.uniq_long_sections ()))	
+		# TODO first, last sections, etc
+		print ("\n\n")
+		
 		sc = random_song_cadence (ss)
+		print ("song cadence  : %s\n" % sc)
 		ssc = sc.sc
 		lsc = sc.lc
 		print ("ssc           : %s" % ssc)
+		print ("nsection      : %s" % ssc.nsection ())
+		print ("uniq          : %s" % ssc.nuniq ())
 		#print ("ssc           : %s" % list (ssc))
-		print ("lsc           : %s" % lsc)
-		#print ("lsc           : %s" % list (lsc))
-		print ("song cadence  : %s" % sc)
-		print ("sections      : %s" % list (sc))
-		print (list (zip (sc.order, list (sc))))
-		print ("first section : %s" % (sc.first_section (),))
-		print ("last  section : %s" % (sc. last_section (),))
-		print ("pre   sections: %s" % list (sc.  pre_sections ()))
-		print ("chorii        : %s" % list (sc.  chorii       ()))
-		print ("nsection      : %s" % sc.nsection ())
-		print ("uniq          : %s" % sc.nuniq ())
 		print ()
-		sc = random_section_cadences (sc)
-		print ("section cadence: %s" % sc)
-		print ("all sections  : %s" % list (sc.all_sections ()))
-		print ("all phrases   : %s" % list (sc.all_phrases ()))
+		print ("lsc           : %s" % lsc)
+		print ("nsection      : %s" % lsc.nsection ())
+		print ("uniq          : %s" % lsc.nuniq ())
+		#print ("lsc           : %s" % list (lsc))
+		print ()
+		print ("sections      : %s\n" % list (sc))
+		print (list (zip (sc.order, list (sc))))
+		print ()
 		print ("first section : %s" % (sc.first_section (),))
 		print ("last  section : %s" % (sc. last_section (),))
 		print ("pre   sections: %s" % list (sc.  pre_sections ()))
 		print ("chorii        : %s" % list (sc.  chorii       ()))
+		print ()
+		print ("uniq s section: %s" % sc.uniq_short_sections ())
+		print ("uniq l section: %s" % sc.uniq_long_sections ())
+		print ("uniq          : %s" % sc.uniq_sections ())
+		print ()
+		print ("nsection      : %s" % sc.nsection ())
+		#print ("nsection t    : %s" % sc.nsection_types ())
+		print ("n s section   : %s" % sc.nshort_section ())
+		print ("n l section   : %s" % sc.nlong_section ())
+		print ("n s st        : %s" % sc.nshort_section_types ())
+		print ("n l st        : %s" % sc.nlong_section_types ())
+		print ("uniq          : %s" % sc.nuniq ())
+		print ("uniq st       : %s" % (sc.uniq_section_types (),))
+		print ("nuniq s section: %s" % sc.nuniq_short_section ())
+		print ("nuniq l section: %s" % sc.nuniq_long_section ())
+		print ("\n\n")
+		
+		sc = random_section_cadences (sc)
+		print ("section cadence: %s\n" % sc)
+		print ("all sections  : %s\n" % list (sc.all_sections ()))
+		print ("all phrases   : %s\n" % list (sc.all_phrases ()))
+		
+		print ("first section : %s" % (sc.first_section (),))
+		print ("last  section : %s" % (sc. last_section (),))
+		print ("pre   sections: %s" % list (sc.  pre_sections ()))
+		print ("chorii        : %s" % list (sc.  chorii       ()))
+		print ()
 		print ("nsection      : %s" % sc.nsection     ())
+		print ("nshort section: %s" % sc.nshort_section ())
+		print ("nlong_section : %s" % sc.nlong_section ())
 		print ("uniq          : %s" % sc.nuniq  ())
+		print ("nuniq   section: %s" % sc.nuniq_section ())
+		print ("nuniq s section: %s" % sc.nuniq_short_section ())
+		print ("nuniq l section: %s" % sc.nuniq_long_section ())
 		print ("nphrase       : %s" % sc.nphrase     ())
 		print ("uniq phrase   : %s" % sc.nuniq_phrase ())
+		print ()
 		print ("first phrase  : %s" % (sc.first_phrase (),))
 		print ("last  phrase  : %s" % (sc. last_phrase (),))
 		print ("pre   phrases : %s" % list (sc.  pre_phrases (),))
 		print ()
 		for k in range (0, sc.nsection ()): print (sc.section_elems (k))
-		for k in range (0, sc.nphrase  ()): print (sc.phrase_elem   (k))
 		print ()
+		for k in range (0, sc.nphrase  ()): print (sc.phrase_elem   (k))
+		print ("\n\n")
+		
 		pc = random_phrase_cadences (sc)
 		print ("phrase cadence: %s" % pc)
 		print ("all sections  : %s" % (list (pc.all_sections ())))
