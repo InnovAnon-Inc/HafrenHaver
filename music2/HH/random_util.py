@@ -29,7 +29,13 @@ def random_bjorklund2 (n, rev=None, rot=None):
 	b = rotate (b, rot)
 	return b
 
-
+def random_bjorklund3 (n, k, rev=None, rot=None):
+	if rev is None: rev = random_bool ()
+	if rot is None: rot = randrange (0, n)
+	b = bjorklund (n, k)
+	if rev: b = reverse (b)
+	b = rotate (b, rot)
+	return b
 
 # Python program to print all subsets with given sum 
 
@@ -70,10 +76,9 @@ def printAllSubsets (arr, n, sum):
 # This code is contributed by ihritik
 
 # https://stackoverflow.com/questions/56206696/recursive-program-to-get-all-subsets-with-given-sum-includes-repetitions
-@jit
+#@jit
 def subsets (arr, _sum, c = []):
 	if sum (c) == _sum: yield c
 	else:
 		for i in arr:
-			if sum (c + [i]) <= _sum:
-				yield from subsets (arr, _sum, c + [i])
+			if sum (c + [i]) <= _sum: yield from subsets (arr, _sum, c + [i])

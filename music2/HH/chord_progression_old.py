@@ -30,7 +30,7 @@ from mode        import random_mode
 		
 		
 		
-
+"""
 section_db = (
 	((0)),       # one   phrase
 	((0, 0),     # two   phrases, same      cadence
@@ -148,7 +148,7 @@ def random_section_cadences_helper (uniq, min_n, max_n, short=None):
 def random_section_cadences (sc): # song cadence => section cadences
 	long_sections,  lm = random_section_cadences_helper (sc.long_uniq,  sc.min_nlsection (), sc.max_nlsection (), False)
 	short_sections, ls = random_section_cadences_helper (sc.short_uniq, sc.min_nssection (), sc.max_nssection (), True)
-	
+"""	
 
 	
 
@@ -322,8 +322,9 @@ class Meter:
 	"""
 	
 	
-	
 
+
+"""
 class Song:
 	@staticmethod
 	def init_map (sections, song_structure):
@@ -527,7 +528,7 @@ class HarmonicFunctionCadence0 (Cadence0):
 	def __repr__ (self): return "HarmonicFunctionCadence1 [arr=%s, arr2=%s]" % (self.arr, self.arr2)
 	def nsegment  (self, section_no): return len (self.arr2[section_no])
 	def nsegments (self): return sum (len (arr) for arr in self.arr2)
-	
+"""	
 		
 
 
@@ -538,6 +539,33 @@ class HarmonicFunctionCadence0 (Cadence0):
 
 
 
+# TODO hp by song, by section, by phrase, by segment, by bar
+# TODO how to iterate?
+# TODO modulations by section and hp
+		
+	
+	uniq = tuple (set (chain (*hcs)))
+	nhps = []
+	for l in uniq: # sizes from subset-sum
+		min_hp = 1
+		max_hp = len (filter (x == l for x in chain (*hcs)))
+		#nhp    = randrange (min_hp, max_hp + 1)
+		#nhps   = nhps + [(nhp, max_hp)]
+		# TODO min,max = #chord progressions ?
+		temp = reduce_map (max_hp, min_hp, max_hp)
+		nhps = nhps + [temp]
+		
+	ndxs = [0] * len (uniq)
+	bar = []
+	for subset in hcs:
+		mapping = []
+		for l in subset:
+			temp    = nhps[l][ndxs[l]]
+			mapping = mapping + [temp]
+			ndxs[l] = ndxs[l] + 1
+		bar = bar + [mapping]
+		
+	return HarmonicCadence (bc, hpt, bar)
 
 
 
@@ -550,15 +578,15 @@ harmonic_progression_db = {}
 def init_harmonic_progression_db (nc):
 	if nc in harmonic_progression_db: return harmonic_progression_db[nc]
 	if nc == 1:
-		progression                 = [1]
-		progressions                = [progression]
+		progression                 = (1,)
+		progressions                = (progression,)
 		harmonic_progression_db[nc] = progressions
 		return progressions
 	#print ("nc=%s" % nc, end="\n")
 	# TODO get uniq lengths from chord_progression_db
 	# TODO allow [1, 2, 3, 4], but filter sequences with too many 1s
 	#arr          = [1, 2, 3, 4]
-	arr           = [2, 3, 4]
+	arr           = (2, 3, 4)
 	#arr          = []
 	#arr          = arr + [1] * (nc // 1)
 	#arr          = arr + [2] * (nc // 2)
@@ -567,7 +595,7 @@ def init_harmonic_progression_db (nc):
 	#progressions = printAllSubsets (arr, len (arr), nc)
 	progressions = subsets (arr, nc)
 	#progressions = [progression[::-1] for progression in progressions]
-	progressions = list (progressions)
+	progressions = tuple (progressions)
 	harmonic_progression_db[nc] = progressions
 	return progressions
 
@@ -576,11 +604,11 @@ class HarmonicProgression: # harmonic rhythm
 	def __init__ (self, harmonic_progression): self.harmonic_progression = harmonic_progression
 	def __repr__ (self): return "HarmonicProgression [harmonic_progression=%s]" % self.harmonic_progression
 def random_harmonic_progression (nc):
-	if nc == 1: progression = [1]
+	if nc == 1: progression = (1,)
 	else:
 		progressions = init_harmonic_progression_db (nc - 1)
 		progression  = choice (progressions)
-		progression  = [1] + progression
+		progression  = (1,) + progression
 	return HarmonicProgression (progression)
 
 # TODO chord_progression = T-T,
@@ -600,16 +628,16 @@ function_progression_db = [
 	#[0, 2, 1, 2], # T-S-D-S(-T)
 	#[0, 1, 2, 2], # T-D-S-S(-T)
 	
-	[0],          # T(-T)
-	[1, 0],       # T-D(-T)
-	[2, 0],       # T-S(-T)
-	[2, 1, 0],    # T-S-D(-T)
-	[1, 2, 0],    # T-D-S(-T)
-	[2, 2, 0],    # T-S-S(-T)
-	[1, 1, 0],    # T-D-D(-T)
-	[2, 2, 1, 0], # T-S-S-D(-T)
-	[2, 1, 2, 0], # T-S-D-S(-T)
-	[1, 2, 2, 0], # T-D-S-S(-T)
+	(0,),         # T(-T)
+	(1, 0),       # T-D(-T)
+	(2, 0),       # T-S(-T)
+	(2, 1, 0),    # T-S-D(-T)
+	(1, 2, 0),    # T-D-S(-T)
+	(2, 2, 0),    # T-S-S(-T)
+	(1, 1, 0),    # T-D-D(-T)
+	(2, 2, 1, 0), # T-S-S-D(-T)
+	(2, 1, 2, 0), # T-S-D-S(-T)
+	(1, 2, 2, 0), # T-D-S-S(-T)
 ]
 #@jit
 class FunctionProgression:

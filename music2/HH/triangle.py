@@ -17,6 +17,51 @@ import sys
 # TODO translate
 # TODO dilate
 
+"""
+def axis (dim, ndim):
+	p0   = tuple ([0] * dim + [-1] + [0] * (ndim - dim))
+	p1   = tuple ([0] * dim + [+1] + [0] * (ndim - dim))
+	p0   = PointND (*p0)
+	p1   = PointND (*p1)
+	return Line (p0, p1)
+def ascension_anim (ndim=3):
+	#npoint = ndim * 2
+	#naxis  = ndim
+	axes = tuple (axis (dim, ndim) for dim in range (0, ndim))
+	# TODO how to rotate & project from ndim onto 2D
+class Point3D (Point):
+	def __init__ (self, x, y, z):
+		Point.__init__ (self, x, y)
+		self.z = z
+	def shadow (self, cam):
+		w,  h  = 2,     2
+		cx, cy = w / 2, h / 2
+		cxy = min (cx, cy) # ?
+
+		x, y, z = self.x, self.y, self.z
+
+		x -= cam.pos[0]
+		y -= cam.pos[1]
+		z -= cam.pos[2]
+
+		x, z = rotate2d ((x, z), cam.rot[1])
+		y, z = rotate2d ((y, z), cam.rot[0])
+
+		f = cxy / z
+		x, y = x * f, y * f
+		#points += [(cx+int(x), cy+int(y))]
+		return Point (x, y)
+class PointND (Point3D):
+	def __init__ (self, *xyz):
+		Point3D.__init__ (self, xyz[0], xyz[1], xyz[2])
+		self.xyz = xyz
+	def project (self):
+		# TODO
+		return Point3D (x, y, z)
+"""
+
+		
+
 class Point:
 	def __init__ (self, x, y):
 		self.x = x
@@ -2125,11 +2170,11 @@ def animations_repeat_helper (width, height, gen):
 	#return (k for k in animation3 (width, height, gen))
 	#return (k for k in animation2 (width, height, gen))
 def animations_repeat (width, height, gen):
-	#return chain (animation2c (width, height, gen), animations_repeat_helper (width, height, gen))
-	return animations_repeat_helper (width, height, gen)
+	return chain (animation2c (width, height, gen), animations_repeat_helper (width, height, gen))
+	#return animations_repeat_helper (width, height, gen)
 def animations_repeat0 (width, height, gen):
-	#return chain (animations (width, height, gen), animations_repeat_helper (width, height, gen))
-	return animations_repeat_helper (width, height, gen)
+	return chain (animations (width, height, gen), animations_repeat_helper (width, height, gen))
+	#return animations_repeat_helper (width, height, gen)
 	
 	
 	
