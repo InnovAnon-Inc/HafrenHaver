@@ -10,6 +10,13 @@ class SectionType (Enum):
 	INTRO  = 3
 	OUTRO  = 4
 	PRE    = 5
+VERSE  = SectionType.VERSE
+CHORUS = SectionType.CHORUS
+BRIDGE = SectionType.BRIDGE
+INTRO  = SectionType.INTRO
+OUTRO  = SectionType.OUTRO
+PRE    = SectionType.PRE
+
 @jit
 def  long_section (st): return st.value in (0, 1, 2)
 @jit
