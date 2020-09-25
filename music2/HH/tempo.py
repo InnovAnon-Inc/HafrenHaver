@@ -74,6 +74,27 @@ def random_tempo (tempo=None):
 	tmin, tmax = tempo.value
 	return uniform (tmin, tmax)
 
+def planck (tempo=None, brainwave=None, brainwave_args=(), scale=None, scale_args=()):
+	if tempo     is None: tempo     = choice (list (Tempo))
+	if brainwave is None: brainwave = get_brainwaves (*brainwave_args)
+	if scale     is None: scale     = random_scale (*scale_args)
+	# find octaves of base freq which fit into given brainwave spectrum
+	
+	
+	
+	
+	
+# to adjust solfeggio: gradually shift base freq
+# two pure tones in ultrasonic register can play at isochronic tempo and use tartini tones to ensure monaural beats
+
+
+
+
+
+
+
+
+
 
 
 
@@ -121,7 +142,7 @@ def random_macro_temporal_cadence (bc=None, bc_args=None):
 	sc = {}
 	for st, section in bc.section_types ():
 		if st == VERSE: continue
-		if not us[st]:
+		if not us[st]: pass # TODO
 	
 	# TODO handle dup section cadences using db
 	
