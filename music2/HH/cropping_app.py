@@ -30,6 +30,9 @@ class CroppingApp (App):
 	def draw_cropped_scene (self, temp): App.draw_scene (self, temp)
 		
 	def crop (self): raise Exception ()
+	
+	def positive_space (self, is_root=True): return 0 # TODO
+	def negative_space (self, is_root=True): return 0 # TODO
 
 if __name__ == "__main__":
 	from gui import GUI

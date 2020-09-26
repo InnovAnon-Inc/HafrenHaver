@@ -23,6 +23,12 @@ from squared_circle import SquaredCircle
 
 from orientation import NORTH, SOUTH, EAST, WEST
 
+
+
+from angle_app import cercle_circonscrit, cercle_inscrit
+	
+	
+
 class  AngledCircle ( AngleApp, CompositeApp):
 	def __init__ (self, child, orientation=NORTH, *args, **kwargs):
 		AngleApp    .__init__ (self, orientation, *args, **kwargs)
@@ -32,29 +38,155 @@ class  AngledCircle ( AngleApp, CompositeApp):
 		AngleApp   .set_subsurface (self, ss)
 		CompositeApp.set_subsurface (self, self.ss)
 		ss = self.ss
-		rect = self.bounds
 		
-		# TODO orientation logic
+		x1, y1, z1 = self.bounds
+		(x, y), r  = cercle_inscrit ((x1, y1, z1))
+		x2, y2 = x - r, y - r
+		w = h = 2 * r
+		rect = pygame.Rect (x2, y2, w, h)
+		print ((x1, y1, z1))
+		print ((x, y))
+		print (r)
+		print ((x2, y2))
+		print ((w))
 		
 		ss2 = ss.subsurface (rect)
-		self.inner_bounds = rect
+		self.inner_bounds = (x, y), (r, r)
 		self.child.set_subsurface (ss2)
 	def draw_cropped_scene (self, temp):
 		AngleApp.draw_cropped_scene (self, temp)
-		rect = self.bounds
 		
-		# TODO orientation logic
+		x1, y1, z1 = self.bounds
+		(x, y), r  = cercle_inscrit ((x1, y1, z1))
+		x2, y2 = x - r, y - r
+		w = h = 2 * r
+		rect = pygame.Rect (x2, y2, w, h)
 			
 		ss2 = temp.subsurface (rect)
 		self.child.set_subsurface (ss2)
 		#self.child.draw_cropped_scene (ss2)
 		self.child.draw_scene (ss2)
 	def minsz (self):
-		if self.rotation == STRAIGHT: tmp = self.child.minsz ()
-		if self.rotation == ANGLED:   tmp = self.child.minsz () * sqrt (2)
+		# TODO determine scale factor from current radius to min radius
+		raise Exception ()
+		tmp = self.child.minsz () * foo
 		tmp = max (tmp, AngleApp.minsz (self))
 		return tmp
-class CircledAngle  (CircleApp, CompositeApp): pass
+	def positive_area (self):
+		x, y, z = self.bounds
+		(x1, y1), (x2, y2), (x3, y3) = x, y, z
+		dx21, dy21 = x2 - x1, y2 - y1
+		dx32, dy32 = x3 - x2, y3 - y2
+		dx13, dy13 = x1 - x3, y1 - y3
+		s21 = sqrt (pow (dx21, 2) + pow (dy21, 2))
+		s32 = sqrt (pow (dx32, 2) + pow (dy32, 2))
+		s13 = sqrt (pow (dx13, 2) + pow (dy13, 2))
+		a1 = findAreaOfTriangle (s21, s32, s13)
+		assert a1 >= 0
+		return a1
+	def negative_area (self):
+		size = self.ss.get_size()
+		w, h = size
+		w, h = w / 2, h / 2
+		a1 = pi * w * h
+		assert a1 >= 0
+		a2   = self.positive_space ()
+		assert a2 >= 0
+		a3 = a1 - a2
+		assert a3 >= 0
+		return a3
+	def positive_space (self, is_root=True):
+		a1 = CompositeApp.positive_space (self, is_root)
+		assert a1 >= 0
+		if not is_root: return a1
+		a1 = a1 + AngleApp.positive_space (self, is_root)
+		assert a1 >= 0
+		return a1
+	def negative_space (self, is_root=True):
+		a1 = CompositeApp.negative_space (self, is_root)
+		assert a1 >= 0
+		if not is_root: return a1
+		a1 = a1 + AngleApp.negative_space (self, is_root) 
+		assert a1 >= 0
+		return a1
+		
+		
+		
+def trianglearea (a, b) : # https://www.geeksforgeeks.org/largest-triangle-that-can-be-inscribed-in-an-ellipse/
+    # a and b cannot be negative  
+    if a < 0 or b < 0 : return -1
+    # area of the triangle  
+    area = (3 * sqrt(3) * pow(a, 2)) / (4 * b) 
+    return area 		
+		
+class CircledAngle  (CircleApp, CompositeApp):
+	def __init__ (self, child, *args, **kwargs):
+		CircleApp   .__init__ (self, *args, **kwargs)
+		CompositeApp.__init__ (self, child, *args, **kwargs)
+		assert isinstance (child, AngleApp)
+	def set_subsurface (self, ss):
+		CircleApp   .set_subsurface (self, ss)
+		CompositeApp.set_subsurface (self, self.ss)
+		ss = self.ss
+		
+		# TODO circumscribed triangle... need triangle bounds relative to circle
+		
+		
+		
+		
+		(x, y), (w, h) = self.bounds
+		print ((x, y, w, h))
+		
+		A = 3 * sqrt (3) / 4 * w * h
+		
+		
+		#b = c
+		#p = a + b + c = a + 2 * b
+		#A = sqrt (p * (p - a) * (p - b) * (p - c)) = sqrt (p * (p - a)) * (p - b)
+		
+		# pow (x / w, 2) + pow (y / h, 2) = 1
+		
+		# TODO arcane sources hint at using orthogonal projections for this, but nobody has actually done it and written about it
+		
+		x1, y1, z1 = self.bounds
+		(x, y), r  = cercle_inscrit ((x1, y1, z1))
+		x2, y2 = x - r, y - r
+		w = h = 2 * r
+		rect = pygame.Rect (x2, y2, w, h)
+		print ((x1, y1, z1))
+		print ((x, y))
+		print (r)
+		print ((x2, y2))
+		print ((w))
+		
+		ss2 = ss.subsurface (rect)
+		self.inner_bounds = (x, y), (r, r)
+		self.child.set_subsurface (ss2)
+	def draw_cropped_scene (self, temp):
+		CircleApp.draw_cropped_scene (self, temp)
+		
+		x1, y1, z1 = self.bounds
+		(x, y), r  = cercle_inscrit ((x1, y1, z1))
+		x2, y2 = x - r, y - r
+		w = h = 2 * r
+		rect = pygame.Rect (x2, y2, w, h)
+			
+		print ((x1, y1, z1))
+		print ((x, y))
+		print (r)
+		print ((x2, y2))
+		print ((w))	
+			
+		ss2 = temp.subsurface (rect)
+		self.child.set_subsurface (ss2)
+		#self.child.draw_cropped_scene (ss2)
+		self.child.draw_scene (ss2)
+	def minsz (self):
+		# TODO determine scale factor from current radius to min radius
+		raise Exception ()
+		tmp = self.child.minsz () * foo
+		tmp = max (tmp, CircleApp.minsz (self))
+		return tmp
 
 class  AngledSquare ( AngleApp, CompositeApp): pass
 class SquaredAngle  (SquareApp, CompositeApp): pass
@@ -105,15 +237,20 @@ class TimeApp (CircleApp):
 # countdown clock / alarm that can trigger by the stars
 
 if __name__ == "__main__":
-	from rotation import ANGLED
+	from rotation import ANGLED, STRAIGHT
+	from orientation import NORTH, SOUTH, EAST, WEST
 	
 	def main ():
-		#a = SquareApp ()
-		#c = CircleApp ()
-		c = CircleApp (background=SECONDARY_BACKGROUND)
-		b = SquaredCircle (c, rotation=ANGLED)
-		#a = SquaredCircle (c)
-		a = CircledSquare (b)
+		j = AngleApp     (orientation=NORTH)
+		i = CircledAngle (j)
+		h = AngledCircle (i, orientation=WEST)
+		g = CircledAngle (h)
+		f = AngledCircle (g, orientation=SOUTH)
+		e = CircledAngle (f)
+		d = AngledCircle (e, orientation=EAST)
+		c = CircledAngle (d)
+		b = AngledCircle (c, orientation=NORTH)
+		a = CircledAngle (b)
 		with GUI (app=a) as g:
 			#g.setApp (a)
 			g.run ()

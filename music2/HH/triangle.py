@@ -2368,20 +2368,31 @@ def main ():
 		#	print ()
 		#	shape.draw (ss)
 		# Draw a solid blue circle in the center
-		#shapes = [random_triangle ((xmin, ymin), (xmax, ymax))]
+		if True:
+			shapes = [random_triangle ((xmin, ymin), (xmax, ymax))]
+			from time_app import cercle_circonscrit, cercle_inscrit
+			for shape in shapes:
+				if isinstance (shape, Triangle):
+					res = cercle_inscrit (((shape.a.x, shape.a.y), (shape.b.x, shape.b.y), (shape.c.x, shape.c.y)))
+					if not res: continue
+					(x, y), r = res
+					pt   = Point  (x, y)
+					temp = Circle (pt, r)
+					shapes.append (temp)
 		#shapes = pentagrams0 ([(5, 2)] * 4)
-		shapes = next (shapes_gen, None)
-		if shapes is None:
-			if repeat: shapes_gen = animations_repeat (xdiff / 2, ydiff / 2, penta_gen)
-			else:      running    = False
-			continue
-		#shapes  = [shape.scale (xdiff / 2, ydiff / 2) for shape in shapes]
-		shapes2 = []
-		for shape in shapes:
-			if type (shape) is not Text:
-				shape   = shape.scale (xdiff / 2, ydiff / 2)
-			shapes2 = shapes2 + [shape]
-		shapes = shapes2
+		else:
+			shapes = next (shapes_gen, None)
+			if shapes is None:
+				if repeat: shapes_gen = animations_repeat (xdiff / 2, ydiff / 2, penta_gen)
+				else:      running    = False
+				continue
+			#shapes  = [shape.scale (xdiff / 2, ydiff / 2) for shape in shapes]
+			shapes2 = []
+			for shape in shapes:
+				if type (shape) is not Text:
+					shape   = shape.scale (xdiff / 2, ydiff / 2)
+				shapes2 = shapes2 + [shape]
+			shapes = shapes2
 		#if type (shapes) is Text: s = shapes
 		#else:
 		#s = shapes.scale (xdiff / 2, ydiff / 2)

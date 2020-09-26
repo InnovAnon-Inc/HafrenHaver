@@ -42,6 +42,26 @@ class SquareApp (CroppingApp):
 	def minsz (self):
 		if self.rotation == STRAIGHT: return 2 * CroppingApp.minsz (self)
 		if self.rotation == ANGLED:   return 3 * CroppingApp.minsz (self)
+	def positive_space (self, is_root=True):
+		x, y, w, h = self.bounds
+		if self.rotation == STRAIGHT: a = w * h
+		if self.rotation == ANGLED:   a = w * h / 2
+		assert a >= 0
+		return a
+	def negative_space (self, is_root=True):
+		if not is_root: return 0
+		x, y, w, h = self.bounds
+		if self.rotation == STRAIGHT: return 0 # TODO 1 ?
+		if self.rotation == ANGLED:
+			wh = w * h
+			a1 = wh
+			assert a1 >= 0
+			a2 = wh / 2
+			assert a2 >= 0
+			a3 = a1 - a2
+			assert a3 >= 0
+			return a3
+			
 
 if __name__ == "__main__":
 	from gui import GUI
@@ -50,6 +70,8 @@ if __name__ == "__main__":
 		a = SquareApp (ANGLED)
 		with GUI (app=a) as g:
 			#g.setApp (a)
+			print (a.positive_space ())
+			print (a.negative_space ())
 			g.run ()
 	main ()
 	quit ()
