@@ -21,11 +21,14 @@ from angle_app import AngleApp
 from circled_square import CircledSquare
 from squared_circle import SquaredCircle
 
+from orientation import NORTH, SOUTH, EAST, WEST
+
+class  AngledCircle ( AngleApp): pass
+class CircledAngle  (CircleApp): pass
 
 class  AngledSquare ( AngleApp): pass
-class  AngledCircle ( AngleApp): pass
 class SquaredAngle  (SquareApp): pass
-class CircledAngle  (CircleApp): pass
+
 		
 # perfect varieties of squares and circles, for compositing
 
@@ -72,11 +75,13 @@ class TimeApp (CircleApp):
 # countdown clock / alarm that can trigger by the stars
 
 if __name__ == "__main__":
+	from rotation import ANGLED
+	
 	def main ():
 		#a = SquareApp ()
 		#c = CircleApp ()
 		c = CircleApp (background=SECONDARY_BACKGROUND)
-		b = SquaredCircle (c)
+		b = SquaredCircle (c, rotation=ANGLED)
 		#a = SquaredCircle (c)
 		a = CircledSquare (b)
 		with GUI (app=a) as g:

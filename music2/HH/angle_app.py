@@ -8,7 +8,7 @@ import pygame.gfxdraw
 
 from orientation import NORTH, EAST, SOUTH, WEST
 
-def tr (t): return tuple (map (lambda x: round (x), t))
+def tr (t): return tuple (map (lambda x: round (x), t)) # tuple-round
 
 class AngleApp (CroppingApp):
 	def __init__ (self, orientation=NORTH, *args, **kwargs):
@@ -47,6 +47,10 @@ class AngleApp (CroppingApp):
 		x, y, z = self.bounds
 		pygame.gfxdraw.     aatrigon (self.cropped_background, *x, *y, *z, OPAQUE)
 		pygame.gfxdraw.filled_trigon (self.cropped_background, *x, *y, *z, OPAQUE)
+	def minsz (self):
+		# TODO get triangle bounding the pixel size
+		return CroppingApp.minsz (self) * 3
+		
 
 if __name__ == "__main__":
 	from gui import GUI

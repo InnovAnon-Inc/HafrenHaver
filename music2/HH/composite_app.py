@@ -15,6 +15,7 @@ class CompositeApp (CroppingApp):
 	def  stop_running (self):
 		CroppingApp .stop_running (self)
 		self.child.stop_running ()
+	def minsz (self): return CroppingApp.minsz (self) * self.child.minsz ()
 
 if __name__ == "__main__":
 	from gui import GUI

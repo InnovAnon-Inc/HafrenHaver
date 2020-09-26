@@ -57,7 +57,7 @@ class App:
 		temp.blit (self.background, ORIGIN)
 	def draw_foreground (self, temp): pass
 
-	# TODO min size = 1 ?
+	def minsz (self): return 1 # px
 
 if __name__ == "__main__":
 	from gui import GUI
