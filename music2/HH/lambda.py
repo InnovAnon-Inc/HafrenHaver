@@ -1,33 +1,47 @@
 #! /usr/bin/env python3
 
-import os
-from pprint import pprint
 import ast
+import inspect
+from ast_decompiler import decompile
+from numba import jit
 
-def lc ():
-	fname = os.path.realpath (__file__)
-	with open (fname, "r") as source: tree = ast.parse (source.read ())
-	#with open (fname, "r") as source: tree = ast.parse (source.read (), mode='eval')
-	analyzer = Analyzer ()
-	analyzer.visit (tree)
-	#tree = ast.fix_missing_locations (analyzer.visit (tree))
-	analyzer.report ()
+#@jit
+def f2lc (f):
+	source  = inspect.getsource (f)
+	return src2lc (source)
+#@jit
+def src2lc (source):
+	code    = ast.parse (source)
 	
-	# TODO convert to lc
-	# TODO rename vars & other syms to greek letters, etc
-	# TODO how to render text in a ring around circular animations ?
+	# TODO transform from imperative to functional style
+	
+	code    = RewriteName ().visit (code)
+	ast.fix_missing_locations (code) # TODO ?
+	#code    = ast.fix_missing_locations (code)
+	
+	source2 = decompile (code) # TODO how to remove comments from output ?
+	#assert source == source2
+	return source
 
-class Analyzer (ast.NodeVisitor):
-    def __init__ (self): self.stats = {"import": [], "from": []}
+#@jit	
+def fd2lc (fd): return src2lc (fd.read ())
 
-    def visit_Import (self, node):
-        for alias in node.names: self.stats["import"].append (alias.name)
-        self.generic_visit (node)
+class RewriteName (ast.NodeTransformer):
+	def visit_Name (self, node):
+		# TODO rename to greek letters, etc
+		#temp = ast.Subscript (
+		#	value=ast.Name (id='data', ctx=ast.Load ()),
+		#	slice=ast.Index (value=ast.Str (s=node.id)),
+		#	ctx=node.ctx)
+		#return ast.copy_location (temp, node)
+		return node
 
-    def visit_ImportFrom (self, node):
-        for alias in node.names: self.stats["from"].append (alias.name)
-        self.generic_visit (node)
-
-    def report (self): pprint (self.stats)
-
-if __name__ == "__main__": lc ()
+if __name__ == "__main__":
+	import os
+	
+	def main ():
+		fname = os.path.realpath (__file__)
+		with open (fname, "r") as fd: src = fd2lc (fd)
+		print (src)
+		for f in (f2lc, src2lc, fd2lc): print (f2lc (f))
+	main ()

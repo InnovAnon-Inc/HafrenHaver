@@ -1,96 +1,84 @@
 #! /usr/bin/env python3
 
+from app import App, DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
+from cropping_app import CroppingApp, OPAQUE
+
+
 import pygame
 
 from gui import GUI, BLACK
 
-DEFAULT_BACKGROUND = "background.png"
 
-ORIGIN = (0, 0)
+import pygame
+import pygame.gfxdraw
 
-class App:
-	def __init__ (self, background=DEFAULT_BACKGROUND):
-		#self.clock = pygame.time.Clock ()
-		self.ss = None
-		self.set_background (background)
+
+from composite_app import CompositeApp
+from circle_app import CircleApp
+from square_app import SquareApp
+from angle_app import AngleApp
+
+from circled_square import CircledSquare
+from squared_circle import SquaredCircle
+
+
+class  AngledSquare ( AngleApp): pass
+class  AngledCircle ( AngleApp): pass
+class SquaredAngle  (SquareApp): pass
+class CircledAngle  (CircleApp): pass
 		
-	def set_background (self, background=None):
-		if background is not None: self.raw_background = pygame.image.load (background)
-		if self.ss is None: return
-		w = self.ss.get_width  ()
-		h = self.ss.get_height ()
-		self.background = pygame.transform.scale (self.raw_background, (w, h))
+# perfect varieties of squares and circles, for compositing
+
+# compositing:
+# circles in circle (ring, cluster)
+# circles in square
+# squares in circle
+# squares in square (grid, lines)
+
+# nested apps should recurse with copies of themselves in used slots... need pixel-perfect minsz... copies need to not be clickable
+
+# aesthetic composites:
+# golden ratio ? for square layouts with main section et al
+# golden ratio ? for circle in circle containers
 		
-	def set_subsurface (self, ss):
-		self.ss = ss
-		self.set_background ()
+# TODO circular container:
+#      has inner & outer radii,
+#      handles sizes of square   children
+# TODO square   container:
+#      has inner & outer rects,
+#      handles sizes of circular parents
 
-	def start_running (self):
-		assert self.ss is not None
-		# TODO
-	def  stop_running (self):
-		assert self.ss is not None
-		# TODO
+# animated containers...
+# jiggle back and forth / up and down (1 pixel)
+# jiggle rotation back and forth (1 degree ?)
+# pulse (scale down by 1 pixel, then back up)
+# fading (alpha)
 
-	def run_loop      (self, keys):
-		assert self.ss is not None
-		# TODO draw bounding box
-		self.ss.fill (BLACK)
-		self.ss.blit (self.background, ORIGIN)
-		#pygame.draw.rect (self.ss, color, Rect (0, 0, w, h))
-		#pygame.display.flip ()
-		pygame.display.update()  
-		#self.clock.tick (7.83)
+# some sort of hilbert curve + cadence => how to vary animations of all containers on screen
 
-"""
-class CenteredApp (App):
+class TimeApp (CircleApp):
 	def __init__ (self):
-		App.__init__ (self)
-	def set_subsurface (self, ss):
-		App.set_subsurface (self, ss)
-		# TODO compute center
-	def run_loop (self, keys):
-		App.run_loop (self, keys)
-		# TODO draw centered point
-"""
-"""
-class CircularApp (App):
-	def __init__ (self):
-		CenteredApp.__init__ (self)
-	def set_subsurface (self, ss):
-		CenteredApp.set_subsurface (self, ss)
-		# TODO check for square children
-	def run_loop (self, keys):
-		CenteredApp.run_loop (self, keys)
-		# TODO draw bounding circle
-
-class SquareApp (App):
-	def __init__ (self):
-		CenteredApp.__init__ (self)
-	def set_subsurface (self, ss):
-		CenteredApp.set_subsurface (self, ss)
-		# TODO check for circular parents
-	def run_loop (self, keys):
-		CenteredApp.run_loop (self, keys)
-		# TODO
-
-class TimeApp (CenteredApp):
-	def __init__ (self):
-		CenteredApp.__init__ (self)
+		CircleApp.__init__ (self)
 	def run_loop (self, keys):
 		#CenteredApp.run_loop (self, keys)
 		pass
-"""
-# day/night indicator
-# wheel of the year
-# moon phases
-# day of week indicator
-# classical time		
+
+# show splash text re: lovecraftian stars aligning
+# day/night indicator... red during sunriset, no blue during night, bright during day (greenish?), dark at night
+# wheel of the year... can indicate position of sun in sky ?
+# moon phases... can indicate position of moon in sky ?
+# day of week indicator... switch symbols at sundown
+# classical time... analog clock with a hand for the procession of the equinox (i.e., eon hand) ?		
 # countdown clock / alarm that can trigger by the stars
 
 if __name__ == "__main__":
 	def main ():
-		a = App ()
+		#a = SquareApp ()
+		#c = CircleApp ()
+		c = CircleApp (background=SECONDARY_BACKGROUND)
+		b = SquaredCircle (c)
+		#a = SquaredCircle (c)
+		a = CircledSquare (b)
 		with GUI (app=a) as g:
 			#g.setApp (a)
 			g.run ()
