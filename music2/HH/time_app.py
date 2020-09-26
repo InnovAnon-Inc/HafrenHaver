@@ -23,11 +23,41 @@ from squared_circle import SquaredCircle
 
 from orientation import NORTH, SOUTH, EAST, WEST
 
-class  AngledCircle ( AngleApp): pass
-class CircledAngle  (CircleApp): pass
+class  AngledCircle ( AngleApp, CompositeApp):
+	def __init__ (self, child, orientation=NORTH, *args, **kwargs):
+		AngleApp    .__init__ (self, orientation, *args, **kwargs)
+		CompositeApp.__init__ (self, child, *args, **kwargs)
+		assert isinstance (child, CircleApp)
+	def set_subsurface (self, ss):
+		AngleApp   .set_subsurface (self, ss)
+		CompositeApp.set_subsurface (self, self.ss)
+		ss = self.ss
+		rect = self.bounds
+		
+		# TODO orientation logic
+		
+		ss2 = ss.subsurface (rect)
+		self.inner_bounds = rect
+		self.child.set_subsurface (ss2)
+	def draw_cropped_scene (self, temp):
+		AngleApp.draw_cropped_scene (self, temp)
+		rect = self.bounds
+		
+		# TODO orientation logic
+			
+		ss2 = temp.subsurface (rect)
+		self.child.set_subsurface (ss2)
+		#self.child.draw_cropped_scene (ss2)
+		self.child.draw_scene (ss2)
+	def minsz (self):
+		if self.rotation == STRAIGHT: tmp = self.child.minsz ()
+		if self.rotation == ANGLED:   tmp = self.child.minsz () * sqrt (2)
+		tmp = max (tmp, AngleApp.minsz (self))
+		return tmp
+class CircledAngle  (CircleApp, CompositeApp): pass
 
-class  AngledSquare ( AngleApp): pass
-class SquaredAngle  (SquareApp): pass
+class  AngledSquare ( AngleApp, CompositeApp): pass
+class SquaredAngle  (SquareApp, CompositeApp): pass
 
 		
 # perfect varieties of squares and circles, for compositing

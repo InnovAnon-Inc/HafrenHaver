@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from itertools import product
+from itertools import product, chain, permutations
 from numba import jit
 from string import ascii_lowercase, digits
 from math import prod
@@ -10,6 +10,13 @@ ACRONYMS     = (
 	'FFF', # Free Code for a Free World!      (slogan)
 	'HH',  # Hafren Haver                     (project)
 )
+
+def acronyms (a=ACRONYMS):
+	ks = range (1, len (a) + 1)
+	ks = (permutations (a, k) for k in ks)
+	ks = chain (*ks)
+	ks = ("".join (k) for k in ks)
+	return tuple (ks)
 
 def a2n1 (alpha):
 	alpha = alpha.lower ()                     # normalize
@@ -71,23 +78,25 @@ def a2bn12 (alpha, b=10): return a2bn1 (alpha, b, prod)
 def a2bn21 (alpha):       return a2bn2 (alpha,    sum)
 def a2bn22 (alpha):       return a2bn2 (alpha,    prod)
 
-def numerology1 (acronyms=ACRONYMS):
+def numerology1 (a=None):
+	if a is None: a = acronyms ()
 	functions = (a2n0, a2n1, a2b)
-	p         = product (functions, acronyms)
+	p         = product (functions, a)
 	ns        = (f (acronym) for f, acronym in p)
 	ns        = tuple (ns)
 	assert len (ns) == len (set (ns))
 	return ns
-def numerology2 (acronyms=ACRONYMS):
+def numerology2 (a=None):
+	if a is None: a = acronyms ()
 	functions = (a2bn11, a2bn21, a2bn12, a2bn22)
-	p         = product (functions, acronyms)
+	p         = product (functions, a)
 	ns        = (f (acronym) for f, acronym in p)
 	ns        = tuple (ns)
 	ns        = set (ns)
 	return tuple (ns)
-def numerology (acronyms=ACRONYMS):
-	t1 = numerology1 (acronyms)
-	t2 = numerology2 (acronyms)
+def numerology (a=None):
+	t1 = numerology1 (a)
+	t2 = numerology2 (a)
 	t  = (*t1, *t2)
 	t  = set (t)
 	return tuple (t)

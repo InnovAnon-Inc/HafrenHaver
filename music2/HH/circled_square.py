@@ -54,7 +54,10 @@ class CircledSquare (CircleApp, CompositeApp):
 		#self.child.draw_cropped_scene (ss2)
 		self.child.draw_scene (ss2)
 
-	def minsz (self): return self.child.minsz () * sqrt (2)
+	def minsz (self):
+		tmp = self.child.minsz () * sqrt (2)
+		tmp = max (tmp, CircleApp.minsz (self))
+		return tmp
 	
 if __name__ == "__main__":
 	from app import SECONDARY_BACKGROUND
