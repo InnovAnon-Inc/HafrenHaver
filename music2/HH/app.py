@@ -44,8 +44,8 @@ class App:
 		
 		self.draw_scene ()
 		
-		pygame.display.update()  
-		self.clock.tick ()
+		#pygame.display.update()  
+		#self.clock.tick ()
 	def draw_scene (self, temp=None):
 		if temp is None: temp = self.ss
 		#self.ss.fill (BLACK)
@@ -57,7 +57,17 @@ class App:
 		temp.blit (self.background, ORIGIN)
 	def draw_foreground (self, temp): pass
 
-	def minsz (self): return 1 # px
+	def minsz (self): return 1, 1 # px
+	def positive_space (self, is_root=True): return 0
+	def negative_space (self, is_root=True): return self.area ()
+	def area (self):
+		w, h = self.dims ()
+		return w * h
+	def dims (self):
+		x, y, w, h = self.get_rect ()
+		return w, h
+	def get_rect (self): return self.ss.get_rect ()
+	def is_recursable (self): return False
 
 if __name__ == "__main__":
 	from gui import GUI

@@ -143,6 +143,8 @@ class GUI:
 		if self.app is not None: self.app.start_running ()
 		while self.running:
 			self.run_loop ()
+			pygame.display.update ()  
+			# TODO get tick speed from app
 			self.clock.tick ()
 		if self.app is not None: self.app. stop_running ()
 		#self.running = False	

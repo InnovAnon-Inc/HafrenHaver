@@ -16,7 +16,7 @@ class SquareApp (CroppingApp):
 		self.parent_is_square = parent_is_square
 	def set_subsurface (self, ss):
 		CroppingApp.set_subsurface (self, ss)
-		self.bounds_exact = self.ss.get_rect ()
+		self.bounds_exact = self.get_rect ()
 		self.bounds       = self.bounds_exact
 	def crop (self):
 		if self.rotation == STRAIGHT:
@@ -39,39 +39,37 @@ class SquareApp (CroppingApp):
 			pts = (a, b, c, d)
 			pygame.gfxdraw.     aapolygon (self.cropped_background, pts, OPAQUE)
 			pygame.gfxdraw.filled_polygon (self.cropped_background, pts, OPAQUE)
+			
 	def minsz (self):
-		if self.rotation == STRAIGHT: return 2 * CroppingApp.minsz (self)
-		if self.rotation == ANGLED:   return 3 * CroppingApp.minsz (self)
-	def positive_space (self, is_root=True):
+		w, h = CroppingApp.minsz (self)
+		if self.rotation == STRAIGHT: r = 2
+		if self.rotation == ANGLED:   r = 3
+		return w * r, h * h
+	def outer_area (self):
+		x, y, w, h = self.bounds
+		return w * h
+	def inner_area (self):
 		x, y, w, h = self.bounds
 		if self.rotation == STRAIGHT: a = w * h
 		if self.rotation == ANGLED:   a = w * h / 2
 		assert a >= 0
 		return a
-	def negative_space (self, is_root=True):
-		if not is_root: return 0
-		x, y, w, h = self.bounds
-		if self.rotation == STRAIGHT: return 0 # TODO 1 ?
-		if self.rotation == ANGLED:
-			wh = w * h
-			a1 = wh
-			assert a1 >= 0
-			a2 = wh / 2
-			assert a2 >= 0
-			a3 = a1 - a2
-			assert a3 >= 0
-			return a3
-			
+	def inner_rect (self): return self.get_outer_rect ()
 
 if __name__ == "__main__":
 	from gui import GUI
+	from rotation import Rotation
 	
 	def main ():
-		a = SquareApp (ANGLED)
-		with GUI (app=a) as g:
-			#g.setApp (a)
-			print (a.positive_space ())
-			print (a.negative_space ())
-			g.run ()
+		for rotation in Rotation:
+			a = SquareApp (rotation)
+			with GUI (app=a) as g:
+				#g.setApp (a)
+				print ("minsz: (%s, %s)" % a.minsz ())
+				print ("outer: %s"       % a.outer_area ())
+				print ("inner: %s"       % a.inner_area ())
+				print ("pos  : %s"       % a.positive_space ())
+				print ("neg  : %s"       % a.negative_space ())
+				g.run ()
 	main ()
 	quit ()

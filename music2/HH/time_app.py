@@ -20,6 +20,8 @@ from angle_app import AngleApp
 
 from circled_square import CircledSquare
 from squared_circle import SquaredCircle
+from angled_circle import AngledCircle
+from circled_angle import CircledAngle
 
 from orientation import NORTH, SOUTH, EAST, WEST
 
@@ -29,168 +31,120 @@ from angle_app import cercle_circonscrit, cercle_inscrit
 	
 	
 
-class  AngledCircle ( AngleApp, CompositeApp):
-	def __init__ (self, child, orientation=NORTH, *args, **kwargs):
-		AngleApp    .__init__ (self, orientation, *args, **kwargs)
-		CompositeApp.__init__ (self, child, *args, **kwargs)
-		assert isinstance (child, CircleApp)
-	def set_subsurface (self, ss):
-		AngleApp   .set_subsurface (self, ss)
-		CompositeApp.set_subsurface (self, self.ss)
-		ss = self.ss
 		
-		x1, y1, z1 = self.bounds
-		(x, y), r  = cercle_inscrit ((x1, y1, z1))
-		x2, y2 = x - r, y - r
-		w = h = 2 * r
-		rect = pygame.Rect (x2, y2, w, h)
-		print ((x1, y1, z1))
-		print ((x, y))
-		print (r)
-		print ((x2, y2))
-		print ((w))
-		
-		ss2 = ss.subsurface (rect)
-		self.inner_bounds = (x, y), (r, r)
-		self.child.set_subsurface (ss2)
-	def draw_cropped_scene (self, temp):
-		AngleApp.draw_cropped_scene (self, temp)
-		
-		x1, y1, z1 = self.bounds
-		(x, y), r  = cercle_inscrit ((x1, y1, z1))
-		x2, y2 = x - r, y - r
-		w = h = 2 * r
-		rect = pygame.Rect (x2, y2, w, h)
-			
-		ss2 = temp.subsurface (rect)
-		self.child.set_subsurface (ss2)
-		#self.child.draw_cropped_scene (ss2)
-		self.child.draw_scene (ss2)
-	def minsz (self):
-		# TODO determine scale factor from current radius to min radius
-		raise Exception ()
-		tmp = self.child.minsz () * foo
-		tmp = max (tmp, AngleApp.minsz (self))
-		return tmp
-	def positive_area (self):
-		x, y, z = self.bounds
-		(x1, y1), (x2, y2), (x3, y3) = x, y, z
-		dx21, dy21 = x2 - x1, y2 - y1
-		dx32, dy32 = x3 - x2, y3 - y2
-		dx13, dy13 = x1 - x3, y1 - y3
-		s21 = sqrt (pow (dx21, 2) + pow (dy21, 2))
-		s32 = sqrt (pow (dx32, 2) + pow (dy32, 2))
-		s13 = sqrt (pow (dx13, 2) + pow (dy13, 2))
-		a1 = findAreaOfTriangle (s21, s32, s13)
-		assert a1 >= 0
-		return a1
-	def negative_area (self):
-		size = self.ss.get_size()
-		w, h = size
-		w, h = w / 2, h / 2
-		a1 = pi * w * h
-		assert a1 >= 0
-		a2   = self.positive_space ()
-		assert a2 >= 0
-		a3 = a1 - a2
-		assert a3 >= 0
-		return a3
-	def positive_space (self, is_root=True):
-		a1 = CompositeApp.positive_space (self, is_root)
-		assert a1 >= 0
-		if not is_root: return a1
-		a1 = a1 + AngleApp.positive_space (self, is_root)
-		assert a1 >= 0
-		return a1
-	def negative_space (self, is_root=True):
-		a1 = CompositeApp.negative_space (self, is_root)
-		assert a1 >= 0
-		if not is_root: return a1
-		a1 = a1 + AngleApp.negative_space (self, is_root) 
-		assert a1 >= 0
-		return a1
-		
-		
-		
-def trianglearea (a, b) : # https://www.geeksforgeeks.org/largest-triangle-that-can-be-inscribed-in-an-ellipse/
-    # a and b cannot be negative  
-    if a < 0 or b < 0 : return -1
-    # area of the triangle  
-    area = (3 * sqrt(3) * pow(a, 2)) / (4 * b) 
-    return area 		
-		
-class CircledAngle  (CircleApp, CompositeApp):
-	def __init__ (self, child, *args, **kwargs):
-		CircleApp   .__init__ (self, *args, **kwargs)
-		CompositeApp.__init__ (self, child, *args, **kwargs)
-		assert isinstance (child, AngleApp)
-	def set_subsurface (self, ss):
-		CircleApp   .set_subsurface (self, ss)
-		CompositeApp.set_subsurface (self, self.ss)
-		ss = self.ss
-		
-		# TODO circumscribed triangle... need triangle bounds relative to circle
-		
-		
-		
-		
-		(x, y), (w, h) = self.bounds
-		print ((x, y, w, h))
-		
-		A = 3 * sqrt (3) / 4 * w * h
-		
-		
-		#b = c
-		#p = a + b + c = a + 2 * b
-		#A = sqrt (p * (p - a) * (p - b) * (p - c)) = sqrt (p * (p - a)) * (p - b)
-		
-		# pow (x / w, 2) + pow (y / h, 2) = 1
-		
-		# TODO arcane sources hint at using orthogonal projections for this, but nobody has actually done it and written about it
-		
-		x1, y1, z1 = self.bounds
-		(x, y), r  = cercle_inscrit ((x1, y1, z1))
-		x2, y2 = x - r, y - r
-		w = h = 2 * r
-		rect = pygame.Rect (x2, y2, w, h)
-		print ((x1, y1, z1))
-		print ((x, y))
-		print (r)
-		print ((x2, y2))
-		print ((w))
-		
-		ss2 = ss.subsurface (rect)
-		self.inner_bounds = (x, y), (r, r)
-		self.child.set_subsurface (ss2)
-	def draw_cropped_scene (self, temp):
-		CircleApp.draw_cropped_scene (self, temp)
-		
-		x1, y1, z1 = self.bounds
-		(x, y), r  = cercle_inscrit ((x1, y1, z1))
-		x2, y2 = x - r, y - r
-		w = h = 2 * r
-		rect = pygame.Rect (x2, y2, w, h)
-			
-		print ((x1, y1, z1))
-		print ((x, y))
-		print (r)
-		print ((x2, y2))
-		print ((w))	
-			
-		ss2 = temp.subsurface (rect)
-		self.child.set_subsurface (ss2)
-		#self.child.draw_cropped_scene (ss2)
-		self.child.draw_scene (ss2)
-	def minsz (self):
-		# TODO determine scale factor from current radius to min radius
-		raise Exception ()
-		tmp = self.child.minsz () * foo
-		tmp = max (tmp, CircleApp.minsz (self))
-		return tmp
+
 
 class  AngledSquare ( AngleApp, CompositeApp): pass
 class SquaredAngle  (SquareApp, CompositeApp): pass
 
+
+
+
+
+
+
+
+from angle_app import tr
+from app import ORIGIN
+
+from math import log, ceil
+
+def recursive_affine (rect, dx, dy, rw, rh, n):
+	x, y, w, h = rect
+	for k in range (1, n + 1):
+		dx, dy = dx * rw, dy * rh
+		x,  y  =  x + dx,  y + dy
+		w,  h  =  w * rw,  h * rh
+		yield x, y, w, h
+def recurse_point (rect, rp, minsz):
+	X, Y, W, H = rect
+	x, y, w, h = rp
+	# get scale and offset for recursion point
+	dx, dy = x - X, y - Y
+	rw, rh = w / W, h / H
+	# get number of recursions until < minsz
+	f = lambda a, b, c: (log (a) - log (b)) / log (c)
+	xmin, ymin = minsz
+	xn, yn = f (xmin, w, rw), f (ymin, h, rh)
+	n = min (xn, yn)
+	n = ceil (n) # TODO off by one ?
+	# recursively apply scale and offset
+	tail = recursive_affine (rp, dx, dy, rw, rh, n)
+	return rp, *tail
+
+from itertools import chain
+
+class RecursiveComposite (App):
+	def __init__ (self, seed, *args, **kwargs):
+		App.__init__ (self, *args, **kwargs)
+		self.child = seed
+	def get_outer_dims (self): return self.child.dims ()
+	def get_outer_area (self): return self.child.outer_area ()
+	def get_inner_dims (self): return self.child.inner_dims ()
+	def minsz (self): return self.child.minsz ()	
+	# TODO fractal space ?
+	def positive_space (self, is_root=True): return self.child.positive_space (is_root)
+	def negative_space (self, is_root=True): return self.child.negative_space (is_root)
+	def inner_rect (self): return self.child.inner_rect ()
+	def set_subsurface (self, ss):
+		self.child.set_subsurface (ss) # SquareApp   .set_subsurface (self, ss)
+		App.set_subsurface (self, self.child.ss)
+	
+	def draw_background (self, temp):
+		App.draw_background (self, temp)
+		self.child.draw_scene (temp)	
+	def draw_foreground (self, temp):
+		TR = temp.get_rect ()                                           # bounding rect for parent
+		X, Y, W, H = TR
+		ts = pygame.Surface ((W, H), pygame.SRCALPHA)                   # get a fresh surface for working
+		
+		pic = temp.copy ()
+		#fake_screen = temp.copy ()                                     # fake screen same size as parent
+		#fake_screen.blit (pic, (W, H))                                 # blit recursive image onto fake screen
+		
+		for rp in self.recursion_points (temp):
+			x, y, w, h = rp
+			w, h = tr ((w, h))
+			trans = pygame.transform.scale (pic, (w, h))                # scale fake screen to bounding rect
+			ts.blit (trans, (x, y))                                     # blit fake screen onto working surface
+			
+		# TODO more than one level of recursion depth
+			
+		temp.blit (ts, (X, Y))     # blit working-surface onto real surface
+	def recursion_points_helper (self):
+		node = self.child
+		while True:
+			if not isinstance (node, CompositeApp):
+				ret = (node.get_rect (), node.minsz ())
+				break
+			if node.is_recursable ():
+				ret = (node.inner_rect (), node.minsz ())
+				break
+			node = node.child
+		#assert False
+		return (ret,)
+	
+	def recursion_points (self, temp):
+		rect = temp.get_rect ()
+		rps = self.recursion_points_helper ()
+		f = lambda args: recurse_point (rect, *args)
+		ret = map (f, rps)
+		return chain (*ret)
+			
+
+
+# using poetic cadences, grammar models, synonym dictionaries => wizard swears (take colorful input and produce musical output)			
+
+		
+# how to manage concentrations of positive vs negative space ?
+
+# need subclasses of main connector apps for providing recursion points and reducing negative space
+
+
+	
+	
+	
+	
 		
 # perfect varieties of squares and circles, for compositing
 
@@ -220,8 +174,73 @@ class SquaredAngle  (SquareApp, CompositeApp): pass
 # fading (alpha)
 
 # some sort of hilbert curve + cadence => how to vary animations of all containers on screen
+# need to account for ratios of positive space vs. negative space
 
-class TimeApp (CircleApp):
+
+
+
+
+
+
+from pyephem_sunpath.sunpath import sunpos
+from datetime import datetime
+
+thetime = datetime (2018, 5, 23, 13)
+lat = 28.6
+lon = 77.2
+tz = 0
+
+alt, azm = sunpos (thetime, lat, lon, tz, dst=False)
+
+
+
+from skyfield import api
+
+timescale = api.load.timescale ()
+class PointInTime:
+	def __init__ (self, observer, datetime):
+		self.observer = observer
+		self.datetime = datetime
+	def get_position_of_sun (self):
+		pass
+	def get_position_of_sun  (self, datetime=None): # position of sun relative to earth
+		dt = self.get_datetime (datetime)
+		
+	# get position of sun  in sky ?
+	# get position of moon in sky ?
+		
+	def get_position_of_moon (self, datetime=None): pass 
+	def get_wheel            (self, datetime=None): pass # wheel of the year, only update computations when time has passed
+	def get_time_of_day      (self, datetime=None): pass # day, night, twilight
+	def get_day_of_week      (self, datetime=None): pass # beginning after sundown ?
+	def get_moon_phase       (self, datetime=None): pass #
+	def get_length_of_day    (self, datetime=None): pass # length of day/night in seconds
+	def get_second_of_day    (self, datetime=None): pass
+
+class TimeModel:
+	def __init__ (self, observer, datetime=None):
+		self.observer = some_gps_voodoo # position of user (lat, lon, alt), either from client or server
+	def get_datetime (self, datetime=None):
+		if datetime is None: datetime = timescale.now ()
+		else:                datetime = timescale.from_datetime (datetime)
+		return datetime
+	def get_observer (self): pass
+	def get_model (self, datetime=None):
+		observer = self.get_observer ()
+		datetime = self.get_datetime ()
+		return PointInTime (observer, datetime)
+		
+		
+	
+
+class TimeController: # tells the app when to update, based on isochronic pulses + frame rate + audio sample rate
+	def get_tick (self): return 7.83 # TODO
+
+# TODO use flatlib for horoscopes/astrology... bitches love sun signs, and computing entire charts for entire congregrations on the daily... well... there might be some possibilities in that
+
+
+# has-a pos_of_sun + woy, pos_of_moon + moonphase, dow, clock, timer, tod
+class TimeApp (CircleApp): # gets data from model, renders it on screen
 	def __init__ (self):
 		CircleApp.__init__ (self)
 	def run_loop (self, keys):
@@ -241,16 +260,25 @@ if __name__ == "__main__":
 	from orientation import NORTH, SOUTH, EAST, WEST
 	
 	def main ():
-		j = AngleApp     (orientation=NORTH)
-		i = CircledAngle (j)
-		h = AngledCircle (i, orientation=WEST)
-		g = CircledAngle (h)
-		f = AngledCircle (g, orientation=SOUTH)
-		e = CircledAngle (f)
-		d = AngledCircle (e, orientation=EAST)
-		c = CircledAngle (d)
-		b = AngledCircle (c, orientation=NORTH)
-		a = CircledAngle (b)
+		if False:
+			j = AngleApp     (orientation=NORTH)
+			i = CircledAngle (j, background=SECONDARY_BACKGROUND)
+			h = AngledCircle (i, orientation=WEST)
+			g = CircledAngle (h, background=SECONDARY_BACKGROUND)
+			f = AngledCircle (g, orientation=SOUTH)
+			e = CircledAngle (f, background=SECONDARY_BACKGROUND)
+			d = AngledCircle (e, orientation=EAST)
+			c = CircledAngle (d, background=SECONDARY_BACKGROUND)
+			b = AngledCircle (c, orientation=NORTH)
+			a = CircledAngle (b, background=SECONDARY_BACKGROUND)
+		else:
+			#d = SquareApp     (background=DEFAULT_BACKGROUND)
+			d = None
+			c = CircledSquare (d, rotation=STRAIGHT)
+			b = SquaredCircle (c, background=SECONDARY_BACKGROUND)
+			a = RecursiveComposite (b)
+			#a = b
+		#a = RecursiveCompositeTest ()
 		with GUI (app=a) as g:
 			#g.setApp (a)
 			g.run ()

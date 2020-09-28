@@ -2373,12 +2373,14 @@ def main ():
 			from time_app import cercle_circonscrit, cercle_inscrit
 			for shape in shapes:
 				if isinstance (shape, Triangle):
-					res = cercle_inscrit (((shape.a.x, shape.a.y), (shape.b.x, shape.b.y), (shape.c.x, shape.c.y)))
-					if not res: continue
-					(x, y), r = res
-					pt   = Point  (x, y)
-					temp = Circle (pt, r)
-					shapes.append (temp)
+					for f in (cercle_inscrit, cercle_circonscrit):
+						res = f (((shape.a.x, shape.a.y), (shape.b.x, shape.b.y), (shape.c.x, shape.c.y)))
+						if not res: continue
+						(x, y), r = res
+						if r <= 0: continue
+						pt   = Point  (x, y)
+						temp = Circle (pt, r)
+						shapes.append (temp)
 		#shapes = pentagrams0 ([(5, 2)] * 4)
 		else:
 			shapes = next (shapes_gen, None)
