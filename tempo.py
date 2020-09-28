@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from enum      import Enum
-from numba     import jit
+#from numba     import jit
 from random    import choice, randrange, shuffle
 from itertools import accumulate, chain, permutations
 
@@ -325,7 +325,7 @@ class HeartBrainTemporalMatrix: pass
 
 
 function_cadence_db = {}
-#@jit
+##@jit
 def init_function_cadence_db (nc):
 	if nc in function_cadence_db: return function_cadence_db[nc]
 	if nc == 1:
@@ -497,7 +497,7 @@ def random_function_progression (nsegment):
 	segment     = tuple (list (segment) + [TONIC])
 	#print ("s2: %s" % (segment,))
 	return segment
-#@jit
+##@jit
 class FunctionProgression (Cadence):
 	@staticmethod
 	def init_map (fc, fps):

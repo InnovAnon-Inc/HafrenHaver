@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from itertools import accumulate, product
-#from numba     import jit
+##from numba     import jit
 from random    import choice
 from key       import random_key
 
@@ -116,7 +116,7 @@ def init_scale_db (lr):
 	if lr not in scale_db: scale_db[lr] = tuple (filter (lambda tetras: sum (tetras[0] + tetras[1]) < lr, product (tetrachords_db, tetrachords_db)))
 	return scale_db[lr]
 
-#@jit
+##@jit
 class Scale:
 	# given 2 tetrachords, create a scale that can be indexed to get ratios
 	@staticmethod

@@ -19,6 +19,8 @@ class RecursiveComposite (App):
 	def __init__ (self, seed, pic=None, *args, **kwargs):
 		App.__init__ (self, *args, **kwargs)
 		self.child = seed
+		assert seed is not None
+		assert isinstance (seed, CompositeApp)
 		self.pic   = pic
 	def get_outer_dims (self): return self.child.dims ()
 	def get_outer_area (self): return self.child.outer_area ()
@@ -48,7 +50,7 @@ class RecursiveComposite (App):
 		print ("test b")
 		for rp in self.recursion_points (temp):
 			print ("test c")
-			x, y, w, h = rp
+			x, y, w, h = rp # x, y is at origin bc relative rects. need to get abs rect
 			print ("rp: %s" % (rp,))
 			w, h = tr ((w, h))
 			print ("test d")

@@ -17,9 +17,9 @@ class  AngledCircle (AngleApp, CompositeApp):
 		AngleApp    .__init__ (self, orientation, *args, **kwargs)
 		CompositeApp.__init__ (self, child, *args, **kwargs)
 		assert child is None or isinstance (child, CircleApp)
-		assert (child is None) != (orientation is None)
-		if child is None: self.orientation = orientation
-		else:             self.orientation = self.child.orientation
+		#assert (child is None) != (orientation is None)
+		#if child is None: self.orientation = orientation
+		#else:             self.orientation = self.child.orientation
 	def start_running (self):
 		AngleApp   .start_running (self)
 		CompositeApp.start_running (self)

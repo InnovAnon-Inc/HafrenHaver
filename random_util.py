@@ -1,14 +1,14 @@
 #! /usr/bin/env python3
 
 from math      import gcd
-from numba     import jit
+#from numba     import jit
 from random    import choice, getrandbits, randrange
 
 from bjorklund import bjorklund
 
-@jit
+#@jit
 def random_index (array): return randrange (0, len (array))
-@jit
+#@jit
 def random_bool (): return bool (getrandbits (1))
 
 def relative_primes (n): return (k for k in range (1, n + 1) if gcd (n, k) == 1)
@@ -16,11 +16,11 @@ def random_bjorklund (n):
 	k = choice (list (relative_primes (n)))
 	return bjorklund (n, k)
 # https://stackoverflow.com/questions/17350330/python-array-rotation
-@jit
+#@jit
 def rotate  (li, rot):
 	if rot == 0: return li
 	return li[rot:] + li[:rot]
-@jit
+#@jit
 def reverse (li):      return li[::-1]
 def random_bjorklund2 (n, rev=None, rot=None):
 	if rev is None: rev = random_bool ()
@@ -77,14 +77,14 @@ def printAllSubsets (arr, n, sum):
 # This code is contributed by ihritik
 
 # https://stackoverflow.com/questions/56206696/recursive-program-to-get-all-subsets-with-given-sum-includes-repetitions
-#@jit
+##@jit
 from itertools import chain
-#@jit
+##@jit
 def subsets_helper (arr, s, c, i):
 	t = (*c, i)
 	if sum (t) <= s: return subsets (arr, s, t)
 	return ()
-#@jit
+##@jit
 def subsets (arr, s, c = ()):
 	# TODO wtf
 	#if sum (c) == s: return (c,)

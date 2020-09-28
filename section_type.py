@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from enum      import Enum
-from numba     import jit
+#from numba     import jit
 
 class SectionType (Enum):
 	VERSE  = 0
@@ -17,8 +17,8 @@ INTRO  = SectionType.INTRO
 OUTRO  = SectionType.OUTRO
 PRE    = SectionType.PRE
 
-@jit
+#@jit
 def  long_section (st): return st.value in (0, 1, 2)
-@jit
+#@jit
 def short_section (st): return st.value in (3, 4, 5)
 	

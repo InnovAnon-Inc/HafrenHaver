@@ -68,7 +68,12 @@ class CompositeApp (CroppingApp):
 		ss2 = ss.subsurface (rect)
 		if self.child is not None: self.child.set_subsurface (ss2)
 		
-	def inner_rect (self): return self.child.inner_rect ()
+	def inner_rect (self):
+		if self.child is None:
+			print ("inner_rect () child is None")
+			raise Exception ()
+		print ("inner_rect () fallback behavior")
+		return self.child.inner_rect ()
 
 if __name__ == "__main__":
 	from gui import GUI

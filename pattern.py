@@ -22,11 +22,11 @@ class Pattern:
 	
 	
 	"""
-	#@jit
+	##@jit
 	def elem (self, i): return self.order[i]
-	#@jit
+	##@jit
 	def all (self): return self.order
-	@jit
+#	@jit
 	def indices (self, k):
 		I = range (0, len (self.order))
 		#for i, v in zip (I, self.order):

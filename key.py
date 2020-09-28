@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from numba       import jit
+#from numba       import jit
 
 from chromatic   import random_chromatic
 from random_util import random_index
@@ -10,7 +10,7 @@ class Key:
 		self.chromatic = chromatic
 		self.key       = key
 	def __repr__ (self): return str ("Key=[%s, key=%s]" % (self.chromatic, self.key))
-	@jit
+#	@jit
 	def adjust (self, index):
 		rlen   = len (self.chromatic.ratios)
 		index  = index + self.key
@@ -22,38 +22,38 @@ class Key:
 			octave = octave - 1
 			index  = index  + rlen
 		return (index, octave)
-	@jit
+#	@jit
 	def ratio (self, index, octave):
 		(index, doctave) = self.adjust (index)
 		octave = octave + doctave
 		return self.chromatic.ratio (index, octave)
-	@jit
+#	@jit
 	def pitch (self, index, octave):
 		(index, doctave) = self.adjust (index)
 		octave = octave + doctave
 		return self.chromatic.pitch (index, octave)
-	@jit
+#	@jit
 	def function (self, index):
 		#(index, doctave) = self.adjust (index)
 		#return self.chromatic.function (index)
 		return self.chromatic.function (index)
-	@jit
+#	@jit
 	def degree (self, index):
 		(index, doctave) = self.adjust (index)
 		#return self.chromatic.degree (index)
 		return index
-	@jit
+#	@jit
 	def increment (self, dkey=1):
 		index, doctave = self.adjust (dkey)
 		return Key (self.chromatic, index), doctave
-	@jit
+#	@jit
 	def decrement (self, dkey=1): return self.increment (-dkey)
-	@jit
+#	@jit
 	def brighter (self):
 		dkey = len (self.chromatic.ratios)
 		dkey = dkey // 2 + 1
 		return self.increment (dkey)
-	@jit
+#	@jit
 	def darker (self):
 		dkey = len (self.chromatic.ratios)
 		#dkey = dkey // 2 - 1

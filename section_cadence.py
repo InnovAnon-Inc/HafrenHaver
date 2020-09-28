@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from enum      import Enum
-from numba     import jit
+#from numba     import jit
 from random    import choice, randrange, shuffle
 from itertools import accumulate, chain, permutations
 
@@ -289,7 +289,7 @@ class SectionCadence (Cadence):
 
 
 	# TODO Cadence.elem ()
-	#@jit
+	##@jit
 #	def section (self, phrase_no): # phrase_no to section
 		#section_no, k = self.psmap[phrase_no]
 		#section_no, k = Cadence.elem (self, phrase_no)
@@ -312,7 +312,7 @@ class SectionCadence (Cadence):
 #		assert self.sp[section_no][k] == phrase_no, "%s, %s" % (self.sp[section_no][k], phrase_no)
 		#print (k)
 #		return section[k]
-	#@jit
+	##@jit
 	
 	
 	

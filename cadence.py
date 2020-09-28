@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from enum      import Enum
-from numba     import jit
+#from numba     import jit
 from random    import choice, randrange, shuffle
 from itertools import accumulate, chain, permutations
 
@@ -42,18 +42,18 @@ class Cadence (Pattern):
 		Pattern.__init__ (self, order)
 		self.uniq = uniq
 	def __repr__ (self): return "Cadence [%s, uniq=%s]" % (Pattern.__repr__ (self), self.uniq)
-	#@jit
+	##@jit
 	def __getitem__ (self, i):
 		#v = self.pattern (i)
 		#return self.uniq[v]
 		return self.uniq[i]
 	def pattern (self, i): return Pattern.__getitem__ (self, i)
-	#@jit
+	##@jit
 	#def all (self): return (self.u (v) for v in Pattern.all (self))
 	#def all (self): return (self.uniq[v] for v in Pattern.all (self))
-	#@jit
+	##@jit
 	#def v (self, v): return v
-	#@jit
+	##@jit
 	#def u (self, v):
 	#	v = self.v (v)
 	#	return self.uniq[v]

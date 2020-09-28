@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from enum      import Enum
-from numba     import jit
+#from numba     import jit
 from random    import choice, randrange, shuffle
 from itertools import accumulate, chain, permutations
 
@@ -67,14 +67,14 @@ class SongCadence0 (Pattern):
 	#def ns (self): return len (self.uniq)
 	#def nuniq (self): return len (set (self.uniq))
 	def nsection (self): return len (self)
-	#@jit
+	##@jit
 	#def elem (self, i): # section_no to section
 	#	v = Cadence.elem (self, i)
 	#	return v.value ()
-	#@jit
+	##@jit
 	#def all (self): return (v.value () for v in Cadence.all (self))
 	#def v (self, v): return Cadence.v (self, v.value ())
-#@jit
+##@jit
 def reduce_map (m, min_n, max_n): # map from cardinality m to n, where n in [min_n, max_n]
 	n     = randrange (min_n, max_n + 1)
 	temp0 = range (0, m)

@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from itertools import product, chain, permutations
-from numba import jit
+#from numba import jit
 from string import ascii_lowercase, digits
 from math import prod
 
@@ -43,7 +43,7 @@ def a2b (alpha):
 	ret   = str (ret)                            # convert string
 	return ret
 
-#@jit
+##@jit
 def numberToBase (n, b): # https://stackoverflow.com/questions/2267362/how-to-convert-an-integer-to-a-string-in-any-base
 	if n == 0: return (0,)
 	digits = []

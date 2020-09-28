@@ -62,7 +62,9 @@ class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-m
 		
 		
 	def draw_cropped_scene (self, temp): App.draw_scene (self, temp)	
-	def crop (self): raise Exception ()
+	def crop (self):
+		print ("crop () is abstract")
+		raise Exception ()
 	
 	def positive_space (self, is_root=True):
 		if is_root is True: a = App.positive_space (self)
@@ -72,10 +74,18 @@ class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-m
 		if is_root is True: a = App.negative_space (self) - self.outer_area ()
 		else:               a = 0
 		return a
-	def outer_area (self): raise Exception ()
-	def inner_area (self): raise Exception ()
-	def outer_rect (self): return App.get_rect (self)
-	def inner_rect (self): raise Exception ()
+	def outer_area (self):
+		print ("outer_area () is abstract")
+		raise Exception ()
+	def inner_area (self):
+		print ("inner_area () is abstract")
+		raise Exception ()
+	def outer_rect (self):
+		print ("outer_rect () is abstract")
+		return App.get_rect (self)
+	def inner_rect (self):
+		print ("inner_rect () is abstract")
+		raise Exception ()
 
 if __name__ == "__main__":
 	from gui import GUI

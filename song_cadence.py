@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from enum      import Enum
-from numba     import jit
+#from numba     import jit
 from random    import choice, randrange, shuffle
 from itertools import accumulate, chain, permutations
 
@@ -42,7 +42,7 @@ from song_cadence0 import random_sc0
 # which section types, which order, and which ones have the same meter
 # this layer separates short sections and long sections, which is necessary for random-generation constraints
 class SongCadence (Cadence):
-	#@jit
+	##@jit
 	@staticmethod
 	def init_uniq (ss, sc, lc):
 		uniq = {}
@@ -72,7 +72,7 @@ class SongCadence (Cadence):
 		self.sc = sc # short cadence
 		self.lc = lc # long  cadence
 	def __repr__ (self): return "SongCadence [%s, ss=%s, sc=%s, lc=%s]" % (Cadence.__repr__ (self), self.ss, self.sc, self.lc)
-	#@jit
+	##@jit
 #	def __getitem__ (self, i): # section_no to section
 #		c, v = self.section1d (i)
 #		return self.section2d (c, v)
@@ -102,7 +102,7 @@ class SongCadence (Cadence):
 		#assert r == c.uniq[v]
 		return (c == self.sc, r)
 		"""
-	#@jit
+	##@jit
 	#def all (self): return (c.uniq[v.value ()] for c, v in Cadence.all (self))
 	#def all (self): return ((c == self.sc, c.uniq[v]) for c, v in Cadence.all (self))
 	#def all (self): return (self.section2d (c, v) for c, v in Cadence.all (self))

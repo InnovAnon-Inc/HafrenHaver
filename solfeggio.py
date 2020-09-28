@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from enum   import Enum
-from numba  import jit
+#from numba  import jit
 from random import choice
 
 class SolfeggioType (Enum):
@@ -265,7 +265,7 @@ def tune_base_frequency ():
 class Solfeggio: # solves the problem of tuning the yellow bell
 	def __init__ (self, base_frequency): self.base_frequency = base_frequency
 	def __repr__ (self): return str ("Solfeggio=[base_frequency=%s]" % self.base_frequency)
-	@jit
+#	@jit
 	def pitch (self, ratio): return self.base_frequency * ratio
         #def draw (self, screen):
         #    index = solfeggios.indexof

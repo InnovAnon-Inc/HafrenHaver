@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from enum      import Enum
-from numba     import jit
+#from numba     import jit
 from random    import choice, randrange, shuffle
 from itertools import accumulate, chain, permutations
 
@@ -80,11 +80,11 @@ class SongStructure (Pattern):
 	#def nsc (self): return len (set (filter (short_section, Pattern.all (self))))
 	#def nlc (self): return len (set (filter ( long_section, Pattern.all (self))))
 	
-	#@jit
+	##@jit
 	#def elem (self, i):
 	#	v = Pattern.elem (self, i)
 	#	return v.value ()
-	#@jit
+	##@jit
 	#def all (self): return (v.value () for v in Pattern.all (self))
 def random_song_structure ():
 	ss = choice (song_structure_db)

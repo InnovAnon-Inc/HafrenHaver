@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from itertools import chain, permutations, repeat, product
-#from numba     import jit
+##from numba     import jit
 from random import choice
 
 from scale       import random_scale, init_scale_inversion_db, init_scales_db, init_scale_db
@@ -72,7 +72,7 @@ def init_scale_inversion_db (intervals):
 	print ("temp=%s" % temp)
 	return temp
 """
-#@jit
+##@jit
 class Mode:
 	def __init__ (self, scale, mode):
 		self.scale = scale
@@ -322,7 +322,7 @@ chord_db = [
 
 # at key layer
 chords_db = {}
-#@jit
+##@jit
 def init_chords_db (chromatic):
 	if chromatic in chords_db: return chords_db[chromatic]
 	temp = []
@@ -336,7 +336,7 @@ def init_chords_db (chromatic):
 # mode layer
 
 tonic_chords_db = {}
-#@jit
+##@jit
 def adjust (chromatic, index):
 	rlen   = len (chromatic.ratios)
 	octave = 0
@@ -347,14 +347,14 @@ def adjust (chromatic, index):
 		octave = octave - 1
 		index  = index  + rlen
 	return (index, octave)
-#@jit
+##@jit
 def tonic_chord (chord, mode):
 	degrees = mode.degrees ()
 	for note in chord:
 		note, doctave = adjust (mode.scale.key.chromatic, note)
 		if note not in degrees: return False
 	return True
-#@jit
+##@jit
 def init_tonic_chords_db (mode):
 	if mode in tonic_chords_db: return tonic_chords_db[mode]
 	chords = init_chords_db (mode.scale.key.chromatic)
@@ -363,7 +363,7 @@ def init_tonic_chords_db (mode):
 	return temp
 
 tonic_chord_inversions_db = {}
-#@jit
+##@jit
 def increasing (chord, chromatic):
 	interval0 = chord[0]
 	yield interval0
@@ -416,22 +416,22 @@ perfect_consonance_db   = [0, 5, 7]
 imperfect_consonance_db = [2, 3, 4, 8, 9, 10]
 perfect_dissonance_db   = [1, 6, 11]
 imperfect_dissonance_db = []
-#@jit
+##@jit
 def   perfect_consonance (interval): return interval in   perfect_consonance_db
-#@jit
+##@jit
 def imperfect_consonance (interval): return interval in imperfect_consonance_db
-#@jit
+##@jit
 def   perfect_dissonance (interval): return interval in   perfect_dissonance_db
-#@jit
+##@jit
 def imperfect_dissonance (interval): return interval in imperfect_dissonance_db
-#@jit
+##@jit
 def consonant (chord):
 	for interval1 in chord:
 		for interval2 in chord:
 			interval = abs (interval2 - interval1)
 			if imperfect_dissonance (interval) or perfect_dissonance (interval): return False
 	return True
-#@jit
+##@jit
 def dissonant (chord):
 	for interval1 in chord:
 		for interval2 in chord:

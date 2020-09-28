@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
-from numba import jit
+#from numba import jit
 
-#@jit
+##@jit
 def bjorklund (steps, pulses):
     steps = int(steps)
     pulses = int(pulses)

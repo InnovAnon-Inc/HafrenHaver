@@ -3,13 +3,13 @@
 import ast
 import inspect
 from ast_decompiler import decompile
-from numba import jit
+#from numba import jit
 
-#@jit
+##@jit
 def f2lc (f):
 	source  = inspect.getsource (f)
 	return src2lc (source)
-#@jit
+##@jit
 def src2lc (source):
 	code    = ast.parse (source)
 	
@@ -24,7 +24,7 @@ def src2lc (source):
 	#assert source == source2
 	return source
 
-#@jit	
+##@jit	
 def fd2lc (fd): return src2lc (fd.read ())
 
 class RewriteName (ast.NodeTransformer):

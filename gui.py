@@ -65,10 +65,11 @@ class GUI:
 		self.entered     = True
 		bits = 16 #the number of channels specified here is NOT 
 		          #the channels talked about here http://www.pygame.org/docs/ref/mixer.html#pygame.mixer.get_num_channels
-		pygame.mixer.pre_init(DEFAULT_SAMPLE_RATE, -bits, 2)
-		#mixer.init ()
+		# TODO
+		#pygame.mixer.pre_init(DEFAULT_SAMPLE_RATE, -bits, 2)
+		##mixer.init ()
 		pygame.init ()
-		mixer .init () # TODO proper order ?
+		#mixer .init () # TODO proper order ?
 		
 		
 		self.screen_info = display.Info  () #Required to set a good resolution for the game screen

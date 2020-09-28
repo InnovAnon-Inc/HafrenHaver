@@ -2,7 +2,7 @@
 
 from enum      import Enum
 from math      import pow
-from numba     import jit
+#from numba     import jit
 from random    import choice
 
 from solfeggio import random_solfeggio
@@ -50,12 +50,12 @@ class Chromatic:
 		self.solfeggio = solfeggio
 		self.ratios    = ratios
 	def __repr__ (self): return str ("Chromatic=[%s, ratios=%s]" % (self.solfeggio, self.ratios))
-	@jit
+#	@jit
 	def ratio (self, index, octave): return self.ratios[index] * pow (2, octave)
-	@jit
+#	@jit
 	def pitch (self, index, octave): return self.solfeggio.pitch (self.ratio (index))
 	# TODO circle of thirds
-	@jit
+#	@jit
 	def function (self, index): return ChordFunction (index % 3)
 	# TODO get monoaural acoustic beat
 	
