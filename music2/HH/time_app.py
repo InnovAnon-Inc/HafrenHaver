@@ -43,95 +43,7 @@ class SquaredAngle  (SquareApp, CompositeApp): pass
 
 
 
-
-from angle_app import tr
-from app import ORIGIN
-
-from math import log, ceil
-
-def recursive_affine (rect, dx, dy, rw, rh, n):
-	x, y, w, h = rect
-	for k in range (1, n + 1):
-		dx, dy = dx * rw, dy * rh
-		x,  y  =  x + dx,  y + dy
-		w,  h  =  w * rw,  h * rh
-		yield x, y, w, h
-def recurse_point (rect, rp, minsz):
-	X, Y, W, H = rect
-	x, y, w, h = rp
-	# get scale and offset for recursion point
-	dx, dy = x - X, y - Y
-	rw, rh = w / W, h / H
-	# get number of recursions until < minsz
-	f = lambda a, b, c: (log (a) - log (b)) / log (c)
-	xmin, ymin = minsz
-	xn, yn = f (xmin, w, rw), f (ymin, h, rh)
-	n = min (xn, yn)
-	n = ceil (n) # TODO off by one ?
-	# recursively apply scale and offset
-	tail = recursive_affine (rp, dx, dy, rw, rh, n)
-	return rp, *tail
-
-from itertools import chain
-
-class RecursiveComposite (App):
-	def __init__ (self, seed, *args, **kwargs):
-		App.__init__ (self, *args, **kwargs)
-		self.child = seed
-	def get_outer_dims (self): return self.child.dims ()
-	def get_outer_area (self): return self.child.outer_area ()
-	def get_inner_dims (self): return self.child.inner_dims ()
-	def minsz (self): return self.child.minsz ()	
-	# TODO fractal space ?
-	def positive_space (self, is_root=True): return self.child.positive_space (is_root)
-	def negative_space (self, is_root=True): return self.child.negative_space (is_root)
-	def inner_rect (self): return self.child.inner_rect ()
-	def set_subsurface (self, ss):
-		self.child.set_subsurface (ss) # SquareApp   .set_subsurface (self, ss)
-		App.set_subsurface (self, self.child.ss)
-	
-	def draw_background (self, temp):
-		App.draw_background (self, temp)
-		self.child.draw_scene (temp)	
-	def draw_foreground (self, temp):
-		TR = temp.get_rect ()                                           # bounding rect for parent
-		X, Y, W, H = TR
-		ts = pygame.Surface ((W, H), pygame.SRCALPHA)                   # get a fresh surface for working
-		
-		pic = temp.copy ()
-		#fake_screen = temp.copy ()                                     # fake screen same size as parent
-		#fake_screen.blit (pic, (W, H))                                 # blit recursive image onto fake screen
-		
-		for rp in self.recursion_points (temp):
-			x, y, w, h = rp
-			w, h = tr ((w, h))
-			trans = pygame.transform.scale (pic, (w, h))                # scale fake screen to bounding rect
-			ts.blit (trans, (x, y))                                     # blit fake screen onto working surface
-			
-		# TODO more than one level of recursion depth
-			
-		temp.blit (ts, (X, Y))     # blit working-surface onto real surface
-	def recursion_points_helper (self):
-		node = self.child
-		while True:
-			if not isinstance (node, CompositeApp):
-				ret = (node.get_rect (), node.minsz ())
-				break
-			if node.is_recursable ():
-				ret = (node.inner_rect (), node.minsz ())
-				break
-			node = node.child
-		#assert False
-		return (ret,)
-	
-	def recursion_points (self, temp):
-		rect = temp.get_rect ()
-		rps = self.recursion_points_helper ()
-		f = lambda args: recurse_point (rect, *args)
-		ret = map (f, rps)
-		return chain (*ret)
-			
-
+from recursive_composite import RecursiveComposite
 
 # using poetic cadences, grammar models, synonym dictionaries => wizard swears (take colorful input and produce musical output)			
 
@@ -140,7 +52,8 @@ class RecursiveComposite (App):
 
 # need subclasses of main connector apps for providing recursion points and reducing negative space
 
-
+# use base frequency + scale for color palette
+# get average color of internet images (from keyword search), then map to color palette ^^^
 	
 	
 	
