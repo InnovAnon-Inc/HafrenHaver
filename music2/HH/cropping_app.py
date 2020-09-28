@@ -4,8 +4,6 @@ import pygame
 
 from app import App, ORIGIN
 
-OPAQUE = (255, 255, 255, 255)
-
 class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-make-circular-surface-in-pygame
 	def __init__ (self, *args, **kwargs):
 		App.__init__ (self, *args, **kwargs)

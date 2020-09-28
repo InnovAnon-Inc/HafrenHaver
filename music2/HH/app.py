@@ -4,11 +4,6 @@ import pygame
 
 from gui import BLACK
 
-DEFAULT_BACKGROUND   = "background.png"
-SECONDARY_BACKGROUND = "shiva.png"
-
-ORIGIN = (0, 0)
-
 class App:
 	def __init__ (self, background=DEFAULT_BACKGROUND):
 		#self.clock = pygame.time.Clock ()

@@ -9,89 +9,8 @@ from angle_app import AngleApp
 
 #from angled_circle import AngledCircle
 		
-def trianglearea (a, b) : # https://www.geeksforgeeks.org/largest-triangle-that-can-be-inscribed-in-an-ellipse/
-    # a and b cannot be negative  
-    if a < 0 or b < 0 : return -1
-    # area of the triangle  
-    area = (3 * sqrt(3) * pow(a, 2)) / (4 * b) 
-    return area 		
+from geometry import trianglearea, inscribe_polygon, graphics_affines, scale_points, bounding_rect
 				
-from math import sin, cos, pi
-
-DEFAULT_ROTATION = pi / 2
-def inscribe_angles   (n):                           
-	r   = range (0, n)
-	f   = lambda k: k / n * 2 * pi
-	tmp = map (f, r)
-	if False: tmp = tuple (tmp)
-	return tmp
-def   rotate_angles   (angles, dt=DEFAULT_ROTATION):
-	f   = lambda t: t + dt
-	tmp = map (f, angles)
-	if False: tmp = tuple (tmp)
-	return tmp
-def angles_to_polygon (angles):
-	f   = lambda t: (cos (t), sin (t))
-	tmp = map (f, angles)
-	if False: tmp = tuple (tmp)
-	return tmp
-def inscribe_polygon (n, theta):
-	angles = inscribe_angles   (n)
-	angles =   rotate_angles   (angles, theta)
-	pts    = angles_to_polygon (angles)
-	return pts
-	
-def graphics_affine_x (x):   return (x + 1) / 2
-def graphics_affine_y (y):   return (1 - y) / 2
-from itertools import chain
-def graphics_affine   (pt):
-	tmp = zip (pt[:-1:2], pt[1::2])
-	f   = lambda xy: (graphics_affine_x (xy[0]), graphics_affine_y (xy[1]))
-	tmp = map (f, tmp)
-	tmp = chain (*tmp)
-	if False: tmp = tuple (tmp)
-	return tmp
-def graphics_affines  (pts): 
-	tmp = map (graphics_affine, pts)
-	if False: tmp = tuple (tmp)
-	return tmp
-
-def    scale_dim      (n,   offset, scale): return offset + scale * n
-def    scale_point    (pt, origin, dims):
-	nsos   = zip (pt, origin, dims)
-	f      = lambda nso: scale_dim (*nso)
-	ret    = map (f, nsos)
-	if False: ret = tuple (ret)
-	return ret
-def    scale_points   (pts, rect):
-	assert len (rect) % 2 == 0
-	ndim = len (rect) // 2
-	orig = rect[:ndim]
-	dims = rect[ndim:]
-	f    = lambda pt: scale_point (pt, orig, dims)
-	ret  = map (f, pts)
-	if False: ret = tuple (ret)
-	return ret
-
-def bounding_box (pts):
-	tmp = zip (*pts)                                # array of tuples (x, y) => arrays of x's, y's and z's  
-	tmp = map (lambda k: (min (*k), max (*k)), tmp) # array of tuples (minx, maxx), (miny, maxy)
-	tmp = zip (*tmp)                                 # array of tuples (minx, miny), (maxx, maxy)
-	if False: tmp = tuple (tmp)
-	return tmp
-from functools import reduce
-def point_deltas (pts):
-	tmp = zip (*pts)                                # array of tuples (minx, miny), (maxx, maxy) => arrays of mins, maxes
-	f   = lambda k: reduce ((lambda a, b: a - b), k[::-1])
-	tmp = map (f, tmp)                              # deltas (maxx - minx), (maxy - miny)
-	if False: tmp = tuple (tmp)
-	return tmp
-def bounding_rect (pts):
-	bb  = bounding_box (pts)
-	bb  = tuple (bb)
-	ds  = point_deltas (bb)
-	return bb[0], ds
-
 class CircledAngle  (CircleApp, CompositeApp): # https://stackoverflow.com/questions/64089260/find-coordinates-of-isosceles-triangle-with-maximum-area-bounded-by-ellipse
 	def __init__ (self, child, *args, **kwargs):
 		CircleApp   .__init__ (self, *args, **kwargs)
@@ -105,12 +24,14 @@ class CircledAngle  (CircleApp, CompositeApp): # https://stackoverflow.com/quest
 		CompositeApp .stop_running (self)
 	def set_subsurface (self, ss):
 		CircleApp   .set_subsurface (self, ss)
-		CompositeApp.set_subsurface (self, self.ss)
+		CompositeApp.set_subsurface (self, None, True)
+		"""
 		ss = self.ss
 		rect = self.inner_rect ()
 		rect = pygame.Rect (*rect)			
 		ss2 = ss.subsurface (rect)
-		self.child.set_subsurface (ss2)	
+		self.child.set_subsurface (ss2)
+		"""	
 	def draw_cropped_scene (self, temp):
 		CircleApp.draw_cropped_scene (self, temp)
 		CompositeApp.draw_cropped_scene (self, temp)

@@ -42,8 +42,7 @@ def random_default_ports ():
 	return tuple (ports)
 def random_default_port (): return random_default_ports ()[0]
 
-DEFAULT_HOST = "0.0.0.0"
-DEFAULT_PORT = random_default_port ()
+
 	
 class HHServer (Server):
 	channelClass = ClientChannel

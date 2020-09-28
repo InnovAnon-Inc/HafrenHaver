@@ -8,7 +8,7 @@ from circle_app import CircleApp
 from angle_app import AngleApp
 
 from orientation import NORTH, SOUTH, EAST, WEST
-from angle_app import cercle_circonscrit, cercle_inscrit
+from geometry import cercle_circonscrit, cercle_inscrit
 	
 	
 
@@ -25,14 +25,15 @@ class  AngledCircle (AngleApp, CompositeApp):
 		CompositeApp .stop_running (self)
 	def set_subsurface (self, ss):
 		AngleApp   .set_subsurface (self, ss)
-		CompositeApp.set_subsurface (self, self.ss)
+		CompositeApp.set_subsurface (self, None, True)
+		"""
 		ss = self.ss
 		
 		rect = self.inner_rect ()
 		rect = pygame.Rect (*rect)			
 		ss2 = ss.subsurface (rect)
 		self.child.set_subsurface (ss2)
-		
+		"""
 		"""
 		x1, y1, z1 = self.bounds
 		(x, y), r  = cercle_inscrit ((x1, y1, z1))

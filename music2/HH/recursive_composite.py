@@ -11,35 +11,15 @@ from composite_app import CompositeApp
 from angle_app import tr
 from app import ORIGIN
 
-from math import log, ceil
 
-def recursive_affine (rect, dx, dy, rw, rh, n):
-	x, y, w, h = rect
-	for k in range (1, n + 1):
-		dx, dy = dx * rw, dy * rh
-		x,  y  =  x + dx,  y + dy
-		w,  h  =  w * rw,  h * rh
-		yield x, y, w, h
-def recurse_point (rect, rp, minsz):
-	X, Y, W, H = rect
-	x, y, w, h = rp
-	# get scale and offset for recursion point
-	dx, dy = x - X, y - Y
-	rw, rh = w / W, h / H
-	# get number of recursions until < minsz
-	f = lambda a, b, c: (log (a) - log (b)) / log (c)
-	xmin, ymin = minsz
-	xn, yn = f (xmin, w, rw), f (ymin, h, rh)
-	n = min (xn, yn)
-	n = ceil (n)
-	# recursively apply scale and offset
-	tail = recursive_affine (rp, dx, dy, rw, rh, n)
-	return rp, *tail
+	
+from geometry import recurse_point
 
 class RecursiveComposite (App):
-	def __init__ (self, seed, *args, **kwargs):
+	def __init__ (self, seed, pic=None, *args, **kwargs):
 		App.__init__ (self, *args, **kwargs)
 		self.child = seed
+		self.pic   = pic
 	def get_outer_dims (self): return self.child.dims ()
 	def get_outer_area (self): return self.child.outer_area ()
 	def get_inner_dims (self): return self.child.inner_dims ()
@@ -60,7 +40,8 @@ class RecursiveComposite (App):
 		X, Y, W, H = TR
 		ts = pygame.Surface ((W, H))    # get a fresh surface for working
 		
-		pic = temp.copy ()
+		if self.pic is None: pic = temp.copy ()
+		else:                pic = self.pic
 		
 		for rp in self.recursion_points (temp):
 			x, y, w, h = rp
