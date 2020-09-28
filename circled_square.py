@@ -147,7 +147,7 @@ class CircledSquare (CircleApp, CompositeApp):
 		return self.child.outer_rect ()
 	
 if __name__ == "__main__":
-	from app import SECONDARY_BACKGROUND
+	from constants import SECONDARY_BACKGROUND
 	from gui import GUI
 	from squared_circle import SquaredCircle
 	def main ():

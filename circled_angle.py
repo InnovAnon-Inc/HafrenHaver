@@ -14,10 +14,13 @@ from constants import ORIGIN
 from geometry import trianglearea, inscribe_polygon, graphics_affines, scale_points, bounding_rect
 				
 class CircledAngle  (CircleApp, CompositeApp): # https://stackoverflow.com/questions/64089260/find-coordinates-of-isosceles-triangle-with-maximum-area-bounded-by-ellipse
-	def __init__ (self, child, *args, **kwargs):
+	def __init__ (self, child, orientation=None, *args, **kwargs):
 		CircleApp   .__init__ (self, *args, **kwargs)
 		CompositeApp.__init__ (self, child, *args, **kwargs)
-		assert isinstance (child, AngleApp)
+		assert self.child is None or isinstance (child, AngleApp)
+		assert (child is None) != (orientation is None)
+		if child is None: self.orientation = orientation
+		else:             self.orientation = child.orientation
 	def start_running (self):
 		CircleApp   .start_running (self)
 		CompositeApp.start_running (self)
@@ -48,7 +51,7 @@ class CircledAngle  (CircleApp, CompositeApp): # https://stackoverflow.com/quest
 		rect = self.outer_rect ()             # bounding box of ellipse
 		x, y, w, h = rect
 
-		r = self.child.orientation.radians () # direction of triangle
+		r = self.orientation.radians () # direction of triangle
 		pts = inscribe_polygon (3, r)
 		pts = graphics_affines (pts)          # from cartesian
 		pts = scale_points (pts, rect)        # scale points to ellipse dims

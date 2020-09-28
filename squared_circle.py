@@ -79,7 +79,7 @@ class SquaredCircle (SquareApp, CompositeApp):
 		return self.child.outer_rect ()
 
 if __name__ == "__main__":
-	from app import SECONDARY_BACKGROUND
+	from constants import SECONDARY_BACKGROUND
 	from gui import GUI
 	from circled_square import CircledSquare
 	
@@ -94,8 +94,9 @@ if __name__ == "__main__":
 			b = CircledSquare (c, background=SECONDARY_BACKGROUND)
 		else:
 			b = CircleApp (background=SECONDARY_BACKGROUND)
-		#a = SquaredCircle (b, rotation=STRAIGHT)
-		a = SquaredCircle (None, rotation=ANGLED)
+		a = SquaredCircle (b, rotation=STRAIGHT)
+		#a = SquaredCircle (None, rotation=ANGLED)
+		# = SquaredCircle (None, rotation=STRAIGHT)
 		with GUI (app=a) as g:
 			#g.setApp (a)
 			print ("minsz: (%s, %s)" % a.minsz ())

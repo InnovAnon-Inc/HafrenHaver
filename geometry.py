@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+from numba import jit
+
 from scipy.constants import golden
 
 from math import log, ceil
@@ -12,11 +14,13 @@ def tr (t): return tuple (map (lambda x: round (x), t)) # tuple-round
 
 from math import sqrt
 
+#@jit
 def findSemiPerimeterOfIncircle (a, b, c):
 	assert a >= 0
 	assert b >= 0
 	assert c >= 0
 	return (a + b + c) / 2
+#@jit
 def findAreaOfTriangle (a, b, c, p=None):
 	assert a >= 0
 	assert b >= 0
@@ -25,6 +29,7 @@ def findAreaOfTriangle (a, b, c, p=None):
 	n = p * (p - a) * (p - b) * (p - c)
 	if n < 0: return 0
 	return sqrt (n)
+#@jit
 def findRadiusOfIncircle (a, b, c, p=None): # https://www.geeksforgeeks.org/program-to-find-the-radius-of-the-incircle-of-the-triangle/ 
 	assert a >= 0 # the sides cannot be negative 
 	assert b >= 0
@@ -45,7 +50,7 @@ def cercle_circonscrit (T):
     x, y = X[0], X[1]
     r = sqrt ((x-x1)**2+(y-y1)**2)
     return (x, y), r
-    
+@jit    
 def coordinates_to_deltas (x, y, z):
 	(x1, y1), (x2, y2), (x3, y3) = x, y, z
 	dx21, dy21 = x2 - x1, y2 - y1
@@ -53,12 +58,14 @@ def coordinates_to_deltas (x, y, z):
 	dx13, dy13 = x1 - x3, y1 - y3
 	dx, dy, dz = (dx21, dy21), (dx32, dy32), (dx13, dy13)
 	return dx, dy, dz
+@jit
 def deltas_to_side_lengths (dx, dy, dz):
 	(dx21, dy21), (dx32, dy32), (dx13, dy13) = dx, dy, dz
 	s21 = sqrt (pow (dx21, 2) + pow (dy21, 2))
 	s32 = sqrt (pow (dx32, 2) + pow (dy32, 2))
 	s13 = sqrt (pow (dx13, 2) + pow (dy13, 2))
 	return s21, s32, s13
+@jit
 def coordinates_to_side_lengths (x, y, z):
 	deltas = coordinates_to_deltas (x, y, z)
 	return deltas_to_side_lengths (*deltas)
@@ -87,7 +94,7 @@ def findCenterOfIncircle (x1, y1, x2, y2, x3, y3, s21=None, s32=None, s13=None, 
 
 
 
-
+@jit
 def trianglearea (a, b) : # https://www.geeksforgeeks.org/largest-triangle-that-can-be-inscribed-in-an-ellipse/
     # a and b cannot be negative  
     if a < 0 or b < 0 : return -1
@@ -99,18 +106,20 @@ from math import sin, cos, pi
 
     
 from constants import DEFAULT_ROTATION
-
+#@jit
 def inscribe_angles   (n):                           
 	r   = range (0, n)
 	f   = lambda k: k / n * 2 * pi
 	tmp = map (f, r)
 	if False: tmp = tuple (tmp)
 	return tmp
+#@jit
 def   rotate_angles   (angles, dt=DEFAULT_ROTATION):
 	f   = lambda t: t + dt
 	tmp = map (f, angles)
 	if False: tmp = tuple (tmp)
 	return tmp
+#@jit
 def angles_to_polygon (angles):
 	f   = lambda t: (cos (t), sin (t))
 	tmp = map (f, angles)
@@ -121,8 +130,10 @@ def inscribe_polygon (n, theta):
 	angles =   rotate_angles   (angles, theta)
 	pts    = angles_to_polygon (angles)
 	return pts
-	
+
+@jit	
 def graphics_affine_x (x):   return (x + 1) / 2
+@jit
 def graphics_affine_y (y):   return (1 - y) / 2
 from itertools import chain
 def graphics_affine   (pt):
@@ -137,6 +148,7 @@ def graphics_affines  (pts):
 	if False: tmp = tuple (tmp)
 	return tmp
 
+@jit
 def    scale_dim      (n,   offset, scale): return offset + scale * n
 def    scale_point    (pt, origin, dims):
 	nsos   = zip (pt, origin, dims)
@@ -188,7 +200,7 @@ def bounding_rect (pts):
 
 
 
-
+@jit
 def recursive_affine (rect, dx, dy, rw, rh, n):
 	x, y, w, h = rect
 	for k in range (1, n + 1):
@@ -196,7 +208,9 @@ def recursive_affine (rect, dx, dy, rw, rh, n):
 		x,  y  =  x + dx,  y + dy
 		w,  h  =  w * rw,  h * rh
 		yield x, y, w, h
+@jit
 def naffine (tgt, current, ratio): return (log (tgt) - log (current)) / log (ratio)
+#@jit
 def recurse_point (rect, rp, minsz):
 	X, Y, W, H = rect
 	x, y, w, h = rp
@@ -204,9 +218,8 @@ def recurse_point (rect, rp, minsz):
 	dx, dy = x - X, y - Y
 	rw, rh = w / W, h / H
 	# get number of recursions until < minsz
-	f = naffine
 	xmin, ymin = minsz
-	xn, yn = f (xmin, w, rw), f (ymin, h, rh)
+	xn, yn = naffine (xmin, w, rw), naffine (ymin, h, rh)
 	n = min (xn, yn)
 	n = ceil (n)
 	# recursively apply scale and offset
@@ -217,7 +230,7 @@ def recurse_point (rect, rp, minsz):
 
 
 
-
+@jit
 def octave (base_frequency, target_frequency):
 	n = naffine (target_frequency, base_frequency, 2)
 	return floor (n)

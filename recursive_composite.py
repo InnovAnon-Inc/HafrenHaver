@@ -10,7 +10,7 @@ from composite_app import CompositeApp
 
 from geometry import tr
 from constants import ORIGIN
-
+from constants import DEFAULT_SCREEN_MODE
 
 	
 from geometry import recurse_point
@@ -36,15 +36,19 @@ class RecursiveComposite (App):
 		App.draw_background (self, temp)
 		self.child.draw_scene (temp)	
 	def draw_foreground (self, temp): # https://stackoverflow.com/questions/34910086/pygame-how-do-i-resize-a-surface-and-keep-all-objects-within-proportionate-to-t
+		App.draw_foreground (self, temp)
+		
 		TR = temp.get_rect ()                            # bounding rect for parent
 		X, Y, W, H = TR
-		ts = pygame.Surface ((W, H))    # get a fresh surface for working
+		print ("TR: %s" % (TR,))
+		ts = pygame.Surface ((W, H), pygame.SRCALPHA)    # get a fresh surface for working
 		
 		if self.pic is None: pic = temp.copy ()
 		else:                pic = self.pic
 		
 		for rp in self.recursion_points (temp):
 			x, y, w, h = rp
+			print ("rp: %s" % (rp,))
 			w, h = tr ((w, h))
 			trans = pygame.transform.scale (pic, (w, h)) # scale fake screen to bounding rect
 			ts.blit (trans, (x, y))                      # blit fake screen onto working surface
@@ -75,8 +79,12 @@ if __name__ == "__main__":
 	from orientation import NORTH, SOUTH, EAST, WEST
 	from circled_square import CircledSquare
 	from squared_circle import SquaredCircle
-	from app import App, DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
-	from gui import GUI, BLACK
+	from circled_angle import CircledAngle
+	from angled_circle import AngledCircle
+	from app import App
+	from constants import DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
+	from gui import GUI
+	from constants import BLACK
 	def main ():
 		if False:
 			j = AngleApp     (orientation=NORTH)
@@ -92,12 +100,19 @@ if __name__ == "__main__":
 		else:
 			#d = SquareApp     (background=DEFAULT_BACKGROUND)
 			d = None
-			c = CircledSquare (d, rotation=STRAIGHT)
-			b = SquaredCircle (c, background=SECONDARY_BACKGROUND)
+			if False:
+				c = CircledSquare (d, rotation=ANGLED)
+				b = SquaredCircle (c, rotation=ANGLED, background=SECONDARY_BACKGROUND)
+			else:
+				c = CircledAngle (d, orientation=NORTH)
+				b = AngledCircle (c, orientation=NORTH, background=SECONDARY_BACKGROUND)
 			a = RecursiveComposite (b)
 			#a = b
 		#a = RecursiveCompositeTest ()
 		with GUI (app=a) as g:
+			print (a.get_rect ())
+			print (a.inner_rect ())
+			print (a.child.outer_rect ())
 			#g.setApp (a)
 			g.run ()
 	main ()

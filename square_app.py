@@ -64,7 +64,7 @@ if __name__ == "__main__":
 	def main ():
 		for rotation in Rotation:
 			a = SquareApp (rotation)
-			with GUI (app=a) as g:
+			with GUI (app=a, exit_on_close=False) as g:
 				#g.setApp (a)
 				print ("minsz: (%s, %s)" % a.minsz ())
 				print ("outer: %s"       % a.outer_area ())
