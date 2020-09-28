@@ -75,12 +75,7 @@ from recursive_composite import RecursiveComposite
 # golden ratio ? for square layouts with main section et al
 # golden ratio ? for circle in circle containers
 		
-# TODO circular container:
-#      has inner & outer radii,
-#      handles sizes of square   children
-# TODO square   container:
-#      has inner & outer rects,
-#      handles sizes of circular parents
+
 
 # animated containers...
 # jiggle back and forth / up and down (1 pixel)
@@ -93,7 +88,7 @@ from recursive_composite import RecursiveComposite
 
 
 
-
+# TODO use special music and colors for synchronizing users engaging in diversions... like tetris
 
 
 
@@ -169,6 +164,26 @@ class TimeApp (CircleApp): # gets data from model, renders it on screen
 # day of week indicator... switch symbols at sundown
 # classical time... analog clock with a hand for the procession of the equinox (i.e., eon hand) ?		
 # countdown clock / alarm that can trigger by the stars
+
+class CircularMatrixText (CircleApp):
+	def draw_foreground (self, temp):
+		df    = pygame.font.get_default_font ()
+		font  = pygame.font.Font (df, 32)
+		text = self.text
+		texts = (font.render (str (c), True, self.crfg, self.crbg) for c in text) # TODO parallel
+		w = self.ss.get_width  ()
+		h = self.ss.get_height ()
+		n = len (self.credits)
+		self.ss.fill (self.crbg)
+		# TODO get width of rendered text, compare to circumference of circle to determine # chars
+		for text, i in zip (texts, range (0, n)): # TODO parallel
+			# TODO get temp surface
+			# TODO render text (letter) on surface
+			# rotate surface by some amount
+			pygame.transform.rotate (temp, angle)
+			rect  = text.get_rect ()
+			rect.center = (round (w / 2), round (h * (i / n) + h * (1 / (2 * n))))
+			self.ss.blit (text, rect)
 
 if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT

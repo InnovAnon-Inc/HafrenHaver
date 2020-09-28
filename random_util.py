@@ -6,8 +6,9 @@ from random    import choice, getrandbits, randrange
 
 from bjorklund import bjorklund
 
+@jit
 def random_index (array): return randrange (0, len (array))
-	
+@jit
 def random_bool (): return bool (getrandbits (1))
 
 def relative_primes (n): return (k for k in range (1, n + 1) if gcd (n, k) == 1)
@@ -77,8 +78,40 @@ def printAllSubsets (arr, n, sum):
 
 # https://stackoverflow.com/questions/56206696/recursive-program-to-get-all-subsets-with-given-sum-includes-repetitions
 #@jit
-def subsets (arr, _sum, c = []):
-	if sum (c) == _sum: yield c
+from itertools import chain
+#@jit
+def subsets_helper (arr, s, c, i):
+	t = (*c, i)
+	if sum (t) <= s: return subsets (arr, s, t)
+	return ()
+#@jit
+def subsets (arr, s, c = ()):
+	# TODO wtf
+	#if sum (c) == s: return (c,)
+	#f = lambda i: subsets_helper (arr, s, c, i)
+	#k = map (f, arr)
+	#k = chain (*k)
+	#return k
+	
+	if sum (c) == s: yield c
 	else:
-		for i in arr:
-			if sum (c + [i]) <= _sum: yield from subsets (arr, _sum, c + [i])
+		#for i in arr:
+		#	t = (*c, i)
+		#	if sum (t) <= _sum: yield from subsets (arr, _sum, t)
+
+		#f = (lambda i: (sum ((*c, i)) <= s))
+		#k = filter (f, arr)
+		#f = lambda i: subsets (arr, s, (*c, i))
+		#k = map (f, k)
+		
+		f = lambda i: subsets_helper (arr, s, c, i)
+		k = map (f, arr)
+		
+		k = chain (*k)
+		yield from k
+		
+if __name__ == "__main__":
+	def main ():
+		print (tuple (subsets ((2, 3, 5, 7), 23)))
+	main ()
+	quit ()

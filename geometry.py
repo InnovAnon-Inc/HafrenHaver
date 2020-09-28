@@ -214,14 +214,23 @@ def naffine (tgt, current, ratio): return (log (tgt) - log (current)) / log (rat
 def recurse_point (rect, rp, minsz):
 	X, Y, W, H = rect
 	x, y, w, h = rp
+	assert X != x or Y != y or W != w or H != h
+	#rp = x + w / 2, y + h / 2, w, h # TODO wtf
+	print ("recurse_point (%s, %s, %s)" % (rect, rp, minsz))
 	# get scale and offset for recursion point
 	dx, dy = x - X, y - Y
+	#dx, dy = dx + (W - w) / 2, dy + (H - h) / 2 # TODO wtf
+	print ("dx: %s, dy: %s" % (dx, dy))
 	rw, rh = w / W, h / H
+	print ("rw: %s, rh: %s" % (rw, rh))
 	# get number of recursions until < minsz
 	xmin, ymin = minsz
 	xn, yn = naffine (xmin, w, rw), naffine (ymin, h, rh)
+	print ("xn: %s, yn: %s" % (xn, yn))
 	n = min (xn, yn)
+	print ("n: %s" % (n,))
 	n = ceil (n)
+	print ("n: %s" % (n,))
 	# recursively apply scale and offset
 	tail = recursive_affine (rp, dx, dy, rw, rh, n)
 	return rp, *tail

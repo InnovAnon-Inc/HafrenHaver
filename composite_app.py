@@ -59,7 +59,7 @@ class CompositeApp (CroppingApp):
 	def is_recursable (self): return self.child is None
 	
 	def set_subsurface (self, ss, second_call=False):
-		if not second_call: CroppingApp.set_subsurface (ss)
+		if not second_call: CroppingApp.set_subsurface (self, ss)
 		if     second_call:
 			assert ss is None
 			ss = self.ss
@@ -67,14 +67,22 @@ class CompositeApp (CroppingApp):
 		rect = pygame.Rect (*rect)			
 		ss2 = ss.subsurface (rect)
 		if self.child is not None: self.child.set_subsurface (ss2)
+		
+	def inner_rect (self): return self.child.inner_rect ()
 
 if __name__ == "__main__":
 	from gui import GUI
 	from angle_app import AngleApp
+	from constants import SECONDARY_BACKGROUND
+	from circled_angle import CircledAngle
+	from angled_circle import AngledCircle
+	from recursive_composite import RecursiveComposite
 	
 	def main ():
-		b = AngleApp ()
-		a = CompositeApp (b)
+		d = None
+		c = AngledCircle (d)
+		b = CircledAngle (c, background=SECONDARY_BACKGROUND)
+		a = RecursiveComposite (b)
 		with GUI (app=a) as g:
 			#g.setApp (a)
 			g.run ()

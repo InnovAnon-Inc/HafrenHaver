@@ -13,7 +13,8 @@ def f2lc (f):
 def src2lc (source):
 	code    = ast.parse (source)
 	
-	# TODO transform from imperative to functional style
+	# TODO transform from imperative to functional style + xforms for idiomatic functional style
+	# TODO remove assertions
 	
 	code    = RewriteName ().visit (code)
 	ast.fix_missing_locations (code) # TODO ?

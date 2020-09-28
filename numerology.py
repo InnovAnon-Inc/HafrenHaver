@@ -43,6 +43,7 @@ def a2b (alpha):
 	ret   = str (ret)                            # convert string
 	return ret
 
+#@jit
 def numberToBase (n, b): # https://stackoverflow.com/questions/2267362/how-to-convert-an-integer-to-a-string-in-any-base
 	if n == 0: return (0,)
 	digits = []

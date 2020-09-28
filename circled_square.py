@@ -151,12 +151,14 @@ if __name__ == "__main__":
 	from gui import GUI
 	from squared_circle import SquaredCircle
 	def main ():
-		h = SquareApp (rotation=ANGLED, background=SECONDARY_BACKGROUND)
-		g = CircledSquare (h)
-		f = SquaredCircle (g, background=SECONDARY_BACKGROUND)
-		e = CircledSquare (f)
-		d = SquaredCircle (e, rotation=ANGLED, background=SECONDARY_BACKGROUND)
-		c = CircledSquare (d)
+		if False:
+			h = SquareApp (rotation=ANGLED, background=SECONDARY_BACKGROUND)
+			g = CircledSquare (h)
+			f = SquaredCircle (g, background=SECONDARY_BACKGROUND)
+			e = CircledSquare (f)
+			d = SquaredCircle (e, rotation=ANGLED, background=SECONDARY_BACKGROUND)
+			c = CircledSquare (d)
+		else: c = None
 		b = SquaredCircle (c, background=SECONDARY_BACKGROUND)
 		a = CircledSquare (b)
 		with GUI (app=a) as g:

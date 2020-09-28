@@ -42,37 +42,62 @@ class RecursiveComposite (App):
 		X, Y, W, H = TR
 		print ("TR: %s" % (TR,))
 		ts = pygame.Surface ((W, H), pygame.SRCALPHA)    # get a fresh surface for working
-		
+		print ("test a")
 		if self.pic is None: pic = temp.copy ()
 		else:                pic = self.pic
-		
+		print ("test b")
 		for rp in self.recursion_points (temp):
+			print ("test c")
 			x, y, w, h = rp
 			print ("rp: %s" % (rp,))
 			w, h = tr ((w, h))
+			print ("test d")
 			trans = pygame.transform.scale (pic, (w, h)) # scale fake screen to bounding rect
+			print ("test e")
 			ts.blit (trans, (x, y))                      # blit fake screen onto working surface
-				
+			print ("test f")
+		print ("test g")
 		temp.blit (ts, (X, Y))                           # blit working-surface onto real surface
 	def recursion_points_helper (self):
 		node = self.child
+		print ("recursion points helper ()")
 		while True:
 			if not isinstance (node, CompositeApp):
+				print ("test a")
 				ret = (node.get_rect (), node.minsz ())
+				#ret = (node.inner_rect (temp), node.minsz ())
+				print ("test b")
 				break
 			if node.is_recursable ():
-				ret = (node.inner_rect (), node.minsz ())
+				print ("test c")
+				temp_a = node.inner_rect (temp)
+				print ("test d")
+				temp_b = node.minsz ()
+				print ("test e")
+				ret = (temp_a, temp_b)
+				#ret = (node.inner_rect (temp), node.minsz ())
+				print ("test f")
 				break
+			print ("test g")
 			node = node.child
+			print ("test h")
 		#assert False
+		print ("test i")
 		return (ret,)
 	
 	def recursion_points (self, temp):
+		print ("recursion points (%s)" % (temp,))
 		rect = temp.get_rect ()
+		print ("test a")
 		rps = self.recursion_points_helper ()
+		print ("test b")
 		f = lambda args: recurse_point (rect, *args)
+		print ("test c")
 		ret = map (f, rps)
-		return chain (*ret)
+		print ("test d")
+		ret = chain (*ret)
+		print ("test e")
+		return ret
 			
 if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT
@@ -100,19 +125,34 @@ if __name__ == "__main__":
 		else:
 			#d = SquareApp     (background=DEFAULT_BACKGROUND)
 			d = None
-			if False:
-				c = CircledSquare (d, rotation=ANGLED)
-				b = SquaredCircle (c, rotation=ANGLED, background=SECONDARY_BACKGROUND)
-			else:
+			k = 0
+			if k == 0:
+				r = ANGLED
+				c = CircledSquare (d, rotation=r)
+				b = SquaredCircle (c, rotation=r, background=SECONDARY_BACKGROUND)
+			if k == 1:
+				r = STRAIGHT
+				c = SquaredCircle (d, rotation=r)
+				b = CircledSquare (c, background=SECONDARY_BACKGROUND)
+			if k == 2:
 				c = CircledAngle (d, orientation=NORTH)
 				b = AngledCircle (c, orientation=NORTH, background=SECONDARY_BACKGROUND)
+			if k == 3:
+				c = AngledCircle (d, orientation=NORTH)
+				b = CircledAngle (c, orientation=NORTH, background=SECONDARY_BACKGROUND)
+				
+			if k == 4:
+				r = STRAIGHT
+				c = CircledSquare (d, rotation=r)
+				b = SquaredCircle (c, rotation=r, background=SECONDARY_BACKGROUND)
+				
 			a = RecursiveComposite (b)
 			#a = b
 		#a = RecursiveCompositeTest ()
 		with GUI (app=a) as g:
-			print (a.get_rect ())
-			print (a.inner_rect ())
-			print (a.child.outer_rect ())
+			#print (a.get_rect ())
+			#print (a.inner_rect ())
+			#print (a.child.outer_rect ())
 			#g.setApp (a)
 			g.run ()
 	main ()
