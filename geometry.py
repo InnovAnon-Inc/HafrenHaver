@@ -328,8 +328,8 @@ def harmonic_pitches (base_frequency, scale, lower_bound, upper_bound, min_octav
 		print ("harmonic pitches: %s" % (ret,))
 	return ret
 	
-print ("FUCK: %s" % (harmonic_pitches (4, (1/1, 3/2), 30, 80),))
-quit()	
+#print ("FUCK: %s" % (harmonic_pitches (4, (1/1, 3/2), 30, 80),))
+#quit()	
 	
 def min_pitch (base_frequency, scale, lower_bound, upper_bound, min_octave=None):
 	return min_pitches (base_frequency, scale, lower_bound, upper_bound, min_octave)[0]

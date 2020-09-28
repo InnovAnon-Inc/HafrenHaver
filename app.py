@@ -2,7 +2,9 @@
 
 import pygame
 
-from gui import BLACK
+from constants import BLACK, ORIGIN
+
+from constants import DEFAULT_BACKGROUND
 
 class App:
 	def __init__ (self, background=DEFAULT_BACKGROUND):
@@ -36,8 +38,9 @@ class App:
 		#self.ss.blit (self.background, ORIGIN)
 		#pygame.draw.rect (self.ss, color, Rect (0, 0, w, h))
 		#pygame.display.flip ()
-		
+		print ("begin app.run_loop ()")
 		self.draw_scene ()
+		print ("end   app.run_loop ()")
 		
 		#pygame.display.update()  
 		#self.clock.tick ()
@@ -48,9 +51,13 @@ class App:
 		self.draw_background (temp)
 		self.draw_foreground (temp)
 	def draw_background (self, temp):
+		print ("begin app.draw_background()")
 		temp.fill (BLACK)
 		temp.blit (self.background, ORIGIN)
-	def draw_foreground (self, temp): pass
+		print ("end app.draw_background()")
+	def draw_foreground (self, temp):
+		print ("app.draw_foreground()")
+		pass
 
 	def minsz (self): return 1, 1 # px
 	def positive_space (self, is_root=True): return 0

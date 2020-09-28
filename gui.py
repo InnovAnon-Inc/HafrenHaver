@@ -14,7 +14,7 @@ from constants import DEFAULT_SUBLIMINAL_THRESHOLD, BLACK, IA_BLACK
 from constants import IA_RED, DEFAULT_SCREEN_MODE, DEFAULT_ISOCHRONIC
 from constants import DEFAULT_SCALE, DEFAULT_SAMPLE_RATE
 from constants import DEFAULT_FRAME_RATE, DEFAULT_TICK_SPEED
-from constants import DEFAULT_EXIT_TIMEOUT
+from constants import DEFAULT_EXIT_TIMEOUT, ORIGIN
 
 
 

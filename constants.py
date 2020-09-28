@@ -1,6 +1,9 @@
 #! /usr/bin/env python3
 
 from math import pi
+import pygame
+
+from network import random_default_port
     
 DEFAULT_ROTATION = pi / 2
 

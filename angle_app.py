@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 
 from app import App
-from cropping_app import CroppingApp, OPAQUE
+from cropping_app import CroppingApp
+from constants import OPAQUE
 
 import pygame
 import pygame.gfxdraw

@@ -128,7 +128,8 @@ class  AngledCircle (AngleApp, CompositeApp):
 if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT
 	from orientation import Orientation
-	from app import App, DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
+	from app import App
+	from constants import DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
 	from gui import GUI
 	#from circled_angle import CircledAngle
 	

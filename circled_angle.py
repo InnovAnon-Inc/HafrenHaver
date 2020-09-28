@@ -7,6 +7,8 @@ from composite_app import CompositeApp
 from circle_app import CircleApp
 from angle_app import AngleApp
 
+from constants import ORIGIN
+
 #from angled_circle import AngledCircle
 		
 from geometry import trianglearea, inscribe_polygon, graphics_affines, scale_points, bounding_rect

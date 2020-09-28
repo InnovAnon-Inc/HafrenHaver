@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
 
-from app import App, DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
-from cropping_app import CroppingApp, OPAQUE
+from app import App
+from constants import DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
+from cropping_app import CroppingApp
+from constants import OPAQUE
 
 
 import pygame
@@ -27,7 +29,7 @@ from orientation import NORTH, SOUTH, EAST, WEST
 
 
 
-from angle_app import cercle_circonscrit, cercle_inscrit
+from geometry import cercle_circonscrit, cercle_inscrit
 	
 	
 

@@ -1,16 +1,17 @@
 #! /usr/bin/env python3
 
 from app import App
-from cropping_app import CroppingApp, OPAQUE
+from cropping_app import CroppingApp
+from constants import OPAQUE
 
 import pygame
 import pygame.gfxdraw
 
 from math import pi
 
-from angle_app import tr
+from geometry import tr
 
-from app import ORIGIN
+from constants import ORIGIN
 
 class CircleApp (CroppingApp):
 	def __init__ (self, *args, **kwargs): CroppingApp.__init__ (self, *args, **kwargs)

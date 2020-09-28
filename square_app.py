@@ -1,8 +1,9 @@
 #! /usr/bin/env python3
 
 from app import App
-from angle_app import tr
-from cropping_app import CroppingApp, OPAQUE
+from geometry import tr
+from cropping_app import CroppingApp
+from constants import OPAQUE
 
 from rotation import STRAIGHT, ANGLED
 

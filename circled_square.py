@@ -7,7 +7,7 @@ from square_app import SquareApp
 from math import sqrt, pi
 
 from rotation import STRAIGHT, ANGLED
-from app import ORIGIN
+from constants import ORIGIN
 
 import pygame
 

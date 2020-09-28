@@ -2,7 +2,8 @@
 
 import pygame
 
-from app import App, ORIGIN
+from app import App
+from constants import ORIGIN
 
 class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-make-circular-surface-in-pygame
 	def __init__ (self, *args, **kwargs):

@@ -8,8 +8,8 @@ from itertools import chain
 from app import App
 from composite_app import CompositeApp
 
-from angle_app import tr
-from app import ORIGIN
+from geometry import tr
+from constants import ORIGIN
 
 
 	
