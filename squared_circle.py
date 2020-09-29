@@ -68,6 +68,7 @@ class SquaredCircle (SquareApp, CompositeApp):
 		return ret
 		return self.child.inner_area ()     # area of circle
 	def inner_rect (self):
+		print ("squared_circle.inner_rect ()")
 		rect = self.outer_rect ()
 		if self.rotation == STRAIGHT: return rect
 		assert self.rotation == ANGLED
@@ -77,6 +78,11 @@ class SquaredCircle (SquareApp, CompositeApp):
 		x, y = (w - w2) / 2, (h - h2) / 2
 		return x, y, w2, h2
 		return self.child.outer_rect ()
+	def minsz_helper (self):
+		w, h = SquareApp.minsz_helper (self)
+		if self.rotation == STRAIGHT: return pi * w, pi * h
+		assert self.rotation == ANGLED
+		return pi * sqrt (2) * w, pi * sqrt (2) * h
 
 if __name__ == "__main__":
 	from constants import SECONDARY_BACKGROUND

@@ -10,6 +10,9 @@ from angle_app import AngleApp
 from orientation import NORTH, SOUTH, EAST, WEST
 from geometry import cercle_circonscrit, cercle_inscrit
 	
+from math import pi
+
+#from cropping_app import CroppingApp
 	
 
 class  AngledCircle (AngleApp, CompositeApp):
@@ -21,14 +24,20 @@ class  AngledCircle (AngleApp, CompositeApp):
 		#if child is None: self.orientation = orientation
 		#else:             self.orientation = self.child.orientation
 	def start_running (self):
+		print ("enter angled_circle.start_running ()")
 		AngleApp   .start_running (self)
 		CompositeApp.start_running (self)
+		print ("leave angled_circle.start_running ()")
 	def  stop_running (self):
+		print ("enter angled_circle.stop_running ()")
 		AngleApp    .stop_running (self)
 		CompositeApp .stop_running (self)
+		print ("leave angled_circle.stop_running ()")
 	def set_subsurface (self, ss):
+		print ("enter angled_circle.set_subsurface ()")
 		AngleApp   .set_subsurface (self, ss)
 		CompositeApp.set_subsurface (self, None, True)
+		print ("leave angled_circle.set_subsurface ()")
 		"""
 		ss = self.ss
 		
@@ -54,8 +63,10 @@ class  AngledCircle (AngleApp, CompositeApp):
 		self.child.set_subsurface (ss2)
 		"""
 	def draw_cropped_scene (self, temp):
+		print ("enter angled_circle.draw_cropped_scene ()")
 		AngleApp.draw_cropped_scene (self, temp)
 		CompositeApp.draw_cropped_scene (self, temp)
+		print ("leave angled_circle.draw_cropped_scene ()")
 		"""
 		x1, y1, z1 = self.bounds
 		(x, y), r  = cercle_inscrit ((x1, y1, z1))
@@ -113,20 +124,71 @@ class  AngledCircle (AngleApp, CompositeApp):
 		assert a1 >= 0
 		return a1
 	"""
-	def positive_space (self, is_root=True): return CompositeApp.positive_space (self, is_root)
-	def negative_space (self, is_root=True): return CompositeApp.positive_space (self, is_root)
-	def minsz          (self):               return CompositeApp.minsz          (self)
-	def outer_bounding_area (self): return AngleApp .outer_area (self) # area of bounding box
-	def outer_area          (self): return AngleApp .inner_area (self) # area of triangle
-	def inner_bounding_area (self): return self.child.outer_area ()    # area of bounding box
-	def inner_area          (self): return self.child.inner_area ()    # area of circle
+	def positive_space (self, is_root=True):
+		print ("enter angled_circle.positive_space ()")
+		a = CompositeApp.positive_space (self, is_root)
+		print ("leave angled_circle.positive_space ()")
+		return a
+	def negative_space (self, is_root=True):
+		print ("enter angled_circle.negative_space ()")
+		a = CompositeApp.positive_space (self, is_root)
+		print ("leave angled_circle.negative_space ()")
+		return a
+	def minsz          (self):
+		print ("enter angled_circle.minsz ()")
+		a = CompositeApp.minsz          (self)
+		print ("leave angled_circle.minsz ()")
+		return a
+	def outer_bounding_area (self):
+		print ("enter angled_circle.outer_bounding_area ()")
+		a = AngleApp .outer_area (self) # area of bounding box
+		print ("leave angled_circle.outer_bounding_area ()")
+		return a
+	def outer_area          (self):
+		print ("enter angled_circle.outer_area ()")
+		a = AngleApp .inner_area (self) # area of triangle
+		print ("leave angled_circle.outer_area ()")
+		return a
+	def inner_bounding_area (self):
+		print ("enter angled_circle.inner_bounding_area ()")
+		x1, y1, z1 = self.bounds
+		(x, y), r  = cercle_inscrit ((x1, y1, z1))
+		#return (x - r, y - r, x + 2 * r, y + 2 * r)
+		a = (x, y, r * 2, r * 2)
+		print ("leave angled_circle.inner_bounding_area ()")
+		return a
+		return self.child.outer_area ()    # area of bounding box
+	def inner_area          (self):
+		print ("enter angled_circle.inner_area ()")
+		if True:
+			print ("inner_area ()")
+			x1, y1, z1 = self.bounds
+			print ("%s, %s, %s" % (x1, y1, z1))
+			(x, y), r  = cercle_inscrit ((x1, y1, z1))
+			print ("(%s, %s) %s" % (x, y, r))
+			a = pi * r * r
+		else:
+			a = self.child.inner_area ()    # area of circle
+		print ("leave angled_circle.inner_area ()")
+		return a
 	def inner_rect (self):
+		print ("enter angled_circle.inner_rect ()")
 		x1, y1, z1 = self.bounds
 		(x, y), r  = cercle_inscrit ((x1, y1, z1))
 		x2, y2 = x - r, y - r
 		w = h = 2 * r
-		return (x2, y2, w, h)
+		a = (x2, y2, w, h)
+		print ("leave angled_circle.inner_rect ()")
+		return a
 		return self.child.outer_rect ()
+	def minsz_helper (self):
+		print ("enter angled_circle.minsz_helper ()")
+		w, h = AngleApp.minsz_helper (self)
+		print ("%s %s" % (w, h))
+		#w, h = CroppingApp.minsz (self)
+		w, h = pi * w, pi * h
+		print ("leave angled_circle.minsz_helper ()")
+		return w, h
 
 if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT

@@ -22,14 +22,20 @@ class CircledAngle  (CircleApp, CompositeApp): # https://stackoverflow.com/quest
 		if child is None: self.orientation = orientation
 		else:             self.orientation = child.orientation
 	def start_running (self):
+		print ("enter circled_angle.start_running ()")
 		CircleApp   .start_running (self)
 		CompositeApp.start_running (self)
+		print ("leave circled_angle.start_running ()")
 	def  stop_running (self):
+		print ("enter circled_angle.stop_running ()")
 		CircleApp    .stop_running (self)
 		CompositeApp .stop_running (self)
+		print ("leave circled_angle.stop_running ()")
 	def set_subsurface (self, ss):
+		print ("enter circled_angle.set_subsurface (%s)" % (ss,))
 		CircleApp   .set_subsurface (self, ss)
 		CompositeApp.set_subsurface (self, None, True)
+		print ("leave circled_angle.set_subsurface ()")
 		"""
 		ss = self.ss
 		rect = self.inner_rect ()
@@ -38,16 +44,47 @@ class CircledAngle  (CircleApp, CompositeApp): # https://stackoverflow.com/quest
 		self.child.set_subsurface (ss2)
 		"""	
 	def draw_cropped_scene (self, temp):
+		print ("enter circled_angle.draw_cropped_scene (%s)" % (temp,))
 		CircleApp.draw_cropped_scene (self, temp)
 		CompositeApp.draw_cropped_scene (self, temp)
-	def positive_space (self, is_root=True): return CompositeApp.positive_space (self, is_root)
-	def negative_space (self, is_root=True): return CompositeApp.positive_space (self, is_root)
-	def minsz          (self):               return CompositeApp.minsz          (self)
-	def outer_bounding_area (self): return CircleApp .outer_area (self) # area of bounding box
-	def outer_area          (self): return CircleApp .inner_area (self) # area of triangle
-	def inner_bounding_area (self): return self.child.outer_area ()    # area of bounding box
-	def inner_area          (self): return self.child.inner_area ()    # area of circle
+		print ("leave circled_angle.draw_cropped_scene ()")
+	def positive_space (self, is_root=True):
+		print ("enter circled_angle.positive_space (%s)" % (is_root,))
+		a = CompositeApp.positive_space (self, is_root)
+		print ("leave circled_angle.positive_space ()")
+		return a
+	def negative_space (self, is_root=True):
+		print ("enter circled_angle.negative_space (%s)" % (is_root,))
+		a = CompositeApp.positive_space (self, is_root)
+		print ("leave circled_angle.negative_space ()")
+		return a
+	def minsz          (self):
+		print ("enter circled_angle.minsz ()")
+		a = CompositeApp.minsz          (self)
+		print ("leave circled_angle.minsz ()")
+		return a
+	def outer_bounding_area (self):
+		print ("enter circled_angle.outer_bounding_area ()")
+		a = CircleApp .outer_area (self) # area of bounding box
+		print ("leave circled_angle.outer_bounding_area ()")
+		return a
+	def outer_area          (self):
+		print ("enter circled_angle.outer_area ()")
+		a = CircleApp .inner_area (self) # area of triangle
+		print ("leave circled_angle.outer_area ()")
+		return a
+	def inner_bounding_area (self):
+		print ("enter circled_angle.inner_bounding_area ()")
+		a = self.child.outer_area ()    # area of bounding box
+		print ("leave circled_angle.inner_bounding_area ()")
+		return a
+	def inner_area          (self):
+		print ("enter circled_angle.inner_area ()")
+		a = self.child.inner_area ()    # area of circle
+		print ("leave circled_angle.inner_area ()")
+		return a
 	def inner_rect (self):
+		print ("enter circled_angle.inner_rect ()")
 		rect = self.outer_rect ()             # bounding box of ellipse
 		x, y, w, h = rect
 
@@ -59,7 +96,9 @@ class CircledAngle  (CircleApp, CompositeApp): # https://stackoverflow.com/quest
 		o, r = bounding_rect (pts)
 		xmin, ymin = o
 		dx, dy = r
-		return (xmin, ymin, dx, dy)
+		a = (xmin, ymin, dx, dy)
+		print ("leave circled_angle.inner_rect ()")
+		return a
 		return self.child.outer_rect ()
 			
 		

@@ -20,14 +20,20 @@ class CircledSquare (CircleApp, CompositeApp):
 		if child is None: self.rotation = rotation
 		else:             self.rotation = child.rotation
 	def start_running (self):
+		print ("enter circled_square.start_running ()")
 		CircleApp   .start_running (self)
 		CompositeApp.start_running (self)
+		print ("enter circled_square.stop_running ()")
 	def  stop_running (self):
+		print ("enter circled_square.stop_running ()")
 		CircleApp    .stop_running (self)
 		CompositeApp .stop_running (self)
+		print ("leave circled_square.stop_running ()")
 	def set_subsurface (self, ss):
+		print ("enter circled_square.set_subsurface (%s)", (ss,))
 		CircleApp   .set_subsurface (self, ss)
 		CompositeApp.set_subsurface (self, None, True)
+		print ("leave circled_square.set_subsurface ()")
 		"""
 		ss = self.ss
 		
@@ -55,8 +61,10 @@ class CircledSquare (CircleApp, CompositeApp):
 		self.child.set_subsurface (ss2)
 		"""
 	def draw_cropped_scene (self, temp):
+		print ("enter circled_square.draw_cropped_scene (%s)", (temp,))
 		CircleApp.draw_cropped_scene (self, temp)
 		CompositeApp.draw_cropped_scene (self, temp)
+		print ("leave circled_square.draw_cropped_scene ()")
 		"""
 		o, (w2, h2) = self.bounds
 		if self.child.rotation == STRAIGHT:
@@ -119,22 +127,47 @@ class CircledSquare (CircleApp, CompositeApp):
 		assert a1 >= 0
 		return a1
 	"""
-	def positive_space (self, is_root=True): return CompositeApp.positive_space (self, is_root)
-	def negative_space (self, is_root=True): return CompositeApp.positive_space (self, is_root)
-	def minsz          (self):               return CompositeApp.minsz          (self)
-	def outer_bounding_area (self): return CircleApp .outer_area (self) # area of bounding box
-	def outer_area          (self): return CircleApp .inner_area (self) # area of circle
+	def positive_space (self, is_root=True):
+		print ("enter circled_square.positive_space ()")
+		a = CompositeApp.positive_space (self, is_root)
+		print ("leave circled_square.positive_space ()")
+		return a
+	def negative_space (self, is_root=True):
+		print ("enter circled_square.negative_space ()")
+		a = CompositeApp.positive_space (self, is_root)
+		print ("leave circled_square.negative_space ()")
+		return a
+	def minsz          (self):
+		print ("enter circled_square.minsz ()")
+		a = CompositeApp.minsz          (self)
+		print ("leave circled_square.minsz ()")
+		return a
+	def outer_bounding_area (self):
+		print ("enter circled_square.outer_bounding_area ()")
+		a = CircleApp .outer_area (self) # area of bounding box
+		print ("leave circled_square.outer_bounding_area ()")
+		return a
+	def outer_area          (self):
+		print ("enter circled_square.outer_area ()")
+		a = CircleApp .inner_area (self) # area of circle
+		print ("leave circled_square.outer_area ()")
+		return a
 	def inner_bounding_area (self):
 		x, y, w, h = self.inner_rect ()
 		return w * h
 		return self.child.outer_area ()     # area of bounding box
 	def inner_area          (self):
+		print ("enter circled_square.inner_area ()")
 		x, y, w, h = self.inner_rect ()
-		if self.child.rotation == STRAIGHT: return w * h
-		assert self.child.rotation == ANGLED
-		return w * h / 2
+		if self.child.rotation == STRAIGHT: a = w * h
+		else:
+			assert self.child.rotation == ANGLED
+			a = w * h / 2
+		print ("leave circled_square.inner_area ()")
+		return a
 		return self.child.inner_area ()     # area of square/diamond
 	def inner_rect (self):
+		print ("enter circled_square.inner_rect ()")
 		o, (w2, h2) = self.bounds
 		if self.rotation == STRAIGHT:
 			w = w2 / sqrt (2)
@@ -143,15 +176,25 @@ class CircledSquare (CircleApp, CompositeApp):
 		if self.rotation == ANGLED:
 			(x, y), (w, h) = self.bounds		
 		rect = (x, y, w * 2, h * 2)
+		print ("leave circled_square.inner_rect ()")
 		return rect
 		return self.child.outer_rect ()
+	def minsz_helper (self):
+		print ("enter circled_square.minsz_helper ()")
+		w, h = CircleApp.minsz_helper (self)
+		if self.rotation == STRAIGHT: a = pi * sqrt (2) * w, pi * sqrt (2) * h
+		else:
+			assert self.rotation == ANGLED
+			a = pi * w, pi * h
+		print ("leave circled_square.minsz_helper ()")
+		return a
 	
 if __name__ == "__main__":
 	from constants import SECONDARY_BACKGROUND
 	from gui import GUI
 	from squared_circle import SquaredCircle
 	def main ():
-		if False:
+		if True:
 			h = SquareApp (rotation=ANGLED, background=SECONDARY_BACKGROUND)
 			g = CircledSquare (h)
 			f = SquaredCircle (g, background=SECONDARY_BACKGROUND)

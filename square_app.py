@@ -41,21 +41,21 @@ class SquareApp (CroppingApp):
 			pygame.gfxdraw.     aapolygon (self.cropped_background, pts, OPAQUE)
 			pygame.gfxdraw.filled_polygon (self.cropped_background, pts, OPAQUE)
 			
-	def minsz (self):
-		w, h = CroppingApp.minsz (self)
-		if self.rotation == STRAIGHT: r = 2
-		if self.rotation == ANGLED:   r = 3
-		return w * r, h * h
-	def outer_area (self):
-		x, y, w, h = self.bounds
-		return w * h
+	def minsz_helper (self):
+		w, h = CroppingApp.minsz_helper (self)
+		if self.rotation == STRAIGHT: return w * 2, h * 2
+		assert self.rotation == ANGLED
+		return w * sqrt (2), h * sqrt (2)
+	#def outer_area (self):
+	#	x, y, w, h = self.bounds
+	#	return w * h
 	def inner_area (self):
 		x, y, w, h = self.bounds
 		if self.rotation == STRAIGHT: a = w * h
 		if self.rotation == ANGLED:   a = w * h / 2
 		assert a >= 0
 		return a
-	def inner_rect (self): return self.get_outer_rect ()
+	#def inner_rect (self): return self.get_outer_rect ()
 
 if __name__ == "__main__":
 	from gui import GUI

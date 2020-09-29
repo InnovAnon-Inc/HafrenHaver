@@ -71,11 +71,17 @@ def coordinates_to_side_lengths (x, y, z):
 	return deltas_to_side_lengths (*deltas)
     
 def cercle_inscrit (T):
+	print ("cercle_inscrit (%s)" % (T,))
 	(x1, y1), (x2, y2), (x3, y3) = T
+	print ("(%s, %s) (%s, %s) (%s, %s)" % (x1, y1, x2, y2, x3, y3))
 	s21, s32, s13 = coordinates_to_side_lengths (*T)
+	print ("%s %s %s" % (s21, s32, s13))
 	p2  = findSemiPerimeterOfIncircle (s21, s32, s13)
+	print ("%s" % (p2,))
 	c   = findCenterOfIncircle (x1, y1, x2, y2, x3, y3, s21, s32, s13, p2)
+	print ("(%s)" % (c,))
 	r   = findRadiusOfIncircle (s21, s32, s13, p2)
+	print ("%s" % (r,))
 	return c, r
 	
 def findCenterOfIncircle (x1, y1, x2, y2, x3, y3, s21=None, s32=None, s13=None, p2=None):

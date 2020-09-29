@@ -49,7 +49,7 @@ class RecursiveComposite (App):
 		else:                pic = self.pic
 		print ("test b")
 		for rp in self.recursion_points (temp):
-			print ("test c")
+			print ("test c: recursive_composite.draw_foreground () in for-loop: %s" % (rp,))
 			x, y, w, h = rp # x, y is at origin bc relative rects. need to get abs rect
 			print ("rp: %s" % (rp,))
 			w, h = tr ((w, h))
@@ -61,8 +61,8 @@ class RecursiveComposite (App):
 		print ("test g")
 		temp.blit (ts, (X, Y))                           # blit working-surface onto real surface
 	def recursion_points_helper (self):
+		print ("enter recursive_composite.recursion points helper ()")
 		node = self.child
-		print ("recursion points helper ()")
 		while True:
 			if not isinstance (node, CompositeApp):
 				print ("test a")
@@ -71,8 +71,8 @@ class RecursiveComposite (App):
 				print ("test b")
 				break
 			if node.is_recursable ():
-				print ("test c")
-				temp_a = node.inner_rect (temp)
+				print ("test c: get inner rect from node: %s %s" % (type (node), node))
+				temp_a = node.inner_rect ()
 				print ("test d")
 				temp_b = node.minsz ()
 				print ("test e")
@@ -85,21 +85,31 @@ class RecursiveComposite (App):
 			print ("test h")
 		#assert False
 		print ("test i")
+		print ("leave recursive_composite.recursion points helper ()")
 		return (ret,)
 	
 	def recursion_points (self, temp):
-		print ("recursion points (%s)" % (temp,))
+		print ("enter recursive_composite.recursion points (%s)" % (temp,))
 		rect = temp.get_rect ()
 		print ("test a")
 		rps = self.recursion_points_helper ()
-		print ("test b")
-		f = lambda args: recurse_point (rect, *args)
-		print ("test c")
-		ret = map (f, rps)
-		print ("test d")
-		ret = chain (*ret)
-		print ("test e")
-		return ret
+		if True:
+			for rp in rps:
+				yield from recurse_point (rect, *rp)
+		else:
+			print ("test b")
+			f = lambda args: recurse_point (rect, *args)
+			print ("test c")
+			ret = map (f, rps)
+			print ("test d")
+			ret=tuple(ret)
+			print ("test dd")
+			ret = chain (*ret)
+			print ("test ddd")
+			ret=tuple(ret)
+			print ("test e")
+			return ret
+		print ("leave recursive_composite.recursion_points ()")
 			
 if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT

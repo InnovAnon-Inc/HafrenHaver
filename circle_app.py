@@ -30,13 +30,15 @@ class CircleApp (CroppingApp):
 		pygame.gfxdraw.     aaellipse (self.cropped_background, *bounds, *bounds, OPAQUE)
 		pygame.gfxdraw.filled_ellipse (self.cropped_background, *bounds, *bounds, OPAQUE)
 
-	def minsz (self):
-		w, h = CroppingApp.minsz (self)
+	def minsz_helper (self):
+		w, h = CroppingApp.minsz_helper (self)
+		#w, h = CroppingApp.minsz (self)
 		return pi * w, pi * h
-	def outer_area (self): return CroppingApp.area (self)
+	#def outer_area (self): return CroppingApp.area (self)
 	def inner_area (self):
 		w, h = self.dims ()
 		return pi * w / 2 * h / 2
+	#def inner_rect (self): return self.outer_rect ()
 
 if __name__ == "__main__":
 	from gui import GUI
