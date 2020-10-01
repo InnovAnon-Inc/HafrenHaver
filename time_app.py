@@ -167,6 +167,23 @@ class TimeApp (CircleApp): # gets data from model, renders it on screen
 # TODO procession of the equinox, positions of other planets... universe man has a clock with an aeon hand
 
 
+# TODO small animations, such as slightly wavy lines, slight brightening and dimming, slight oscillation, slight expansion/contraction
+# ... to make things a little less static without being distracting
+#class QuarterTab (Animation):
+#
+
+
+
+
+# TODO FinuxSpeak:
+# can write in functional or imperative language... use src2src translation
+# db of algorithms... automated selection of algorithm for workload
+# jit + partial evaluation + pgo
+# ... the goal is to be able to specify very generalized and abstract versions of solutions, and have them automatically replaced with special-case versions
+
+# TODO FinuxOS
+# microkernel design to facilitate clustering of all system services
+
 
 if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT

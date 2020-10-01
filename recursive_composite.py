@@ -17,13 +17,15 @@ from cropping_app import CroppingApp
 	
 from geometry import recurse_point
 
+from geom import SQUARE, DIAMOND, CIRCLE, ANGLE_N, ANGLE_E, ANGLE_S, ANGLE_W
+
 class RecursiveComposite (App):
 	def __init__ (self, seed, pic=None, *args, **kwargs):
 		App.__init__ (self, *args, **kwargs)
 		self.child = seed
 		assert seed is not None
 		assert isinstance (seed, CompositeApp)
-		self.pic   = pic
+		self.pic   = pic # TODO maybe run through DeepDream AI
 	def get_outer_dims (self): return self.child.dims ()
 	def get_outer_area (self): return self.child.outer_area ()
 	def get_inner_dims (self): return self.child.inner_dims ()
@@ -66,28 +68,35 @@ class RecursiveComposite (App):
 		print ("enter recursive_composite.recursion points helper ()")
 		node = self.child
 		while True:
+			if not isinstance (node, CompositeApp) or node.is_recursable ():
+				r = node.recursion_rect (SQUARE)
+				m = node.minsz ()
+				ret = (r, m)
+				break
 			# TODO inner_rect() is not right: need an inner inner rect
-			if not isinstance (node, CompositeApp):
-				#print ("unexpected node type")
-				#raise Exception ()
-				print ("test a")
-				if isinstance (node, CroppingApp): r = node.inner_rect ()
-				else: r = node.get_rect ()
-				#ret = (node.get_rect (), node.minsz ())
-				#ret = (node.inner_rect (), node.minsz ())
-				ret = (r, node.minsz ())
-				print ("test b")
-				break
-			if node.is_recursable ():
-				print ("test c: get inner rect from node: %s %s" % (type (node), node))
-				temp_a = node.inner_rect ()
-				print ("test d")
-				temp_b = node.minsz ()
-				print ("test e")
-				ret = (temp_a, temp_b)
-				#ret = (node.inner_rect (temp), node.minsz ())
-				print ("test f")
-				break
+			#if not isinstance (node, CompositeApp):
+			#	#print ("unexpected node type")
+			#	#raise Exception ()
+			#	print ("test a")
+			#	#if isinstance (node, CroppingApp): r = node.inner_rect ()
+			#	#else: r = node.get_rect ()
+			#	#ret = (node.get_rect (), node.minsz ())
+			#	#ret = (node.inner_rect (), node.minsz ())
+			#	r = node.recursion_rect (SQUARE) # TODO get our geometry
+			#	ret = (r, node.minsz ())
+			#	print ("test b")
+			#	break
+			#if node.is_recursable ():
+			#	print ("test c: get inner rect from node: %s %s" % (type (node), node))
+			#	#temp_a = node.inner_rect ()
+			#	temp_a = node.recursion_rect (SQUARE)
+			#	print ("test d")
+			#	temp_b = node.minsz ()
+			#	print ("test e")
+			#	ret = (temp_a, temp_b)
+			#	#ret = (node.inner_rect (temp), node.minsz ())
+			#	print ("test f")
+			#	break
 			print ("test g")
 			node = node.child
 			print ("test h")
@@ -156,6 +165,7 @@ if __name__ == "__main__":
 				# shapeApp.get_inner_inner_rect (outer_geometry=square)
 				# 
 				r = ANGLED
+				#r = STRAIGHT
 				if False:
 					d = SquareApp (rotation=r, background=SECONDARY_BACKGROUND)
 					c = CircledSquare (d)
@@ -166,6 +176,7 @@ if __name__ == "__main__":
 				b = SquaredCircle (c, rotation=r, background=SECONDARY_BACKGROUND)
 			if k == 1:
 				r = STRAIGHT
+				#r = ANGLED
 				c = SquaredCircle (d, rotation=r)
 				b = CircledSquare (c, background=SECONDARY_BACKGROUND)
 			if k == 2:

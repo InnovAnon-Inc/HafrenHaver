@@ -5,6 +5,8 @@ from cropping_app import CroppingApp
 
 import pygame
 
+from geom import SQUARE, DIAMOND, CIRCLE, ANGLE_N, ANGLE_E, ANGLE_S, ANGLE_W
+
 class CompositeApp (CroppingApp):
 	def __init__ (self, child, *args, **kwargs):
 		CroppingApp.__init__ (self, *args, **kwargs)
@@ -101,11 +103,28 @@ class CompositeApp (CroppingApp):
 		print ("leave composite_app.inner_rect ()")
 		return a
 		
-	#def recursion_rect (self, geom=None): # need to override: default behavior is to use square outer geometry
-	# TODO if child is none then use geom, else use child geom
-	# TODO if child is not none, then child's recursion rect needs to be scaled to this one
-		
-		
+	def recursion_rect (self, geom=SQUARE): # need to override: default behavior is to use square outer geometry
+		print ("enter composite_app.recursion_rect (%s)" % (geom,))
+		if self.child is None:
+			#return CroppingApp.recursion_rect (self, geom)
+			rect = CroppingApp.recursion_rect (self, geom)
+		else:
+			x, y, w, h = self.child.recursion_rect (geom)
+			# TODO if child is not none, then child's recursion rect needs to be scaled to this one
+			X, Y, W, H = CroppingApp.recursion_rect (self, geom)
+			#X, Y, W, H = self.outer_rect ()
+			assert X >= 0
+			assert Y >= 0
+			assert W > 0
+			assert H > 0
+			assert x >= 0
+			assert y >= 0
+			assert w <= W
+			assert h <= H
+			#rect = (X - x, Y - y, W / w, H / h)
+			rect = (X + x, Y + y, W / w, H / h)
+		print ("leave composite_app.recursion_rect ()")
+		return rect
 	
 
 if __name__ == "__main__":

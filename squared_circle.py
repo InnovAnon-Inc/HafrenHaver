@@ -7,6 +7,7 @@ from rotation import STRAIGHT, ANGLED
 	
 from math import sqrt, pi
 import pygame
+from geom import SQUARE
 
 class SquaredCircle (SquareApp, CompositeApp):
 	def __init__ (self, child, rotation=STRAIGHT, *args, **kwargs):
@@ -83,6 +84,7 @@ class SquaredCircle (SquareApp, CompositeApp):
 		if self.rotation == STRAIGHT: return pi * w, pi * h
 		assert self.rotation == ANGLED
 		return pi * sqrt (2) * w, pi * sqrt (2) * h
+	def recursion_rect (self, geom=SQUARE): return CompositeApp.recursion_rect (self, geom)
 
 if __name__ == "__main__":
 	from constants import SECONDARY_BACKGROUND

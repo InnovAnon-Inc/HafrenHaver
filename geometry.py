@@ -449,8 +449,16 @@ def reasonable_minmax_int_pitch (base_frequency, scale, lower_bound, upper_bound
 		
 def to_degrees (radians): return radians / (2 * pi) * 360
 def to_radians (degrees): return degrees / 360 * (2 * pi)
-		
-		
+
+def midpoint (pts):
+	dims = zip (*pts)
+	dims = tuple (dims)
+	assert len (dims) == 2
+	f    = lambda a, b: a + (b - a) / 2
+	pt   = reduce (f, dims)
+	if False: pt = tuple (pt)
+	return pt
+				
 if __name__ == "__main__":
 	print (DEFAULT_FRAME_RATE)
 	print (DEFAULT_SAMPLE_RATE)

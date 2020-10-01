@@ -7,11 +7,15 @@ from constants import OPAQUE
 import pygame
 import pygame.gfxdraw
 
-from math import pi
+from math import pi, sqrt
 
 from geometry import tr
 
 from constants import ORIGIN
+
+from geom import SQUARE, DIAMOND, CIRCLE, ANGLE_N, ANGLE_S, ANGLE_E, ANGLE_W
+from orientation import NORTH, SOUTH, EAST, WEST
+from geometry import inscribe_polygon, graphics_affines, scale_points, bounding_rect
 
 class CircleApp (CroppingApp):
 	def __init__ (self, *args, **kwargs): CroppingApp.__init__ (self, *args, **kwargs)
@@ -39,6 +43,84 @@ class CircleApp (CroppingApp):
 		w, h = self.dims ()
 		return pi * w / 2 * h / 2
 	#def inner_rect (self): return self.outer_rect ()
+	def recursion_rect (self, geom=SQUARE):
+		print ("enter circle_app.recursion_rect (%s)" % (geom,))
+		if geom == SQUARE:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			w, h = W / sqrt (2), H / sqrt (2)
+			#x, y = X + w / 2, Y + h / 2
+			x, y = X + (W - w) / 2, Y + (H - h) / 2
+			#x, y = X, Y
+			#assert X != x
+			#assert Y != y
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+		if geom == DIAMOND:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			w, h = W / sqrt (2), H / sqrt (2)
+			x, y = X + w / 2, Y + h / 2
+			#x, y = X - w, Y - h
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+		if geom == CIRCLE: return CroppingApp.recursion_rect (self, geom)
+		if geom == ANGLE_N:
+			r = NORTH.radians () # direction of triangle
+			pts = inscribe_polygon (3, r)
+			pts = graphics_affines (pts)          # from cartesian
+			pts = scale_points (pts, rect)        # scale points to ellipse dims
+			
+			o, r = bounding_rect (pts)
+			xmin, ymin = o
+			dx, dy = r
+			x, y, w, h = xmin, ymin, dx, dy
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+		if geom == ANGLE_E:
+			r = EAST.radians () # direction of triangle
+			pts = inscribe_polygon (3, r)
+			pts = graphics_affines (pts)          # from cartesian
+			pts = scale_points (pts, rect)        # scale points to ellipse dims
+			
+			o, r = bounding_rect (pts)
+			xmin, ymin = o
+			dx, dy = r
+			x, y, w, h = xmin, ymin, dx, dy
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+		if geom == ANGLE_W:
+			r = WEST.radians () # direction of triangle
+			pts = inscribe_polygon (3, r)
+			pts = graphics_affines (pts)          # from cartesian
+			pts = scale_points (pts, rect)        # scale points to ellipse dims
+			
+			o, r = bounding_rect (pts)
+			xmin, ymin = o
+			dx, dy = r
+			x, y, w, h = xmin, ymin, dx, dy
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+		if geom == ANGLE_S:
+			r = SOUTH.radians () # direction of triangle
+			pts = inscribe_polygon (3, r)
+			pts = graphics_affines (pts)          # from cartesian
+			pts = scale_points (pts, rect)        # scale points to ellipse dims
+			
+			o, r = bounding_rect (pts)
+			xmin, ymin = o
+			dx, dy = r
+			x, y, w, h = xmin, ymin, dx, dy
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+		raise Exception () # unsupported geom
+			
 
 if __name__ == "__main__":
 	from gui import GUI

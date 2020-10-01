@@ -11,7 +11,7 @@ from itertools import cycle, starmap
 from constants import OPAQUE
 from geometry import to_degrees, reflect_angles
 from circle_app import CircleApp
-class MagicCircle (CircleApp): # composite app, child is also circle, animated app
+class MagicCircle (CircleApp): # composite app, child is also circle, animated app, pos/neg space has ranges
 	def __init__ (self, text=None, font=None):
 		CircleApp.__init__ (self)
 

@@ -6,6 +6,8 @@ from constants import BLACK, ORIGIN
 
 from constants import DEFAULT_BACKGROUND
 
+from geom import SQUARE, DIAMOND, CIRCLE, ANGLE_N, ANGLE_E, ANGLE_S, ANGLE_W
+
 class App:
 	def __init__ (self, background=DEFAULT_BACKGROUND):
 		#self.clock = pygame.time.Clock ()
@@ -100,7 +102,11 @@ class App:
 	def is_recursable (self):
 		print ("app.is_recursable ()")
 		return False
-
+	def recursion_rect (self, geom=SQUARE):
+		print ("enter app.recursion_rect (%s)" % (geom,))
+		rect = self.get_rect ()
+		print ("leave app.recursion_rect ()")
+		return rect
 if __name__ == "__main__":
 	from gui import GUI
 	

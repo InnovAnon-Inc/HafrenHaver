@@ -10,6 +10,7 @@ from rotation import STRAIGHT, ANGLED
 from constants import ORIGIN
 
 import pygame
+from geom import SQUARE
 
 class CircledSquare (CircleApp, CompositeApp):
 	def __init__ (self, child, rotation=None, *args, **kwargs):
@@ -188,6 +189,7 @@ class CircledSquare (CircleApp, CompositeApp):
 			a = pi * w, pi * h
 		print ("leave circled_square.minsz_helper ()")
 		return a
+	def recursion_rect (self, geom=SQUARE): return CompositeApp.recursion_rect (self, geom)
 	
 if __name__ == "__main__":
 	from constants import SECONDARY_BACKGROUND

@@ -12,6 +12,9 @@ import pygame.gfxdraw
 
 from math import sqrt
 
+from geom import SQUARE, DIAMOND, CIRCLE, ANGLE_N, ANGLE_E, ANGLE_S, ANGLE_W
+from geometry import midpoint
+
 class SquareApp (CroppingApp):
 	def __init__ (self, rotation=STRAIGHT, parent_is_square=True, *args, **kwargs):
 		CroppingApp.__init__ (self, *args, **kwargs)
@@ -58,6 +61,120 @@ class SquareApp (CroppingApp):
 		assert a >= 0
 		return a
 	#def inner_rect (self): return self.get_outer_rect ()
+	def recursion_rect (self, geom=SQUARE):
+		print ("enter square_app.recursion_rect (%s)" % (geom,))
+		if self.rotation == STRAIGHT and geom == SQUARE: return CroppingApp.recursion_rect (self, geom)
+		if self.rotation == ANGLED   and geom == SQUARE:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			w, h = W / sqrt (2), H / sqrt (2)
+			x, y = X + w / 2, Y + h / 2
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+			
+		if self.rotation == STRAIGHT and geom == DIAMOND:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			w, h = W / sqrt (2), H / sqrt (2)
+			x, y = X + w / 2, Y + h / 2
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+		if self.rotation == ANGLED and geom == DIAMOND: return CroppingApp.recursion_rect (self, geom)
+		
+		if self.rotation == STRAIGHT and geom == CIRCLE:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			w, h = W / sqrt (2), H / sqrt (2)
+			#x, y = X + w / 2, Y + h / 2
+			#x, y = X + w, Y + h
+			x, y = X + (W - w) / 2, Y + (H - h) / 2
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+		if self.rotation == ANGLED and geom == CIRCLE:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			#w, h = W / sqrt (2), H / sqrt (2)
+			##x, y = X + w / 2, Y + h / 2
+			#x, y = X + (W - w) / 2, Y + (H - h) / 2
+			r = sqrt (pow (1 / 2, 2) + pow (1 / 2, 2))
+			cx, cy = X + W / 2, Y + H / 2
+			x, y, w, h = cx - r * W, cy - r * H, r * W * 2, r * H * 2
+			assert x > 0
+			assert y > 0
+			return x, y, w, h
+		
+		if self.rotation == STRAIGHT and geom == ANGLE_N: return CroppingApp.recursion_rect (self, geom)
+		if self.rotation == STRAIGHT and geom == ANGLE_E: return CroppingApp.recursion_rect (self, geom)
+		if self.rotation == STRAIGHT and geom == ANGLE_S: return CroppingApp.recursion_rect (self, geom)
+		if self.rotation == STRAIGHT and geom == ANGLE_W: return CroppingApp.recursion_rect (self, geom)
+		if self.rotation == ANGLED   and geom == ANGLE_N:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			A = (X + W / 2, Y)
+			B = (X + W    , Y + H / 2)
+			C = (X + W / 2, Y + H)
+			D = (X        , Y + H / 2)
+			
+			a = A
+			b = midpoint (B, C)
+			c = midpoint (C, D)
+			
+			o, r = bounding_rect (pts)
+			xmin, ymin = o
+			dx, dy = r
+			return (xmin, ymin, dx, dy)
+		if self.rotation == ANGLED   and geom == ANGLE_E:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			A = (X + W / 2, Y)
+			B = (X + W    , Y + H / 2)
+			C = (X + W / 2, Y + H)
+			D = (X        , Y + H / 2)
+			
+			a = B
+			b = midpoint (C, D)
+			c = midpoint (D, A)
+			
+			o, r = bounding_rect (pts)
+			xmin, ymin = o
+			dx, dy = r
+			return (xmin, ymin, dx, dy)
+		if self.rotation == ANGLED   and geom == ANGLE_S:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			A = (X + W / 2, Y)
+			B = (X + W    , Y + H / 2)
+			C = (X + W / 2, Y + H)
+			D = (X        , Y + H / 2)
+			
+			a = C
+			b = midpoint (D, A)
+			c = midpoint (A, B)
+			
+			o, r = bounding_rect (pts)
+			xmin, ymin = o
+			dx, dy = r
+			return (xmin, ymin, dx, dy)
+		if self.rotation == ANGLED   and geom == ANGLE_W:
+			rect = CroppingApp.recursion_rect (self, geom)
+			X, Y, W, H = rect
+			A = (X + W / 2, Y)
+			B = (X + W    , Y + H / 2)
+			C = (X + W / 2, Y + H)
+			D = (X        , Y + H / 2)
+			
+			a = D
+			b = midpoint (A, B)
+			c = midpoint (B, C)
+			
+			o, r = bounding_rect (pts)
+			xmin, ymin = o
+			dx, dy = r
+			return (xmin, ymin, dx, dy)
+		raise Exception () # unsupported geom
 
 if __name__ == "__main__":
 	from gui import GUI

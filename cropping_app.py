@@ -5,6 +5,8 @@ import pygame
 from app import App
 from constants import ORIGIN
 
+from geom import SQUARE, DIAMOND, CIRCLE, ANGLE_N, ANGLE_E, ANGLE_S, ANGLE_W
+
 
 class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-make-circular-surface-in-pygame
 	def __init__ (self, *args, **kwargs):
@@ -114,6 +116,9 @@ class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-m
 		a = App.minsz (self) # minsz of child
 		print ("leave cropping_app.minsz_helper ()")
 		return a
+		
+	def recursion_rect (self, geom=SQUARE): return self.inner_rect () # override
+	#def recursion_rect (self, geom=SQUARE): return self.outer_rect () # override
 	
 	
 	#def outer_bounding_area (self): raise Exception () # area of bounding box
@@ -122,6 +127,7 @@ class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-m
 	#def inner_area          (self): raise Exception () # area of circle
 	
 	#def recursion_rect (self, geom=SQUARE): # need to override: default behavior is to use square outer geometry
+		
 		
 
 if __name__ == "__main__":

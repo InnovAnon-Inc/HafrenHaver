@@ -202,18 +202,20 @@ Thanks InnovAnon!
 S. Faust for his exploration of turiya and its possibilities
 and for his mentorship.
 
-Honorable mention to known Western code monks,
-who may not have contributed anything to this particular project,
-but rather to the Western cyber-monastic tradition in general:
-- Terry A. Davis
-- Sasha Gallagher
-
 TruthStream: their entertaining spin on these technologies
 has been downright inspirational during this undertaking.
 
 Other credits are specifically linked in the source,
 such as StackOverflow threads where the good people ensured
 forward progress, even on days when I watched several sunrises.
+
+Dedication
+----------
+Honorable mention to known Western code monks,
+who may not have contributed anything to this particular project,
+but rather to the Western cyber-monastic tradition in general:
+- Terry A. Davis
+- Sasha Gallagher
 
 License
 ----------
