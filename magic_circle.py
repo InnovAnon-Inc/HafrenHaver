@@ -246,6 +246,7 @@ class MagicCircle (CircleApp): # composite app, child is also circle, animated a
 	# 3 * 4 = 12 points on polygon...  
 	def draw_foreground (self, temp):
 		print ("circular_matrix_text.draw_foreground ()")
+		CircleApp.draw_foreground (self, temp)
 		xforms = self.xforms # image, w, h
 		n      = self.n
 		ndx    = self.sectioni
