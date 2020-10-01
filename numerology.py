@@ -9,6 +9,19 @@ ACRONYMS     = (
 	'IA',  # InnovAnon: Innovations Anonymous (inc)
 	'FFF', # Free Code for a Free World!      (slogan)
 	'HH',  # Hafren Haver                     (project)
+	'SS',  # Severn Sieve                     (subproject)
+)
+
+TEXTS = (
+	'InnovAnon',
+	'Innovations',
+	'Anonymous',
+	'InnovationsAnonymous',
+	'FreeCode',
+	'FreeWorld',
+	'FreeCodeForAFreeWorld',
+	'HafrenHaver',
+	'SevernSieve',
 )
 
 def acronyms (a=ACRONYMS):
@@ -80,7 +93,7 @@ def a2bn21 (alpha):       return a2bn2 (alpha,    sum)
 def a2bn22 (alpha):       return a2bn2 (alpha,    prod)
 
 def numerology1 (a=None):
-	if a is None: a = acronyms ()
+	if a is None: a = acronyms () + TEXTS
 	functions = (a2n0, a2n1, a2b)
 	p         = product (functions, a)
 	ns        = (f (acronym) for f, acronym in p)
@@ -88,7 +101,7 @@ def numerology1 (a=None):
 	assert len (ns) == len (set (ns))
 	return ns
 def numerology2 (a=None):
-	if a is None: a = acronyms ()
+	if a is None: a = acronyms () + TEXTS
 	functions = (a2bn11, a2bn21, a2bn12, a2bn22)
 	p         = product (functions, a)
 	ns        = (f (acronym) for f, acronym in p)

@@ -10,6 +10,8 @@ from rotation import STRAIGHT, ANGLED
 import pygame
 import pygame.gfxdraw
 
+from math import sqrt
+
 class SquareApp (CroppingApp):
 	def __init__ (self, rotation=STRAIGHT, parent_is_square=True, *args, **kwargs):
 		CroppingApp.__init__ (self, *args, **kwargs)

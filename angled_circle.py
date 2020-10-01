@@ -196,10 +196,10 @@ if __name__ == "__main__":
 	from app import App
 	from constants import DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
 	from gui import GUI
-	#from circled_angle import CircledAngle
+	from circled_angle import CircledAngle
 	
 	def main ():
-		if False:
+		if True:
 			j = AngleApp     (orientation=NORTH)
 			i = CircledAngle (j)
 			h = AngledCircle (i, orientation=WEST)

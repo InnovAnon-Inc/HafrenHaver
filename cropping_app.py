@@ -109,8 +109,7 @@ class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-m
 		ret = rw * minw, rh * minh
 		print ("enter cropping_app.minsz ()")
 		return ret
-	# need to override
-	def minsz_helper (self):
+	def minsz_helper (self): # need to override
 		print ("enter cropping_app.minsz_helper ()")
 		a = App.minsz (self) # minsz of child
 		print ("leave cropping_app.minsz_helper ()")
@@ -121,6 +120,9 @@ class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-m
 	#def outer_area          (self): raise Exception () # area of square/diamond
 	#def inner_bounding_area (self): raise Exception () # area of bounding box
 	#def inner_area          (self): raise Exception () # area of circle
+	
+	#def recursion_rect (self, geom=SQUARE): # need to override: default behavior is to use square outer geometry
+		
 
 if __name__ == "__main__":
 	from gui import GUI

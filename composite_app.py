@@ -101,7 +101,9 @@ class CompositeApp (CroppingApp):
 		print ("leave composite_app.inner_rect ()")
 		return a
 		
-		
+	#def recursion_rect (self, geom=None): # need to override: default behavior is to use square outer geometry
+	# TODO if child is none then use geom, else use child geom
+	# TODO if child is not none, then child's recursion rect needs to be scaled to this one
 		
 		
 	

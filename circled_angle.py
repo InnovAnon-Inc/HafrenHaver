@@ -147,9 +147,10 @@ if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT
 	from orientation import NORTH, SOUTH, EAST, WEST
 	from gui import GUI
+	from angled_circle import AngledCircle
 	
 	def main ():
-		if False:
+		if True:
 			j = AngleApp     (orientation=NORTH)
 			i = CircledAngle (j)
 			h = AngledCircle (i, orientation=WEST)

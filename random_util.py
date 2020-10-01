@@ -11,7 +11,13 @@ def random_index (array): return randrange (0, len (array))
 #@jit
 def random_bool (): return bool (getrandbits (1))
 
-def relative_primes (n): return (k for k in range (1, n + 1) if gcd (n, k) == 1)
+def relative_primes (n, minn=1, maxn=None):
+	if maxn is None: maxn = n
+	assert minn <= n
+	f = lambda k: gcd (n, k) == 1
+	rng = range (minn, maxn + 1)
+	return filter (f, rng)
+	#return (k for k in range (minn, n + 1) if gcd (n, k) == 1)
 def random_bjorklund (n):
 	k = choice (list (relative_primes (n)))
 	return bjorklund (n, k)
@@ -109,6 +115,38 @@ def subsets (arr, s, c = ()):
 		
 		k = chain (*k)
 		yield from k
+		
+		
+
+# relatively prime pair a, b s.t. a >= minn, b >= minn, a * b <= maxn
+def random_relatively_prime_pair (minn, maxn):
+	#print ("random_relatively_prime_pair (%s, %s)" % (minn, maxn))
+	while True:
+		a = randrange (minn, maxn // minn)
+		#print ("a: %s" % (a,))
+		bn = random_relatively_prime_to (a, minn, maxn)
+		if bn is None: continue
+		b, n = bn
+		return a, b, n
+		
+# random number b, relatively prime to a, s.t., minn <= a * b <= maxn
+def random_relatively_prime_to (a, minn, maxn):
+	#print ("random_relatively_prime_to (%s, %s, %s)" % (a, minn, maxn))
+	assert a >= minn
+	assert a <= maxn // minn
+	print ("a: %s, minn: %s, maxn: %s" % (a, minn, maxn // a))
+	bs = relative_primes (a, minn, maxn // a)
+	bs = tuple (bs)
+	if len (bs) == 0: return None
+	print ("bs: %s" % (bs,))
+	#print ("bs: %s" % (bs,))
+	b = choice (bs)
+	assert b >= minn, "b: %s, minn: %s" % (b, minn)
+	n = a * b
+	assert n <= maxn
+	return b, n
+		
+		
 		
 if __name__ == "__main__":
 	def main ():

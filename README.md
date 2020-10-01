@@ -29,6 +29,17 @@ phrases differ from each other, but rather than generating a unique
 phrase cadence for the second one, it might reuse a phrase cadence 
 from elsewhere in the piece).
 
+# SevernSieve
+P.o.C. for variable-length wheel factorization
+==========
+An implementation of variable-length wheel factorization
+(a compression technique for the sieve of eratosthenes)
+that theoretically has a slightly lower upper bound to its
+asymptotic complexity.
+
+There's one problem of efficiency to be resolved in the implementation.
+Hashing could be used as a work-around until a formula is derived.
+
 TODO
 ----------
 - binaural beats
@@ -36,6 +47,8 @@ TODO
 - monaural beats
 - other effects... like phasing
 - poetic meter
+- subliminal programming
+- ndimensional and possibly true non-euclidean topologies
 
 Underlying Concepts
 ----------
@@ -73,6 +86,111 @@ HafrenHaver (verb):
 To go on and on about a legendary British princess who was drowned
 in the River Severn by her repudiated stepmother Gwendolen.
 
+SevernSieve (noun):
+
+A device for separating wanted elements from unwanted material
+in the River Severn.
+
+Purpose
+----------
+To what end are we engineering literal mind control technology?
+
+The state of the art in brainwave entrainment technology is really
+quite amazing, making attaining advanced states of consciousness
+that previously took decades (or lifetimes according to some dogmas)
+possible within a few months of consistent practice.
+
+The implications of this is that the neigh-mythical state of turiya is
+easily accessible to even "armchair" mystics. However, the
+implementations of these technologies are lagging behind the current
+research. Listening to isochronic pulses can be nerve-wracking and
+downright repetitive, even when masked with pink noise such as nature
+sounds and buzzword musical textures, such as singing bowls, which is
+known to reduce the effectiveness of the isochronic technologies.
+
+Thus, the state of the art is to either shine a proverbial laser into
+your ear-balls or to reduce the effectiveness of the technology.
+Furthermore, isochronic technology is known to be effective over both
+audible and visual wavelengths, but few known implementations implement
+the latter, much less both.
+
+This framework will make it quick and easy to stand up apps that have
+these technologies embedded in them at a fundamental level.
+While our focus is on generating tolerable pink noise
+and creating an interface for controlling the
+necessary models, the middleware will be able to manage layouts,
+colorschemes, audio, etc., for any sort of app, including games:
+imagine, for example, a tetris implementation that can induce
+trancelike states, enhancing the effectiveness of positive affirmations
+to enhance your gaming experience. Play games, get turiya for free.
+
+That layer will enable a useful subproject:
+gamifying the learning process,
+as well as generating mnemonic songs
+given plain natural language statements,
+and facilitating the synchronization
+of the classroom in reciting these songs.
+For anyone who has taken classical Latin,
+this process technique should be familiar.
+
+In a nutshell:
+- target a cymatic base frequency, such as salinated water
+- use prime number math (plus a layer for keys, tetrachords, scales, modes and chords)
+  for all tempos, acoustic beats (caused by harmonies) and even color schemes
+- induce a particular brainwave frequency via the combination of
+  monaural beats, visual and audible isochronic pulses
+
+So... what's the result like? Imagine that you spend all day working
+on some great project, you inevitably get tired and go to sleep,
+but when you enter your dream cycle, you remember that break time is over,
+sit down at your terminal, and continue coding in the dream world,
+switching to your desk with a paper and pencil
+if the terminal is getting too dreamlike, then,
+when you wake up refreshed, and continue coding in the waking world,
+the code is easier and quicker to write, because you've already
+written it before.
+
+That is what is possible in a Level 1 Dream State on a night when your
+turiya is strong enough.
+Though being the world's most productive office worker is not the point.
+That's just the beginning of what can be achieved:
+that's only a Level 1 Dream State.
+These technologies will help make the other dream levels accessible
+as well, if used while sleeping.
+
+After attaining a Level 4 Dream State, the next strange state of
+consciousness is Level 4 Ascension, when you begin to dream in four
+dimensions.
+
+Admittedly, the advanced topologies will require exotic physics engines,
+including multidimensional raycasting at a minimum,
+as well as curious computations related to audio engineering.
+That is a TODO for far in the future,
+but that will make Level 4 Ascension accessible to the masses,
+at least the ones who have stereophonic input to their listening
+devices--headphones for their ears.
+
+That layer will enable a fun subproject, a massive undertaking in its
+own right: a sandbox to merge game genres into a single universe,
+allowing for focus from FPS-scale gameplay to simtower-, simcity-,
+civ-level and beyond.
+There will be a focus on randomized content generation;
+AIs will be trained within this sandbox,
+in an effort to generate more realistic, randomized buildings
+and city structures:
+Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn.
+
+Once completed, this project should contribute to our effort to achieve
+a critical mass of individuals who have achieved turiya and 
+Level 4 Ascension, which should, in theory, make these abilities
+the default for human consciousness.
+
+Bigger picture: what next after we make the three dimensional world
+obselete for the collective unconscious?
+Well, we build drones to replace our niche in the ecosystem,
+making ourselves obselete to this world,
+and turn our attention toward getting the Hell off this rock.
+
 Credits
 ----------
 The lionshare of the credit goes to that inner monologue
@@ -81,9 +199,17 @@ subconscious mind-brain (yeah... "mind-brain") or perhaps a
 supernatural entity that nobody has actually seen.
 Thanks InnovAnon!
 
-Honorable mention to known Western code monks:
+S. Faust for his exploration of turiya and its possibilities
+and for his mentorship.
+
+Honorable mention to known Western code monks,
+who may not have contributed anything to this particular project,
+but rather to the Western cyber-monastic tradition in general:
 - Terry A. Davis
 - Sasha Gallagher
+
+TruthStream: their entertaining spin on these technologies
+has been downright inspirational during this undertaking.
 
 Other credits are specifically linked in the source,
 such as StackOverflow threads where the good people ensured
@@ -98,6 +224,6 @@ one sinister line at a time.
 
 Other code, obviously, retains the original licenses.
 
-==========
-Innovations Anonymous
+# Innovations Anonymous
 Free Code for a Free World!
+==========

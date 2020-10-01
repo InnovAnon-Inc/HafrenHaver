@@ -12,6 +12,8 @@ from geometry import tr
 from constants import ORIGIN
 from constants import DEFAULT_SCREEN_MODE
 
+from cropping_app import CroppingApp
+
 	
 from geometry import recurse_point
 
@@ -64,10 +66,16 @@ class RecursiveComposite (App):
 		print ("enter recursive_composite.recursion points helper ()")
 		node = self.child
 		while True:
+			# TODO inner_rect() is not right: need an inner inner rect
 			if not isinstance (node, CompositeApp):
+				#print ("unexpected node type")
+				#raise Exception ()
 				print ("test a")
-				ret = (node.get_rect (), node.minsz ())
-				#ret = (node.inner_rect (temp), node.minsz ())
+				if isinstance (node, CroppingApp): r = node.inner_rect ()
+				else: r = node.get_rect ()
+				#ret = (node.get_rect (), node.minsz ())
+				#ret = (node.inner_rect (), node.minsz ())
+				ret = (r, node.minsz ())
 				print ("test b")
 				break
 			if node.is_recursable ():
@@ -94,8 +102,7 @@ class RecursiveComposite (App):
 		print ("test a")
 		rps = self.recursion_points_helper ()
 		if True:
-			for rp in rps:
-				yield from recurse_point (rect, *rp)
+			for rp in rps: yield from recurse_point (rect, *rp)
 		else:
 			print ("test b")
 			f = lambda args: recurse_point (rect, *args)
@@ -122,6 +129,8 @@ if __name__ == "__main__":
 	from constants import DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
 	from gui import GUI
 	from constants import BLACK
+	from square_app import SquareApp
+	
 	def main ():
 		if False:
 			j = AngleApp     (orientation=NORTH)
@@ -138,9 +147,22 @@ if __name__ == "__main__":
 			#d = SquareApp     (background=DEFAULT_BACKGROUND)
 			d = None
 			k = 0
+			if k == -1:
+				d = SquareApp (background=SECONDARY_BACKGROUND)
+				c = CircledSquare (d)
+				b = SquaredCircle (c, background=SECONDARY_BACKGROUND)
 			if k == 0:
+				# TODO need to get inner inner rect, given a specified geometry
+				# shapeApp.get_inner_inner_rect (outer_geometry=square)
+				# 
 				r = ANGLED
-				c = CircledSquare (d, rotation=r)
+				if False:
+					d = SquareApp (rotation=r, background=SECONDARY_BACKGROUND)
+					c = CircledSquare (d)
+				elif True:
+					c = CircledSquare (d, rotation=r)
+				else:
+					c = CircledSquare (d, rotation=STRAIGHT)
 				b = SquaredCircle (c, rotation=r, background=SECONDARY_BACKGROUND)
 			if k == 1:
 				r = STRAIGHT

@@ -125,6 +125,13 @@ def   rotate_angles   (angles, dt=DEFAULT_ROTATION):
 	tmp = map (f, angles)
 	if False: tmp = tuple (tmp)
 	return tmp
+
+def  reflect_angles	  (angles):
+	f = lambda t: -t
+	tmp = map (f, angles)
+	if False: tmp = tuple (tmp)
+	return tmp
+
 ##@jit
 def angles_to_polygon (angles):
 	f   = lambda t: (cos (t), sin (t))
@@ -437,6 +444,12 @@ def reasonable_minmax_int_pitch (base_frequency, scale, lower_bound, upper_bound
 # TODO reasonable pitch given base freq, scale, audio bounds, graphics bounds	
 
 	
+		
+		
+		
+def to_degrees (radians): return radians / (2 * pi) * 360
+def to_radians (degrees): return degrees / 360 * (2 * pi)
+		
 		
 if __name__ == "__main__":
 	print (DEFAULT_FRAME_RATE)
