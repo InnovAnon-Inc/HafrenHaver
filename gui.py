@@ -41,9 +41,10 @@ import sys
 import os
 
 class GUI:
-	def __init__ (self, title=DEFAULT_TITLE, icontitle=DEFAULT_ICONTITLE, icon=DEFAULT_ICON, running_title=RUNNING_TITLE, running_icontitle=RUNNING_ICONTITLE, closing_title=CLOSING_TITLE, closing_icontitle=CLOSING_ICONTITLE, credits=DEFAULT_CREDITS, subliminal_threshold=DEFAULT_SUBLIMINAL_THRESHOLD, crfg=IA_RED, crbg=IA_BLACK, fullscreen=False, exit_on_close=True, app=None):
+	def __init__ (self, fullscreen=False, exit_on_close=False, app=None, busy_wait=False):
 		self.entered           = False
 		#self.running           = False
+		"""
 		self.        title     =         title
 		self.        icontitle =         icontitle
 		self.        icon      =         icon
@@ -54,16 +55,18 @@ class GUI:
 		self.credits           = credits
 		self.crfg              = crfg
 		self.crbg              = crbg
+		"""
 		self.fullscreen        = fullscreen
 		self.app               = app
-		self.subliminal_threshold = subliminal_threshold
+		#self.subliminal_threshold = subliminal_threshold
 		self.exit_on_close     = exit_on_close
+		self.busy_wait         = busy_wait
 		#self.ss = None
 		#self.set_background (background)
 		
 	def __enter__ (self):		
 		self.entered     = True
-		bits = 16 #the number of channels specified here is NOT 
+		#bits = 16 #the number of channels specified here is NOT 
 		          #the channels talked about here http://www.pygame.org/docs/ref/mixer.html#pygame.mixer.get_num_channels
 		# TODO
 		#pygame.mixer.pre_init(DEFAULT_SAMPLE_RATE, -bits, 2)
@@ -74,29 +77,35 @@ class GUI:
 		
 		self.screen_info = display.Info  () #Required to set a good resolution for the game screen
 		self.clock       = pygame.time   .Clock ()
-		self.set_title      ()
-		self.set_icon       ()
+		#self.set_title      ()
+		#self.set_icon       ()
+		self.enter0 ()
 		self.set_app        ()
 		
-		self.clock.tick ()
+		#self.clock.tick ()
 		self.set_fullscreen ()
-		self.show_credits   ()
-		#self.set_background ()
-		self.clock.tick (self.subliminal_threshold)
-		return self	
+		#self.show_credits   ()
+		##self.set_background ()
+		#self.clock.tick (self.subliminal_threshold)
+		self.enter1 ()
+		return self
+	
+	def enter0 (self): pass
+	def enter1 (self): pass 
+	def  exit0 (self): pass
 	def __exit__ (self, type, value, traceback):
 		print ("in exit")
 		self.running = False
-		self.clock.tick ()
-		print ("after tick")
-		#self.set_background ()
-		self.show_credits ()
-		print ("after credits")
-		self.set_title (self.closing_title, self.closing_icontitle)
-		print ("after title")
-		#self.clock.tick (self.subliminal_threshold)
-		self.clock.tick ()
-		print ("after tick")
+		#self.clock.tick ()
+		#print ("after tick")
+		##self.set_background ()
+		#self.show_credits ()
+		#print ("after credits")
+		#self.set_title (self.closing_title, self.closing_icontitle)
+		#print ("after title")
+		##self.clock.tick (self.subliminal_threshold)
+		#self.clock.tick ()
+		#print ("after tick")
 		def f ():
 			pygame.display.quit ()
 			print ("after display quit")
@@ -187,10 +196,7 @@ class GUI:
 		if self.ss is not None: self.app.set_subsurface (self.ss)
 	
 	def run (self):
-		self.running = True
-		self.set_title (self.running_title, self.running_icontitle)
-		if self.app is not None: self.app.start_running ()
-		self.clock.tick ()
+		self.run_enter ()
 		while self.running:
 			#print ("in while")
 			self.run_loop ()
@@ -201,12 +207,24 @@ class GUI:
 			if not self.running: break
 			#print ("before tick")
 			# TODO get tick speed from app
-			self.clock.tick_busy_loop (DEFAULT_TICK_SPEED)
+			self.do_tick ()
 			#print ("after tick")
 		#print ("end while")
 		if self.app is not None: self.app. stop_running ()
+		self.run_leave ()
+	def run_enter (self):
+		self.running = True
+#		self.set_title (self.running_title, self.running_icontitle)
+		if self.app is not None: self.app.start_running ()
+		self.clock.tick ()
+	def run_leave (self):
 		#print ("end run")
-		#self.running = False	
+		self.running = False
+		
+	def do_tick (self):
+		if self.busy_wait: f = self.clock.tick_busy_loop	
+		else:              f = self.clock.tick
+		f (DEFAULT_TICK_SPEED)
 	def run_loop (self):
 		pygame.event.pump () 	          # process event queue
 		
@@ -215,18 +233,23 @@ class GUI:
 				self.running = False
 				return
 				
-			if event.type == VIDEORESIZE:
-				self.ss = pygame.display.set_mode (event.dict['size'], RESIZABLE)
-				if self.app is not None: self.app.set_subsurface (self.ss)
+#			if event.type == VIDEORESIZE:
+#				self.ss = pygame.display.set_mode (event.dict['size'], RESIZABLE)
+#				if self.app is not None: self.app.set_subsurface (self.ss)				
+			self.handle_event (event)
 		keys = pygame.key.get_pressed ()  # It gets the states of all keyboard keys.
 		if keys[ord ('q')]:
 			self.running = False
 			return
-		if keys[ord ('f')]: self.set_fullscreen (not self.fullscreen)
-		if keys[ord ('r')]: self.set_fullscreen (False)
+#		if keys[ord ('f')]: self.set_fullscreen (not self.fullscreen)
+#		if keys[ord ('r')]: self.set_fullscreen (False)
+		self.handle_keys (keys)
 		
 		# TODO only update graphics every n ticks... audio on every tick
 		if self.app is not None: self.app.run_loop (keys)
+		
+	def handle_event (self, event): pass
+	def handle_keys  (self, keys):  pass
 		
 if __name__ == "__main__":
 	print (DEFAULT_FRAME_RATE)
