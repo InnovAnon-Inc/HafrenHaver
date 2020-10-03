@@ -10,7 +10,7 @@ terminate    = 'terminate' ;
 hold_keys    = 'hold' right:keys ;
 release_keys = 'release' right:keys ;
 	
-press_keys   = 'press' left:[ multiplier ] right:keys ;
+press_keys   = [ 'press' ] left:[ multiplier ] right:keys ;
 multiplier   = right:num ( 'time' | 'times' ) ;
 	
 keys         = [ 'keys' | 'key' ] right:{ key }+ ;
