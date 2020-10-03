@@ -236,6 +236,7 @@ if __name__ == "__main__":
 	from gui import GUI
 	
 	def main ():
+		# finagellini algorithm:
 		# the tree is specified with (radius, height)
 		# the tree's branches are specified with (height, angle):         3D polar coordinates with respect to tree's dimensions
 		# which is transformed using a 1-to-1 mapping to (x, y, z):       3D cartesian coordinates on the surface of the cone
