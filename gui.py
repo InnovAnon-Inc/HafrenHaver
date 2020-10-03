@@ -92,7 +92,7 @@ class GUI:
 	
 	def enter0 (self): pass
 	def enter1 (self): pass 
-	def  exit0 (self): pass
+	def  exit0 (self, type, value, traceback): pass
 	def __exit__ (self, type, value, traceback):
 		print ("in exit")
 		self.running = False
@@ -106,6 +106,7 @@ class GUI:
 		##self.clock.tick (self.subliminal_threshold)
 		#self.clock.tick ()
 		#print ("after tick")
+		self.exit0 (type, value, traceback)
 		def f ():
 			pygame.display.quit ()
 			print ("after display quit")
@@ -122,7 +123,11 @@ class GUI:
 			print ("thread created")
 			x.start ()
 			print ("thread started")
-			x.join (DEFAULT_EXIT_TIMEOUT)
+			if self.exit_on_close:
+				x.join (DEFAULT_EXIT_TIMEOUT)
+				if x.is_alive (): # TODO
+					pass
+			else: x.join ()
 			print ("thread joined")
 			res = 0 # TODO
 		else:
@@ -133,42 +138,6 @@ class GUI:
 		if self.exit_on_close: os._exit (res)
 		print ("exit_on_close disabled")
 		return False
-	def show_credits (self):
-		assert self.entered
-		df    = pygame.font.get_default_font ()
-		font  = pygame.font.Font (df, 32)
-		texts = (font.render (c, True, self.crfg, self.crbg) for c in self.credits) # TODO parallel
-		w = self.ss.get_width  ()
-		h = self.ss.get_height ()
-		n = len (self.credits)
-		self.ss.fill (self.crbg)
-		for text, i in zip (texts, range (0, n)): # TODO parallel
-			rect  = text.get_rect ()
-			rect.center = (round (w / 2), round (h * (i / n) + h * (1 / (2 * n))))
-			self.ss.blit (text, rect)
-		pygame.display.update ()
-		#self.clock.tick (.1)
-	def set_background (self, background=None):
-		if background is not None: self.raw_background = pygame.image.load (background)
-		if self.ss is None: return
-		w = self.ss.get_width  ()
-		h = self.ss.get_height ()
-		self.background = pygame.transform.scale (self.raw_background.convert_alpha (), (w, h))
-		self.ss.fill (BLACK)
-		self.ss.blit (self.background, ORIGIN)
-		pygame.display.update()
-		
-	def set_title (self, title=None, icontitle=None):
-		#assert title is not None or icontitle is not None
-		if     title is not None: self.    title =     title
-		if icontitle is not None: self.icontitle = icontitle
-		if self.entered: display.set_caption (self.title, self.icontitle)
-		
-	def set_icon (self, icon=None):
-		if icon is not None: self.icon = icon
-		if not self.entered: return
-		surface = pygame.image.load (self.icon)
-		display.set_icon (surface)
 
 	def set_fullscreen (self, fullscreen=None):
 		assert self.entered
@@ -197,6 +166,7 @@ class GUI:
 	
 	def run (self):
 		self.run_enter ()
+		self.clock.tick ()
 		while self.running:
 			#print ("in while")
 			self.run_loop ()
@@ -210,13 +180,14 @@ class GUI:
 			self.do_tick ()
 			#print ("after tick")
 		#print ("end while")
-		if self.app is not None: self.app. stop_running ()
+		if self.app is not None: self.app.stop_running ()
 		self.run_leave ()
+		self.clock.tick ()
 	def run_enter (self):
 		self.running = True
 #		self.set_title (self.running_title, self.running_icontitle)
 		if self.app is not None: self.app.start_running ()
-		self.clock.tick ()
+		
 	def run_leave (self):
 		#print ("end run")
 		self.running = False

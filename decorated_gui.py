@@ -62,8 +62,8 @@ class DecoratedGUI (ResizeGUI):
 		self.show_credits   ()
 		#self.set_background ()
 		self.clock.tick (self.subliminal_threshold)
-	def exit0 (self):
-		ResizeGUI.exit0 (self)
+	def exit0 (self, type, value, traceback):
+		ResizeGUI.exit0 (self, type, value, traceback)
 		self.clock.tick ()
 		print ("after tick")
 		#self.set_background ()
@@ -134,7 +134,7 @@ class DecoratedGUI (ResizeGUI):
 	
 	def run (self):
 		self.run0 ()
-		GUI.run (self)
+		ResizeGUI.run (self)
 	def run0 (self): self.set_title (self.running_title, self.running_icontitle)
 		
 	#def set_fullscreen (self, fullscreen=None):

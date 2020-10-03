@@ -44,7 +44,7 @@ class ResizeGUI (GUI):
 	def __init__ (self, fullscreen=False, *args, **kwargs):
 		GUI.__init__ (self, *args, **kwargs)
 		self.fullscreen        = fullscreen
-		
+	"""	
 	def set_fullscreen (self, fullscreen=None):
 		assert self.entered
 		if fullscreen is not None: self.fullscreen = fullscreen
@@ -63,7 +63,7 @@ class ResizeGUI (GUI):
 		self.rect = self.screen.get_rect   ()
 		self.ss   = self.screen.subsurface (self.rect)
 		if self.app is not None: self.app.set_subsurface (self.ss)
-				
+		"""		
 	def handle_event (self, event):
 		if event.type == VIDEORESIZE:
 			self.ss = pygame.display.set_mode (event.dict['size'], RESIZABLE)
