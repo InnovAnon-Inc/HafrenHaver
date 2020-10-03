@@ -30,21 +30,124 @@ def parse_command (text):
 	# TODO handle nato here ? numbers are nightmarish in the ebnf
 	#ast  = translate_tokens (toks) # translate to IR
 	#evs  =   compile_tokens (ast)  # convert to pygame.Event
-	evs = translate_tokens (toks) # compile to pygame.Event
+	toks = translate_tokens (toks) # translate to IR
+	evs  =   compile_tokens (toks) # compile to pygame.Event
 	return evs
+
+from itertools import chain
+def translate_tokens (toks):
+	toks = map (      fix_token, toks)
+	toks = map (     nato_token, toks)
+	toks = map (translate_token, toks)
+	toks = chain (*toks)
+	# TODO join number tokens
+	toks = tuple (toks)
+	return toks
+fix_db = {
+	"won" : 1,
+	"wun" : 1,
+	"too" : 2,
+	"to"  : 2,
+	"for" : 4,
+}
+def fix_token (token):
+	if token in fix_db: return fix_db[token]
+	return token
+nato_db = {
+	'alpha'   : 'a',
+	'bravo'   : 'b',
+	'charlie' : 'c',
+	'delta'   : 'd',
+	'echo'    : 'e',
+	'foxtrot' : 'f',
+	'golf'    : 'g',
+	'hotel'   : 'h',
+	'india'   : 'i',
+	'juliet'  : 'j',
+	'kilo'    : 'k',
+	'lima'    : 'l',
+	'mike'    : 'm',
+	'november': 'n',
+	'oscar'   : 'o',
+	'papa'    : 'p',
+	'quebec'  : 'q',
+	'romeo'   : 'r',
+	'sierra'  : 's',
+	'tango'   : 't',
+	'uniform' : 'u',
+	'victor'  : 'v',
+	'whiskey' : 'w',
+	'xray'    : 'x',
+	'yankee'  : 'y',
+	'zulu'    : 'z',
+	'tree'    : 3,
+	'fower'   : 4,
+	'fife'    : 5,
+	'ait'     : 8,
+	'niner'   : 9,
+	'affirmative' : 'yes',
+	'roger'       : 'yes',
+	'wilco'       : 'yes',
+	'negatory'    : 'no',
+}
+def nato_token (token):
+	if token in nato_db: return nato_db[token]
+	return token
+tr_dbn = {
+	'zero'     :  0,
+	'one'      :  1,
+	'two'      :  2,
+	'three'    :  3,
+	'four'     :  4,
+	'five'     :  5,
+	'six'      :  6,
+	'seven'    :  7,
+	'eight'    :  8,
+	'nine'     :  9,
+	'ten'      : 10,
+	'eleven'   : 11,
+	'twelve'   : 12,
+	'thirteen' : 13,
+	'fourteen' : 14,
+	'fifteen'  : 15,
+	'sixteen'  : 16,
+	'seventeen': 17,
+	'eighteen' : 18,
+	'nineteen' : 19,
+	'twenty'   : 20,
+	'thirty'   : 30,
+	'forty'    : 40,
+	'fifty'    : 50,
+	'sixty'    : 60,
+	'seventy'  : 70,
+	'eighty'   : 80,
+	'ninety'   : 90,
+}
+tr_dbt = {
+	'once'   : (1, 'time' ),
+	'twice'  : (2, 'times'),
+	'thrice' : (3, 'times'),
+}
+def translate_token (token):
+	# TODO handle large numbers
+	if token in tr_dbn: return (tr_dbn[token],)
+	if token in tr_dbt: return tr_dbt[token]
+	return (token,)
 	
 #from hal_parser import BAASParser
 import tatsu
 translate_db = {}
-def translate_tokens (tokens, semantics=None):
+def compile_tokens (tokens, semantics=None):
 	if semantics is None: semantics = get_semantics ()
 	if (tokens, semantics) in translate_db: return translate_db[(tokens, semantics)]
+	f      = lambda token: str (token)
+	tokens = map (f, tokens)
 	text   = " ".join (tokens)
 	if not len (text): return None
 	parser = get_parser ()
 	#parser = BAASParser ()
 	try: ast = parser.parse (text, semantics=semantics)
-	except tatsu.exceptions.FailedToken as e:
+	except Exception as e:
 		ast = None
 		print (e)
 	print ("ast: %s" % (ast,))
@@ -211,15 +314,13 @@ if __name__ == "__main__":
 	print (parse_command ("press        whiskey tango foxtrot"))
 	print (parse_command ("press   keys whiskey tango foxtrot"))
 	
-	print (parse_command ("press        whiskey repeat two"))
-	print (parse_command ("press   key  whiskey repeat two"))
-	print (parse_command ("press        whiskey repeat two times"))
-	print (parse_command ("press   key  whiskey repeat two times"))
+	print (parse_command ("press two times      whiskey"))
+	print (parse_command ("press two times key  whiskey"))
+	print (parse_command ("press twice          whiskey"))
+	print (parse_command ("press twice     key  whiskey"))
 
-	print (parse_command ("press        whiskey tango foxtrot repeat two"))
-	print (parse_command ("press   keys whiskey tango foxtrot repeat two"))
-	print (parse_command ("press        whiskey tango foxtrot repeat two times"))
-	print (parse_command ("press   keys whiskey tango foxtrot repeat two times"))
+	print (parse_command ("press twice          whiskey tango foxtrot"))
+	print (parse_command ("press twice     keys whiskey tango foxtrot"))
 	
 	# TODO multiple commands
 	

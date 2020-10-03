@@ -5,6 +5,8 @@ import speech_recognition as sr                                         # import
 from audio_gui import AudioGUI
 from hallib import get_response, parse_command
 
+import pygame
+
 class HAL9000 (AudioGUI): # Heuristically Programmed ALgorithmic Computer
 	def __init__ (self, r=None, m=None, *args, **kwargs):
 		AudioGUI.__init__ (self, *args, **kwargs)
@@ -16,9 +18,11 @@ class HAL9000 (AudioGUI): # Heuristically Programmed ALgorithmic Computer
 	def run_enter (self):
 		r = self.r 
 		m = self.m
+		print ("HAL is adjusting for ambient noise")
 		# https://www.codesofinterest.com/2017/04/energy-threshold-calibration-in-speech-recognition.html
 		with self.m as source: r.adjust_for_ambient_noise (source)
 		r.dynamic_energy_threshold = True
+		print ("HAL is online")
 		
 		AudioGUI.run_enter (self)
 		
