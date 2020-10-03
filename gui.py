@@ -17,7 +17,7 @@ from constants import DEFAULT_FRAME_RATE, DEFAULT_TICK_SPEED
 from constants import DEFAULT_EXIT_TIMEOUT, ORIGIN
 
 
-
+from pygame import K_ESCAPE, K_q
 
 # TODO use scales to select better tick speeds
 	
@@ -199,15 +199,25 @@ class GUI:
 	def run_loop (self):
 		pygame.event.pump () 	          # process event queue
 		
-		for event in pygame.event.get (): # Did the user click the window close button?
+		events = pygame.event.get ()
+		for event in events: # Did the user click the window close button?
 			if event.type == pygame.QUIT:
 				self.running = False
 				return
 				
 #			if event.type == VIDEORESIZE:
 #				self.ss = pygame.display.set_mode (event.dict['size'], RESIZABLE)
-#				if self.app is not None: self.app.set_subsurface (self.ss)				
-			self.handle_event (event)
+#				if self.app is not None: self.app.set_subsurface (self.ss)	
+			
+			#if not self.handle_event (event): pygame.event.post (event)
+			
+			if event.type == pygame.KEYDOWN:
+				if event.key == K_ESCAPE or event.key == K_q:
+					self.running = False
+					return
+			
+			self.handle_event (event)	
+			
 		keys = pygame.key.get_pressed ()  # It gets the states of all keyboard keys.
 		if keys[ord ('q')]:
 			self.running = False
@@ -217,7 +227,7 @@ class GUI:
 		self.handle_keys (keys)
 		
 		# TODO only update graphics every n ticks... audio on every tick
-		if self.app is not None: self.app.run_loop (keys)
+		if self.app is not None: self.app.run_loop (events, keys)
 		
 	def handle_event (self, event): pass
 	def handle_keys  (self, keys):  pass

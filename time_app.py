@@ -153,7 +153,7 @@ class TimeController: # tells the app when to update, based on isochronic pulses
 class TimeApp (CircleApp): # gets data from model, renders it on screen
 	def __init__ (self):
 		CircleApp.__init__ (self)
-	def run_loop (self, keys):
+	def run_loop (self, events, keys):
 		#CenteredApp.run_loop (self, keys)
 		pass
 

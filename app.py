@@ -43,7 +43,7 @@ class App:
 		# TODO
 		print ("leave app.stop_running ()")
 
-	def run_loop      (self, keys):
+	def run_loop      (self, events, keys):
 		print ("enter app.run_loop (%s)" % (keys,))
 		assert self.ss is not None
 		# TODO draw bounding box

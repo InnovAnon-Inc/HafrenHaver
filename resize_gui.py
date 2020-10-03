@@ -34,7 +34,7 @@ from gui import GUI
 
 
 
-
+from pygame import K_r, K_f, KEYDOWN
 
 import threading
 import sys
@@ -68,6 +68,9 @@ class ResizeGUI (GUI):
 		if event.type == VIDEORESIZE:
 			self.ss = pygame.display.set_mode (event.dict['size'], RESIZABLE)
 			if self.app is not None: self.app.set_subsurface (self.ss)
+		elif event.type == KEYDOWN:
+			if event.key == K_f: self.set_fullscreen (not self.fullscreen)
+			if event.key == K_r: self.set_fullscreen (False)
 		GUI.handle_event (self, event)
 	def handle_keys  (self, keys):
 		if keys[ord ('f')]: self.set_fullscreen (not self.fullscreen)

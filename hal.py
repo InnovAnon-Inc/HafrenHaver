@@ -55,6 +55,15 @@ class HAL9000 (AudioGUI): # Heuristically Programmed ALgorithmic Computer
 		if events is None: return
 		for e in events: pygame.event.post (e)
 	
+	"""
+	def run_loop (self):
+		text = 'press key quebec'
+		events = parse_command (text)
+		if events is None: return
+		for e in events: pygame.event.post (e)
+		
+		AudioGUI.run_loop (self)
+	"""
 # TODO
 #import nltk
 #nltk.download ()
