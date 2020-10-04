@@ -93,6 +93,7 @@ class SquaredCircle (SquareApp, CompositeApp):
 		if self.child is None:
 			if self.rotation == ANGLED   and geom == DIAMOND: pass
 			if self.rotation == STRAIGHT and geom == SQUARE:
+				print ("squared_circle computing recursion_rect for square geometry")
 				w, h = W / sqrt (2), H / sqrt (2)
 				x, y = X + (W - w) / 2, Y + (H - h) / 2
 				rect = x, y, w, h
@@ -114,6 +115,7 @@ class SquaredCircle (SquareApp, CompositeApp):
 				x, y = X + (W - w) / 2, Y + (H - h) / 2
 				rect = x, y, w, h
 		else:
+			print ("squared_circle deferring to child for recursion rect")
 			rect = self.child.recursion_rect (geom)
 			x, y, w, h = rect
 			

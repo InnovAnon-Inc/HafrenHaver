@@ -24,6 +24,7 @@ if __name__ == "__main__":
 	def main ():
 		d = None
 		r = STRAIGHT
+		r = ANGLED
 		c = SquaredCircle (d, rotation=r)
 		b = CircledSquare (c, background=SECONDARY_BACKGROUND)
 			

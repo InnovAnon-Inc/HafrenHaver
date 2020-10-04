@@ -117,8 +117,8 @@ class CroppingApp (App): # https://stackoverflow.com/questions/64075338/how-to-m
 		print ("leave cropping_app.minsz_helper ()")
 		return a
 		
-	def recursion_rect (self, geom=SQUARE): return self.inner_rect () # override
-	#def recursion_rect (self, geom=SQUARE): return self.outer_rect () # override
+	#def recursion_rect (self, geom=SQUARE): return self.inner_rect () # override
+	def recursion_rect (self, geom=SQUARE): return self.outer_rect () # override
 	
 	
 	#def outer_bounding_area (self): raise Exception () # area of bounding box

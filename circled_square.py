@@ -197,7 +197,9 @@ class CircledSquare (CircleApp, CompositeApp):
 		X, Y, W, H = rect
 		if self.child is None:
 			if self.rotation == ANGLED   and geom == DIAMOND: pass
-			if self.rotation == STRAIGHT and geom == SQUARE:  pass
+			if self.rotation == STRAIGHT and geom == SQUARE:
+				print ("circled_square using circle_app for recursion_rect")
+				pass
 			if self.rotation == ANGLED   and geom == SQUARE:
 				w, h = W / sqrt (2), H / sqrt (2)
 				x, y = X + (W - w) / 2, Y + (H - h) / 2
@@ -217,6 +219,7 @@ class CircledSquare (CircleApp, CompositeApp):
 				x, y = X + (W - w) / 2, Y + (H - h) / 2
 				rect = x, y, w, h
 		else:
+			print ("circled_square deferring to child for recursion_rect")
 			rect = self.child.recursion_rect (geom)
 			x, y, w, h = rect
 			

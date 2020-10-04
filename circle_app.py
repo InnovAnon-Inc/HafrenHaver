@@ -46,6 +46,7 @@ class CircleApp (CroppingApp):
 	def recursion_rect (self, geom=SQUARE):
 		print ("enter circle_app.recursion_rect (%s)" % (geom,))
 		if geom == SQUARE:
+			print ("circle_app computing recursion rect for square geometry")
 			rect = CroppingApp.recursion_rect (self, geom)
 			X, Y, W, H = rect
 			w, h = W / sqrt (2), H / sqrt (2)

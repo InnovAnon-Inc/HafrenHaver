@@ -24,6 +24,7 @@ if __name__ == "__main__":
 	def main ():
 		d = None
 		r = ANGLED
+		r = STRAIGHT
 		c = SquaredCircle (d, rotation=r)
 		b = CircledSquare (c, background=SECONDARY_BACKGROUND)
 		a = RecursiveComposite (b)
