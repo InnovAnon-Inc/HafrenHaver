@@ -122,7 +122,8 @@ class CompositeApp (CroppingApp):
 			assert w <= W
 			assert h <= H
 			#rect = (X - x, Y - y, W / w, H / h)
-			rect = (X + x, Y + y, W / w, H / h)
+			#rect = (X + x, Y + y, W / w, H / h)
+			return (x, y, w, h)
 		print ("leave composite_app.recursion_rect ()")
 		return rect
 	

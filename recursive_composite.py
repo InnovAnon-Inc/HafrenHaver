@@ -66,6 +66,8 @@ class RecursiveComposite (App):
 		temp.blit (ts, (X, Y))                           # blit working-surface onto real surface
 	def recursion_points_helper (self):
 		print ("enter recursive_composite.recursion points helper ()")
+		return ((self.recursion_rect (), self.minsz ()),)
+		"""
 		node = self.child
 		while True:
 			if not isinstance (node, CompositeApp) or node.is_recursable ():
@@ -104,7 +106,7 @@ class RecursiveComposite (App):
 		print ("test i")
 		print ("leave recursive_composite.recursion points helper ()")
 		return (ret,)
-	
+		"""
 	def recursion_points (self, temp):
 		print ("enter recursive_composite.recursion points (%s)" % (temp,))
 		rect = temp.get_rect ()
@@ -126,6 +128,32 @@ class RecursiveComposite (App):
 			print ("test e")
 			return ret
 		print ("leave recursive_composite.recursion_points ()")
+		
+		
+		
+	def recursion_rect (self, geom=SQUARE): # need to override: default behavior is to use square outer geometry
+		print ("enter composite_app.recursion_rect (%s)" % (geom,))
+		if self.child is None:
+			#return CroppingApp.recursion_rect (self, geom)
+			rect = App.recursion_rect (self, geom)
+		else:
+			x, y, w, h = self.child.recursion_rect (geom)
+			# TODO if child is not none, then child's recursion rect needs to be scaled to this one
+			X, Y, W, H = App.recursion_rect (self, geom)
+			#X, Y, W, H = self.outer_rect ()
+			assert X >= 0
+			assert Y >= 0
+			assert W > 0
+			assert H > 0
+			assert x >= 0
+			assert y >= 0
+			assert w <= W
+			assert h <= H
+			#rect = (X - x, Y - y, W / w, H / h)
+			#rect = (X + x, Y + y, W / w, H / h)
+			rect = (x, y, w, h)
+		print ("leave composite_app.recursion_rect ()")
+		return rect
 			
 if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT
@@ -139,6 +167,7 @@ if __name__ == "__main__":
 	from gui import GUI
 	from constants import BLACK
 	from square_app import SquareApp
+	from hal import HAL9000
 	
 	def main ():
 		if False:
@@ -194,7 +223,7 @@ if __name__ == "__main__":
 			a = RecursiveComposite (b)
 			#a = b
 		#a = RecursiveCompositeTest ()
-		with GUI (app=a) as g:
+		with HAL9000 (app=a) as g:
 			#print (a.get_rect ())
 			#print (a.inner_rect ())
 			#print (a.child.outer_rect ())

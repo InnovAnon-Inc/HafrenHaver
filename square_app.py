@@ -68,30 +68,38 @@ class SquareApp (CroppingApp):
 			rect = CroppingApp.recursion_rect (self, geom)
 			X, Y, W, H = rect
 			w, h = W / sqrt (2), H / sqrt (2)
-			x, y = X + w / 2, Y + h / 2
+			x, y = X + (W - w) / 2, Y + (H - h) / 2
 			assert x > 0
 			assert y > 0
+			assert w < W
+			assert h < H
 			return x, y, w, h
 			
 		if self.rotation == STRAIGHT and geom == DIAMOND:
 			rect = CroppingApp.recursion_rect (self, geom)
 			X, Y, W, H = rect
-			w, h = W / sqrt (2), H / sqrt (2)
-			x, y = X + w / 2, Y + h / 2
+			#w, h = W / sqrt (2), H / sqrt (2)
+			w, h = W, H
+			x, y = X + (W - w) / 2, Y + (H - h) / 2
 			assert x > 0
 			assert y > 0
+			#assert h < H
+			#assert w < W
 			return x, y, w, h
 		if self.rotation == ANGLED and geom == DIAMOND: return CroppingApp.recursion_rect (self, geom)
 		
 		if self.rotation == STRAIGHT and geom == CIRCLE:
 			rect = CroppingApp.recursion_rect (self, geom)
 			X, Y, W, H = rect
-			w, h = W / sqrt (2), H / sqrt (2)
+			#w, h = W / sqrt (2), H / sqrt (2)
+			w, h = W, H
 			#x, y = X + w / 2, Y + h / 2
 			#x, y = X + w, Y + h
 			x, y = X + (W - w) / 2, Y + (H - h) / 2
 			assert x > 0
 			assert y > 0
+			assert w < W
+			assert h < H
 			return x, y, w, h
 		if self.rotation == ANGLED and geom == CIRCLE:
 			rect = CroppingApp.recursion_rect (self, geom)
@@ -99,11 +107,17 @@ class SquareApp (CroppingApp):
 			#w, h = W / sqrt (2), H / sqrt (2)
 			##x, y = X + w / 2, Y + h / 2
 			#x, y = X + (W - w) / 2, Y + (H - h) / 2
-			r = sqrt (pow (1 / 2, 2) + pow (1 / 2, 2))
-			cx, cy = X + W / 2, Y + H / 2
-			x, y, w, h = cx - r * W, cy - r * H, r * W * 2, r * H * 2
+			dw, dh =  W / sqrt (2),  H / sqrt (2)
+			#dw, dh = dw / sqrt (2), dh / sqrt (2)
+			w, h = dw, dh
+			x, y = X + (W - w) / 2, Y + (H - h) / 2
+			#r = sqrt (pow (1 / 2, 2) + pow (1 / 2, 2))
+			#cx, cy = X + W / 2, Y + H / 2
+			#x, y, w, h = cx - r * W, cy - r * H, r * W * 2, r * H * 2
 			assert x > 0
 			assert y > 0
+			assert w < W
+			assert h < H
 			return x, y, w, h
 		
 		if self.rotation == STRAIGHT and geom == ANGLE_N: return CroppingApp.recursion_rect (self, geom)

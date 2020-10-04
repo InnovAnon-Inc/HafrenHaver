@@ -27,7 +27,7 @@ if __name__ == "__main__":
 		c = CircledSquare (d, rotation=r)
 		b = SquaredCircle (c, background=SECONDARY_BACKGROUND)		
 		a = RecursiveComposite (b)
-		with GUI (app=a) as g:
+		with GUI (app=a, exit_on_close=False) as g:
 			g.run ()
 	main ()
 	quit ()

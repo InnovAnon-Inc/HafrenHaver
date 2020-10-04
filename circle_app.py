@@ -56,17 +56,22 @@ class CircleApp (CroppingApp):
 			#assert Y != y
 			assert x > 0
 			assert y > 0
+			assert w < W
+			assert h < H
 			return x, y, w, h
 		if geom == DIAMOND:
 			rect = CroppingApp.recursion_rect (self, geom)
 			X, Y, W, H = rect
-			w, h = W / sqrt (2), H / sqrt (2)
-			x, y = X + w / 2, Y + h / 2
+			#w, h = W / sqrt (2), H / sqrt (2)
+			w, h = W, H
+			x, y = X + (W - w) / 2, Y + (H - h) / 2
 			#x, y = X - w, Y - h
-			assert x > 0
-			assert y > 0
+			#assert x > 0
+			#assert y > 0
 			return x, y, w, h
-		if geom == CIRCLE: return CroppingApp.recursion_rect (self, geom)
+		if geom == CIRCLE:
+			rect = CroppingApp.recursion_rect (self, geom)
+			return rect
 		if geom == ANGLE_N:
 			r = NORTH.radians () # direction of triangle
 			pts = inscribe_polygon (3, r)

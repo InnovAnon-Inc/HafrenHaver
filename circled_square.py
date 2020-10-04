@@ -10,7 +10,7 @@ from rotation import STRAIGHT, ANGLED
 from constants import ORIGIN
 
 import pygame
-from geom import SQUARE
+from geom import SQUARE, DIAMOND, CIRCLE
 
 class CircledSquare (CircleApp, CompositeApp):
 	def __init__ (self, child, rotation=None, *args, **kwargs):
@@ -189,8 +189,50 @@ class CircledSquare (CircleApp, CompositeApp):
 			a = pi * w, pi * h
 		print ("leave circled_square.minsz_helper ()")
 		return a
-	def recursion_rect (self, geom=SQUARE): return CompositeApp.recursion_rect (self, geom)
-	
+	def recursion_rect (self, geom=SQUARE):
+		print ("enter circled_square.recursion_rect (%s)" % (geom,))
+		if self.rotation == STRAIGHT: g = SQUARE
+		if self.rotation == ANGLED:   g = DIAMOND
+		rect =  CircleApp.recursion_rect (self, g)
+		X, Y, W, H = rect
+		if self.child is None:
+			if self.rotation == ANGLED   and geom == DIAMOND: pass
+			if self.rotation == STRAIGHT and geom == SQUARE:  pass
+			if self.rotation == ANGLED   and geom == SQUARE:
+				w, h = W / sqrt (2), H / sqrt (2)
+				x, y = X + (W - w) / 2, Y + (H - h) / 2
+				rect = x, y, w, h
+			if self.rotation == STRAIGHT and geom == DIAMOND:
+				w, h = W / sqrt (2), H / sqrt (2)
+				#w, h = w / sqrt (2), h / sqrt (2)
+				x, y = X + (W - w) / 2, Y + (H - h) / 2
+				rect = x, y, w, h
+			if self.rotation == ANGLED and geom == CIRCLE:
+				w, h = W / sqrt (2), H / sqrt (2)
+				x, y = X + (W - w) / 2, Y + (H - h) / 2
+				rect = x, y, w, h
+			if self.rotation == STRAIGHT and geom == CIRCLE:
+				w, h = W, H
+				#w, h = W / sqrt (2), H / sqrt (2)
+				x, y = X + (W - w) / 2, Y + (H - h) / 2
+				rect = x, y, w, h
+		else:
+			rect = self.child.recursion_rect (geom)
+			x, y, w, h = rect
+			
+			assert X >= 0
+			assert Y >= 0
+			assert W > 0
+			assert H > 0
+			assert x >= 0
+			assert y >= 0
+			#assert w <= W
+			#assert h <= H
+			#rect = (X + x, Y + y, W / w, H / h)
+			rect = X + x, Y + y, w, h
+		print ("leave circled_square.recursion_rect ()")
+		return rect
+		
 if __name__ == "__main__":
 	from constants import SECONDARY_BACKGROUND
 	from gui import GUI

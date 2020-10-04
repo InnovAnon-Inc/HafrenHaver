@@ -12,8 +12,8 @@ from constants import OPAQUE
 from geometry import to_degrees, reflect_angles
 from circle_app import CircleApp
 class MagicCircle (CircleApp): # composite app, child is also circle, animated app, pos/neg space has ranges
-	def __init__ (self, text=None, font=None):
-		CircleApp.__init__ (self)
+	def __init__ (self, text=None, font=None, *args, **kwargs):
+		CircleApp.__init__ (self, *args, **kwargs)
 
 		if text is None:
 			# if child is none, use own source (get subtype source), else query child for model source, else use child source
@@ -89,7 +89,7 @@ class MagicCircle (CircleApp): # composite app, child is also circle, animated a
 		#texts = repeat (texts)
 		
 		# each char of text is rotated => text is a polygon, circle is inscribed
-		X, Y, W, H = self.get_rect ()                                   # outer radii
+		X, Y, W, H = self.inner_rect ()                                   # outer radii
 		print ("(X, Y): (%s, %s) (W: %s, H: %s)" % (X, Y, W, H))
 		#w, h = W - 2 * tw, H - 2 * th                                   # make room for text aligned at axes
 		x, y, w, h = X + tw / 2, Y + th / 2, W - tw, H - th # text center
