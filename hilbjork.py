@@ -63,8 +63,8 @@ for p in range (1, 5):
 	
 def fuck (p, N, ct, ks):
 	ct = ct[::-1]
-	k0 = zip ([False] * len (ks), ks)
-	k1 = zip ([True]  * len (ks),  ks[::-1])
+	k0 = zip ([True]  * len (ks), ks)
+	k1 = zip ([False] * len (ks),  ks[::-1])
 	k  = chain (k0, k1)
 	k = zip (k, cycle (ct))
 	for k, ct in k:

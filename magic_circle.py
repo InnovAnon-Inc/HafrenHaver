@@ -286,6 +286,7 @@ if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT
 	from orientation import NORTH, SOUTH, EAST, WEST
 	from gui import GUI
+	from hal import HAL9000
 	
 	def main ():
 		if False:
@@ -309,7 +310,7 @@ if __name__ == "__main__":
 		else:
 			a = MagicCircle ()
 		#a = RecursiveCompositeTest ()
-		with GUI (app=a, exit_on_close=False) as g:
+		with HAL9000 (app=a, exit_on_close=False) as g:
 			#g.setApp (a)
 			g.run ()
 	main ()

@@ -20,6 +20,7 @@ if __name__ == "__main__":
 	from gui import GUI
 	from constants import BLACK
 	from square_app import SquareApp
+	from hal import HAL9000
 	
 	def main ():
 		d = None
@@ -28,7 +29,7 @@ if __name__ == "__main__":
 		c = CircledSquare (d, rotation=r)
 		b = SquaredCircle (c, background=SECONDARY_BACKGROUND)		
 		a = RecursiveComposite (b)
-		with GUI (app=a) as g:
+		with HAL9000 (app=a) as g:
 			g.run ()
 	main ()
 	quit ()

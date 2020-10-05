@@ -135,13 +135,14 @@ if __name__ == "__main__":
 	from circled_angle import CircledAngle
 	from angled_circle import AngledCircle
 	from recursive_composite import RecursiveComposite
+	from hal import HAL9000
 	
 	def main ():
 		d = None
 		c = AngledCircle (d)
 		b = CircledAngle (c, background=SECONDARY_BACKGROUND)
 		a = RecursiveComposite (b)
-		with GUI (app=a) as g:
+		with HAL9000 (app=a) as g:
 			#g.setApp (a)
 			g.run ()
 	main ()

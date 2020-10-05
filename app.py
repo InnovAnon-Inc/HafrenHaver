@@ -109,10 +109,11 @@ class App:
 		return rect
 if __name__ == "__main__":
 	from gui import GUI
+	from hal import HAL9000
 	
 	def main ():
 		a = App ()
-		with GUI (app=a) as g:
+		with HAL9000 (app=a) as g:
 			#g.setApp (a)
 			g.run ()
 	main ()

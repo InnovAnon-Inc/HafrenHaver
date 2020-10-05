@@ -192,12 +192,13 @@ class SquareApp (CroppingApp):
 
 if __name__ == "__main__":
 	from gui import GUI
+	from hal import HAL9000
 	from rotation import Rotation
 	
 	def main ():
 		for rotation in Rotation:
 			a = SquareApp (rotation)
-			with GUI (app=a, exit_on_close=False) as g:
+			with HAL9000 (app=a, exit_on_close=False) as g:
 				#g.setApp (a)
 				print ("minsz: (%s, %s)" % a.minsz ())
 				print ("outer: %s"       % a.outer_area ())

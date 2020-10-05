@@ -90,6 +90,7 @@ class StatChart (CircleApp): # TODO need an abstract class bc this is similar to
 
 if __name__ == "__main__":
 	from gui import GUI, BLACK
+	from hal import HAL9000
 	from random import uniform, randrange
 	
 	def main ():
@@ -101,7 +102,7 @@ if __name__ == "__main__":
 		f    = lambda k: uniform (0, 1)
 		rads = map (f, rng)
 		a    = StatChart (rads)
-		with GUI (app=a, exit_on_close=False) as g:
+		with HAL9000 (app=a, exit_on_close=False) as g:
 			#g.setApp (a)
 			g.run ()
 	main ()

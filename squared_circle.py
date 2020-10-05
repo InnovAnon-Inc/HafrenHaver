@@ -94,7 +94,8 @@ class SquaredCircle (SquareApp, CompositeApp):
 			if self.rotation == ANGLED   and geom == DIAMOND: pass
 			if self.rotation == STRAIGHT and geom == SQUARE:
 				print ("squared_circle computing recursion_rect for square geometry")
-				w, h = W / sqrt (2), H / sqrt (2)
+				#w, h = W / sqrt (2), H / sqrt (2) # since the circle is empty, don't reduce size
+				w, h = W, H
 				x, y = X + (W - w) / 2, Y + (H - h) / 2
 				rect = x, y, w, h
 			if self.rotation == ANGLED   and geom == SQUARE:
@@ -128,13 +129,15 @@ class SquaredCircle (SquareApp, CompositeApp):
 			#assert w <= W
 			#assert h <= H
 			#rect = (X + x, Y + y, W / w, H / h)
-			rect = X + x, Y + y, w, h
+			#rect = X + x, Y + y, w, h
+			rect = X + (W - w) / 2, Y + (H - h) / 2, w, h
 		print ("leave squared_circle.recursion_rect ()")
 		return rect
 
 if __name__ == "__main__":
 	from constants import SECONDARY_BACKGROUND
 	from gui import GUI
+	from hal import HAL9000
 	from circled_square import CircledSquare
 	
 	def main ():
@@ -151,7 +154,7 @@ if __name__ == "__main__":
 		a = SquaredCircle (b, rotation=STRAIGHT)
 		#a = SquaredCircle (None, rotation=ANGLED)
 		# = SquaredCircle (None, rotation=STRAIGHT)
-		with GUI (app=a) as g:
+		with HAL9000 (app=a) as g:
 			#g.setApp (a)
 			print ("minsz: (%s, %s)" % a.minsz ())
 			print ("outer: %s"       % a.outer_area ())

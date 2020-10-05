@@ -232,7 +232,8 @@ class CircledSquare (CircleApp, CompositeApp):
 			#assert w <= W
 			#assert h <= H
 			#rect = (X + x, Y + y, W / w, H / h)
-			rect = X + x, Y + y, w, h
+			#rect = X + x, Y + y, w, h
+			rect = X + (W - w) / 2, Y + (H - h) / 2, w, h
 		print ("leave circled_square.recursion_rect ()")
 		return rect
 		
@@ -240,6 +241,8 @@ if __name__ == "__main__":
 	from constants import SECONDARY_BACKGROUND
 	from gui import GUI
 	from squared_circle import SquaredCircle
+	from hal import HAL9000
+	
 	def main ():
 		if True:
 			h = SquareApp (rotation=ANGLED, background=SECONDARY_BACKGROUND)
@@ -251,7 +254,7 @@ if __name__ == "__main__":
 		else: c = None
 		b = SquaredCircle (c, background=SECONDARY_BACKGROUND)
 		a = CircledSquare (b)
-		with GUI (app=a) as g:
+		with HAL9000 (app=a) as g:
 			#g.setApp (a)
 			print ("minsz: (%s, %s)" % a.minsz ())
 			print ("outer: %s"       % a.outer_area ())

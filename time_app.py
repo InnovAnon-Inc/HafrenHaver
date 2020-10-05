@@ -89,7 +89,124 @@ from recursive_composite import RecursiveComposite
 
 
 # TODO use special music and colors for synchronizing users engaging in diversions... like tetris
+def cacher (f, *args):
+	fname = "%s-%s.cache" % (str (f), str (args))
+	my_file = Path (fname)
+	if my_file.is_file ():
+		with open (fname, "r") as f: mylist = tuple (map (make_tuple, f))
+		assert len (mylist) == 1
+		mylist = mylist[0]
+		#assert len (mylist) == 2
+		return mylist	
+	ret = f (*args)
+	with open (fname, "w") as f: f.write (str (ret))
+	return ret
+	
+def addr2gps (addr):
+	geolocator = Nominatim (user_agent="Hafren Haver")
+	location   = geolocator.geocode (addr)
+	ret        = (location.latitude, location.longitude, location.altitude)
+	return ret
+def addr2gps_cacher (addr): return cacher (addr2gps, addr)
 
+def gps2observer (lat, lon, alt):
+	lowell           = ephem.Observer()
+	lowell.lon       = lon
+	lowell.lat       = lat
+	lowell.elevation = alt
+	#lowell.date = '1986/3/13'
+	return lowell
+	
+def addr2observer (addr):
+	tmp = addr2gps_cacher (addr)
+	return gps2observer (*tmp)
+	
+def city2observer_lookup        (city): return cities.lookup (city)
+def city2observer_lookup_cacher (city): return cacher (city2observer_lookup, city)
+def city2observer (city):
+	try:    ret = ephem.city                  (city)
+	except: ret = city2observer_lookup_cacher (city)
+	return ret
+
+class GPS:
+	def __init__ (self, observer): self.observer = observer
+class CityGPS (GPS):
+	def __init__ (self, city):
+		observer = city2observer (city)
+		GPS.__init__ (self, observer)
+class AddrGPS (GPS):
+	def __init__ (self, addr):
+		observer = addr2observer (addr)
+		GPS.__init__ (self, observer)
+class GPSClient (Client, GPS):
+	def __init__ (self, host, port):
+		Client.__init__ (self, host, port)
+		GPS   .__init__ (self, None)
+	def Network_observer (self, data):
+		print("*** observer: " + data['observer'])
+		self.observer = data['observer']
+		# TODO notify GUI
+		#self.is_running = False
+class GPSChannel (PlayerChannel):
+	def __init__ (self, *args, **kwargs): PlayerChannel.__init__ (self, *args, **kwargs)
+	#def Network_message (self, data):
+    #    self._server.SendToAll({"action": "message", "message": data['message'], "who": self.nickname})
+class GPSServer (PlayerServer, GPS):
+	channelClass = GPSChannel
+	def __init__ (self, gps, *args, **kwargs):
+		PlayerServer.__init__ (self, *args, **kwargs)
+		GPS.__init__ (self, gps.observer)
+		self.gps = gps
+	def Connected (self, channel, addr):
+		PlayerServer.Connected (self, channel, addr)
+		self.SendObserver (channel)
+	def SendObserver  (self, player): player.Send      ({"action": "observer", "observer": self.observer})
+	def SendObservers (self):         self  .SendToAll ({"action": "observer", "observer": self.observer})
+	def set_gps (self, gps):
+		self.gps = gps
+		self.SendObservers ()
+		 # TODO notiy GUI
+		 
+	
+	
+class ClassicalClock:
+	def __init__ (self, gps, time=None):
+		self.gps      = gps
+		self.update_time (time)
+		self.sun      = ephem.Sun  ()
+		self.moon     = ephem.Moon ()
+	def update_time (self, time=None):
+		if time is None: time = datetime.datetime.utcnow ()
+		self.gps.observer.date = time
+		self.sun .compute (self.observer)
+		self.moon.compute (self.observer)
+	def get_time (self):
+		self.get_hour ()
+		self.get minute ()
+		self.get_second ()
+		self.get_day_or_night () # determines bright or dark
+		self.get_day_of_week () # determines color and symbol
+		self.get_moon_phase ()
+		self.get_moon_position ()
+		self.get_season ()
+		self.get_position_of_sun ()
+	def get_length_of_second (self): pass
+	
+	
+	
+# pre alpha	(codename: nirvana)
+# solfeggio, chromatic, tetrachords, scales, modes => color manager
+# fractalizer, matrix text => layout manager
+
+# alpha (codename: nexus)
+# network, chat
+# yantra visualizations
+
+# beta (codename: black tantra)
+# most music layers
+# subliminal programming
+# IDE
+	
 
 
 from pyephem_sunpath.sunpath import sunpos

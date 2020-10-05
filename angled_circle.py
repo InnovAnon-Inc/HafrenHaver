@@ -197,6 +197,7 @@ if __name__ == "__main__":
 	from constants import DEFAULT_BACKGROUND, SECONDARY_BACKGROUND
 	from gui import GUI
 	from circled_angle import CircledAngle
+	from hal import HAL9000
 	
 	def main ():
 		if True:
@@ -214,7 +215,7 @@ if __name__ == "__main__":
 			b = CircleApp ()
 			a = AngledCircle (b, orientation=NORTH)
 		#a = RecursiveCompositeTest ()
-		with GUI (app=a) as g:
+		with HAL9000 (app=a) as g:
 			#g.setApp (a)
 			print ("minsz: (%s, %s)" % a.minsz ())
 			print ("outer: %s"       % a.outer_area ())

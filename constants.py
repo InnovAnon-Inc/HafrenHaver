@@ -49,13 +49,15 @@ DEFAULT_EXIT_TIMEOUT = 3
 
 
 
-OPAQUE = (255, 255, 255, 255)
+OPAQUE = (255, 255, 255, 255) # TODO I think this should be called TRANSPARENT
 
-
+# TODO DEFAULT_HOST        => client param: domain name or ip of server
+# TODO DEFAULT_PORT        => client param: port              of server
+# TODO DEFAULT_LISTEN_ADDR => server param:
+# TODO DEFAULT_LISTEN_PORT => server param:
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = random_default_port ()
-
-
+DEFAULT_USER_AGENT = "HafrenHaver" # TODO maybe leak your info
 
 
 DEFAULT_BACKGROUND   = "background.png"

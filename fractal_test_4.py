@@ -24,12 +24,9 @@ if __name__ == "__main__":
 	
 	def main ():
 		d = None
-		r = ANGLED
-		r = STRAIGHT
-		c = CircledSquare (d, rotation=r)
-		b = SquaredCircle (c, background=SECONDARY_BACKGROUND)		
+		c = CircledSquare (d, rotation=STRAIGHT)
+		b = SquaredCircle (c, rotation=ANGLED, background=SECONDARY_BACKGROUND)
 		a = RecursiveComposite (b)
-		with HAL9000 (app=a, exit_on_close=False) as g:
-			g.run ()
+		with HAL9000 (app=a) as g: g.run ()
 	main ()
 	quit ()

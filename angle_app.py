@@ -71,11 +71,12 @@ class AngleApp (CroppingApp):
 if __name__ == "__main__":
 	from gui import GUI
 	from orientation import Orientation
+	from hal import HAL9000
 	
 	def main ():
 		for orientation in Orientation:
 			a = AngleApp (orientation)
-			with GUI (app=a) as g:
+			with HAL9000 (app=a) as g:
 				#g.setApp (a)
 				print ("minsz: (%s, %s)" % a.minsz ())
 				print ("outer: %s"       % a.outer_area ())
