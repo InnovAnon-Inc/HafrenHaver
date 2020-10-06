@@ -30,7 +30,33 @@ from pygame import K_ESCAPE, K_q
 
 
 
-
+from itertools import combinations, chain
+from functools import reduce
+from pygame import display
+def get_mode_ok_helper (modes, info):
+	f = lambda k: combinations (modes, k)                               # get combinations of desired flags
+	rng = range (0, len (modes))
+	rng = rng[::-1]
+	tmp = map (f, rng)
+	tmp = chain (*tmp)
+	g   = lambda a, b: (a | b)                                          # reduce combinations
+	f   = lambda combo: reduce (g, combo, 0)
+	tmp = map (f, tmp)
+	#info = display.Info  ()                                             # get valid combination-reductions
+	size = info.current_w, info.current_h
+	f   = lambda flags: pygame.display.mode_ok (size, flags=flags) != 0
+	tmp = filter (f, tmp)
+	return tmp
+def get_mode_ok (info, *modes):
+	ret = get_mode_ok_helper (modes, info)
+	ret = next (ret, 0)
+	return ret
+screen_mode_db = {}
+def get_default_screen_mode (info):
+	if info in screen_mode_db: return screen_mode_db[info]
+	ret = DEFAULT_SCREEN_MODE | get_mode_ok (info, pygame.HWSURFACE, pygame.DOUBLEBUF)
+	screen_mode_db[info] = ret
+	return ret
 
 
 
@@ -145,7 +171,7 @@ class GUI:
 		screen_info     = self.screen_info
 		if fullscreen:
 			self.first_screen = (screen_info.current_w, screen_info.current_h)
-			self.      screen = display.set_mode (self.first_screen, FULLSCREEN | DEFAULT_SCREEN_MODE)
+			self.      screen = display.set_mode (self.first_screen, FULLSCREEN | get_default_screen_mode (screen_info))
 		else:
 			w, h = screen_info.current_w, screen_info.current_h
 			if w == h: self.first_screen = (w,                  h                 )
@@ -153,7 +179,7 @@ class GUI:
 			if w <  h: self.first_screen = (round (w / golden), h                 )
 			#toolbar_height = 120 # TODO
 			#self.first_screen = (screen_info.current_w, screen_info.current_h - toolbar_height)
-			self.      screen = display.set_mode (self.first_screen, RESIZABLE | DEFAULT_SCREEN_MODE)
+			self.      screen = display.set_mode (self.first_screen, RESIZABLE | get_default_screen_mode (screen_info))
 		self.rect = self.screen.get_rect   ()
 		self.ss   = self.screen.subsurface (self.rect)
 		if self.app is not None: self.app.set_subsurface (self.ss)

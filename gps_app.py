@@ -10,13 +10,30 @@ import matplotlib.backends.backend_agg as agg
 #from mpl_toolkits.basemap import Basemap
 #import numpy as np
 
-import pylab
+#import pylab
+import matplotlib.pyplot as plt
 
 from square_app import SquareApp
 
 from constants import ORIGIN
 
-import geopandas as gpd
+import numpy as np
+import pandas as pd
+import cartopy.crs as ccrs
+import cartopy
+
+from constants import OPAQUE
+
+# https://stackoverflow.com/questions/13714454/specifying-and-saving-a-figure-with-exact-size-in-pixels
+def pygame2matplotlib (w, h): return { 'figsize' : (w, h), 'dpi' : 1 }
+
+
+projections = [ccrs.PlateCarree(), # https://semba-blog.netlify.app/07/04/2020/mapping-with-cartopy-in-python/
+               ccrs.Robinson(),
+               ccrs.Mercator(),
+               ccrs.Orthographic(),
+               ccrs.InterruptedGoodeHomolosine()
+              ]
 
 class MapApp (SquareApp):
 	def __init__ (self, lat, lon):
@@ -28,38 +45,47 @@ class MapApp (SquareApp):
 		ss = self.ss
 		if ss is None: return
 		
-		lon_0 = self.lon
-		lat_0 = self.lat
+		rect = ss.get_rect ()
+		x, y, w, h = rect
+		dims = pygame2matplotlib (w, h)
 		
-		#m = Basemap (width=width, height=width, projection='aeqd',
-        #    lat_0=lat_0, lon_0=lon_0)
-		#m.drawmapboundary (fill_color='aqua')              # fill background.
-		#m.drawcoastlines (linewidth=0.5)                   # draw coasts and fill continents.
-		#m.fillcontinents (color='coral', lake_color='aqua')
-		#m.drawparallels (np.arange (-80, 81, 20))          # 20 degree graticule.
-		#m.drawmeridians (np.arange (-180, 180, 20))
-		#xpt, ypt = m (lon_0, lat_0)                        # draw a black dot at the center.
-		#m.plot ([xpt], [ypt], 'ko')
-		#fig = m
+		central_lon = self.lon
+		central_lat = self.lat
+		#projection = ccrs.PlateCarree (central_lon, central_lat)
+		projection = ccrs.PlateCarree (central_longitude=central_lon) # TODO latitude
+		#fig, ax = plt.subplots (**dims, subplot_kw={'projection': projection})
+
+		fig = plt.figure (**dims, facecolor='none', edgecolor='none')
+		fig.patch.set_visible (False)
 		
-		fig = pylab.figure (figsize=[4, 4], # Inches
-		                    dpi=100,        # 100 dots per inch, so the resulting buffer is 400x400 pixels
-		                   )
-		#ax = fig.gca ()
-		plt = fig.gca ()
-		#ax.plot ([1, 2, 4])
+		#ax  = fig.add_subplot (1, 1, 1, projection=projection) # nrows, ncols, index
+		ax  = fig.add_subplot (projection=projection)
+		ax.set_global    ()
 		
-		canvas = agg.FigureCanvasAgg (fig)
+		ax.stock_img     ()
+		ax.add_feature   (cartopy.feature.LAND)
+		ax.add_feature   (cartopy.feature.OCEAN)
+		ax.add_feature   (cartopy.feature.COASTLINE)
+		ax.add_feature   (cartopy.feature.BORDERS, linestyle='dotted')
+		ax.add_feature   (cartopy.feature.LAKES, alpha=0.5)
+		ax.add_feature   (cartopy.feature.RIVERS)
+		ax.gridlines     ()
+		#ax.coastlines  ()
+		
+		ax.plot (self.lon, self.lat, 'ro')
+		#ax.plot (self.lon, self.lat, 'ro', transform=projection)
+		
+		canvas = agg.FigureCanvasAgg (fig) # https://stackoverflow.com/questions/48093361/using-matplotlib-in-pygame
 		canvas.draw ()		
 		renderer = canvas.get_renderer ()
-		raw_data = renderer.tostring_rgb ()
+		raw_data = renderer.buffer_rgba () # tricky bitch
 		self.raw_data = raw_data
 		self.size     = canvas.get_width_height ()
 	def draw_foreground (self, temp): # TODO apps should merely blit pre rendered images here
 		SquareApp.draw_foreground (self, temp)
 		raw_data = self.raw_data
 		size     = self.size
-		surf = pygame.image.fromstring (raw_data, size, "RGB")
+		surf = pygame.image.frombuffer (raw_data, size, "RGBA")
 		temp.blit (surf, ORIGIN) 
 	def notify (self, lat, lon):
 		self.lat = lat
@@ -77,7 +103,7 @@ class         GPSApp (SquareApp):
 	# has-a barometer
 	# has-a map
 	pass
-		 
+		 		 
 if __name__ == "__main__":
 	from gps_client import GPSClient
 	from hal import HAL9000

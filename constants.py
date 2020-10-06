@@ -24,7 +24,8 @@ BLACK    = (  0, 0, 0)
 IA_BLACK = (  0, 5, 0)
 IA_RED   = (247, 0, 3)
 
-DEFAULT_SCREEN_MODE = pygame.HWSURFACE | pygame.DOUBLEBUF
+#DEFAULT_SCREEN_MODE = pygame.NOFRAME
+DEFAULT_SCREEN_MODE = 0
 
 DEFAULT_ISOCHRONIC  = 7.83 # hz
 DEFAULT_SCALE       = (1/1, 3/2) # TODO randomize or something

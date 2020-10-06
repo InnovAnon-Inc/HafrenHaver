@@ -29,6 +29,8 @@ from constants import DEFAULT_EXIT_TIMEOUT, ORIGIN
 
 
 
+# TODO iconify
+
 
 from gui import GUI
 
