@@ -28,7 +28,7 @@ class Client (ConnectionListener):
 		print ("You are now connected to the server")
 		self.is_connected = True
 	def Network_error (self, data):
-		print ('error:', data['error'][1])
+		print ('error:', data['error'])
 		connection.Close ()
 		self.is_connected = False
 	def Network_disconnected (self, data):

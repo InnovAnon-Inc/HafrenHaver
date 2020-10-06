@@ -28,8 +28,9 @@ class GPSClient (Client, GPS):
 		observer      = data['observer']
 		observer      = observer_msg (observer)
 		self.observer = observer
+		assert observer is not None
 		# TODO notify GUI
-		self.notify (observer.lat, observer.lon)
+		self.notify (observer)
 		#self.is_running = False
 		 
 if __name__ == "__main__":

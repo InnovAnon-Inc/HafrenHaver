@@ -2,95 +2,7 @@
 
 import pygame
 
-import matplotlib
-matplotlib.use("Agg")
-
-import matplotlib.backends.backend_agg as agg
-
-#from mpl_toolkits.basemap import Basemap
-#import numpy as np
-
-#import pylab
-import matplotlib.pyplot as plt
-
-from square_app import SquareApp
-
-from constants import ORIGIN
-
-import numpy as np
-import pandas as pd
-import cartopy.crs as ccrs
-import cartopy
-
-from constants import OPAQUE
-
-# https://stackoverflow.com/questions/13714454/specifying-and-saving-a-figure-with-exact-size-in-pixels
-def pygame2matplotlib (w, h): return { 'figsize' : (w, h), 'dpi' : 1 }
-
-
-projections = [ccrs.PlateCarree(), # https://semba-blog.netlify.app/07/04/2020/mapping-with-cartopy-in-python/
-               ccrs.Robinson(),
-               ccrs.Mercator(),
-               ccrs.Orthographic(),
-               ccrs.InterruptedGoodeHomolosine()
-              ]
-
-class MapApp (SquareApp):
-	def __init__ (self, lat, lon):
-		SquareApp.__init__ (self)
-		self.lat = lat
-		self.lon = lon
-	def set_subsurface (self, ss=None): # TODO apps should pre render images here
-		SquareApp.set_subsurface (self, ss)
-		ss = self.ss
-		if ss is None: return
-		
-		rect = ss.get_rect ()
-		x, y, w, h = rect
-		dims = pygame2matplotlib (w, h)
-		
-		central_lon = self.lon
-		central_lat = self.lat
-		#projection = ccrs.PlateCarree (central_lon, central_lat)
-		projection = ccrs.PlateCarree (central_longitude=central_lon) # TODO latitude
-		#fig, ax = plt.subplots (**dims, subplot_kw={'projection': projection})
-
-		fig = plt.figure (**dims, facecolor='none', edgecolor='none')
-		fig.patch.set_visible (False)
-		
-		#ax  = fig.add_subplot (1, 1, 1, projection=projection) # nrows, ncols, index
-		ax  = fig.add_subplot (projection=projection)
-		ax.set_global    ()
-		
-		ax.stock_img     ()
-		ax.add_feature   (cartopy.feature.LAND)
-		ax.add_feature   (cartopy.feature.OCEAN)
-		ax.add_feature   (cartopy.feature.COASTLINE)
-		ax.add_feature   (cartopy.feature.BORDERS, linestyle='dotted')
-		ax.add_feature   (cartopy.feature.LAKES, alpha=0.5)
-		ax.add_feature   (cartopy.feature.RIVERS)
-		ax.gridlines     ()
-		#ax.coastlines  ()
-		
-		ax.plot (self.lon, self.lat, 'ro')
-		#ax.plot (self.lon, self.lat, 'ro', transform=projection)
-		
-		canvas = agg.FigureCanvasAgg (fig) # https://stackoverflow.com/questions/48093361/using-matplotlib-in-pygame
-		canvas.draw ()		
-		renderer = canvas.get_renderer ()
-		raw_data = renderer.buffer_rgba () # tricky bitch
-		self.raw_data = raw_data
-		self.size     = canvas.get_width_height ()
-	def draw_foreground (self, temp): # TODO apps should merely blit pre rendered images here
-		SquareApp.draw_foreground (self, temp)
-		raw_data = self.raw_data
-		size     = self.size
-		surf = pygame.image.frombuffer (raw_data, size, "RGBA")
-		temp.blit (surf, ORIGIN) 
-	def notify (self, lat, lon):
-		self.lat = lat
-		self.lon = lon
-		self.set_subsurface ()
+from map_app import MapApp
 
 from circle_app import CircleApp
 
@@ -98,10 +10,68 @@ class ThermometerApp (SquareApp): pass
 class   AltimeterApp (CircleApp): pass
 class   BarometerApp (CircleApp): pass
 class         GPSApp (SquareApp):
-	# has-a thermometer
-	# has-a altimeter
-	# has-a barometer
-	# has-a map
+	def __init__ (self):
+		SquareApp.__init__ (self)
+		self.map         = MapApp ()
+		#self.altimeter   = AltimeterApp   ()
+		#self.thermometer = ThermometerApp ()
+		#self.barometer   = BarometerApp   ()
+	def set_projection (self, projection):
+		print ("enter gps_app.set_projection (%s)" % (projection,))
+		self.map.set_projection (projection)
+		print ("leave gps_app.set_projection ()")
+	def set_gps (self, gps):
+		print ("enter gps_app.set_gps (%s)" % (gps,))
+		self.gps = gps
+		self.set_observer (gps.observer)
+		print ("leave gps_app.set_gps ()")
+	def set_observer (self, observer):
+		print ("enter gps_app.set_observer (%s)" % (observer,))
+		if observer is None: return
+		#epoch     = observer.epoch
+		self.map        .notify (observer.lat, observer.lon)
+		#self.altimeter  .notify (observer.elevation)
+		#self.thermometer.notify (observer.temp)
+		#self.barometer  .notify (observer.pressure)
+		print ("leave gps_app.set_observer ()")
+	def set_subsurface (self, ss=None):
+		print ("enter gps_app.set_subsurface (%s)" % (ss,))
+		SquareApp.set_subsurface (self, ss)
+		ss = self.ss
+		if ss is None: return
+		x, y, w, h = ss.get_rect ()
+		rect0 = x        , y        , w / 2, h / 2
+		rect1 = x + w / 2, y        , w / 2, h / 2
+		rect2 = x        , y + h / 2, w / 2, h / 2
+		rect3 = x + w / 2, y + h / 2, w / 2, h / 2
+		ss0 = ss.subsurface (rect0)
+		ss1 = ss.subsurface (rect1)
+		ss2 = ss.subsurface (rect2)
+		ss3 = ss.subsurface (rect3)
+		self.map        .set_subsurface (ss0)
+		#self.altimeter  .set_subsurface (ss1)
+		#self.thermometer.set_subsurface (ss2)
+		#self.barometer  .set_subsurface (ss3)
+		print ("leave gps_app.set_subsurface ()")
+	def draw_foreground (self, temp):
+		print ("enter gps_app.draw_foreground (%s)" % (temp,))
+		SquareApp.draw_foreground (self, temp)	
+		x, y, w, h = temp.get_rect ()
+		rect0 = x        , y        , w / 2, h / 2
+		rect1 = x + w / 2, y        , w / 2, h / 2
+		rect2 = x        , y + h / 2, w / 2, h / 2
+		rect3 = x + w / 2, y + h / 2, w / 2, h / 2
+		ss0 = temp.subsurface (rect0)
+		ss1 = temp.subsurface (rect1)
+		ss2 = temp.subsurface (rect2)
+		ss3 = temp.subsurface (rect3)
+		self.map        .draw_foreground (ss0)
+		#self.altimeter  .draw_foreground (ss1)
+		#self.thermometer.draw_foreground (ss2)
+		#self.barometer  .draw_foreground (ss3)
+		print ("leave gps_app.draw_foreground ()")
+	# has-a map, has-a selector for projection
+	# has-a selector for ClientGPS, AddrGPS, CityGPS
 	pass
 		 		 
 if __name__ == "__main__":
@@ -109,11 +79,17 @@ if __name__ == "__main__":
 	from hal import HAL9000
 	
 	def main ():
-		a = MapApp (0, 0)
-		h = "localhost"
-		p = 1717
-		n = a.notify
-		g = GPSClient (h, p, n)
-		with HAL9000 (app=a) as g: g.run ()
+		a = GPSApp ()
+		with HAL9000 (app=a) as G:
+			p = random_projection ()
+			a.set_projection (p)
+			
+			h = "localhost"
+			p = 1717
+			n = a.set_observer
+			g = GPSClient (h, p, n)
+			a.set_gps (g)
+			
+			G.run ()
 	main ()
 	quit ()
