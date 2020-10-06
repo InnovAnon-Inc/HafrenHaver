@@ -8,24 +8,24 @@ matplotlib.use ("Agg")
 import matplotlib.backends.backend_agg as agg
 import matplotlib.pyplot as plt
 
-from square_app import SquareApp
+from app import App
 from constants import ORIGIN
 
 # https://stackoverflow.com/questions/13714454/specifying-and-saving-a-figure-with-exact-size-in-pixels
 def pygame2matplotlib (w, h): return { 'figsize' : (w, h), 'dpi' : 1 }
 
 # TODO some projections are circular...
-class PyGamePlotLib (SquareApp): # integrates matplotlib with pygame
-	def set_subsurface (self, ss=None): # TODO apps should pre render images here
+class PyGamePlotLib (App): # integrates matplotlib with pygame
+	def set_subsurface (self, ss=None, second_run=False): # TODO apps should pre render images here
 		print ("enter pygame_plotlib.set_subsurface (%s)" % (ss,))
-		SquareApp.set_subsurface (self, ss)
+		if second_run: assert ss is None
+		else: App.set_subsurface (self, ss)
 		self.compute ()
 		print ("leave pygame_plotlib.set_subsurface ()")
 	def compute (self):
 		print ("enter pygame_plotlib.compute ()")
 		ss = self.ss
 		if ss is None: return
-		if self.projection is None: return
 		
 		rect = ss.get_rect ()
 		x, y, w, h = rect
@@ -49,7 +49,11 @@ class PyGamePlotLib (SquareApp): # integrates matplotlib with pygame
 	def compute_helper (self, fig): pass # override: draw stuff here
 	def draw_foreground (self, temp): # TODO apps should merely blit pre rendered images here
 		print ("enter pygame_plotlib.draw_foreground (%s)" % (temp,))
-		SquareApp.draw_foreground (self, temp)
+		App.draw_foreground (self, temp)
+	#def draw_scene (self, temp=None): # TODO apps should merely blit pre rendered images here
+	#	print ("enter pygame_plotlib.draw_scene (%s)" % (temp,))
+	#	App.draw_scene (self, temp)
+		if temp is None: temp = self.ss
 		raw_data = self.raw_data
 		size     = self.size
 		x, y, w, h = temp.get_rect ()
@@ -67,7 +71,7 @@ if __name__ == "__main__":
 	from hal import HAL9000
 	
 	def main ():
-		# TODO
-		pass
+		a = PyGamePlotLib ()
+		with HAL9000 (app=a) as g: g.run ()
 	main ()
 	quit ()

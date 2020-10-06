@@ -278,8 +278,10 @@ class HilbjorkSquare (SquareApp):
 		self.ks  = ks
 		"""
 		self.next_screen ()
-	def draw_foreground (self, temp):
-		SquareApp.draw_foreground (self, temp)
+	#def draw_foreground (self, temp):
+	#	SquareApp.draw_foreground (self, temp)
+	def draw_cropped_scene (self, temp):
+		SquareApp.draw_cropped_scene (self, temp)
 		rect   = temp.get_rect ()
 		x, y, W, H = rect
 		assert self.x == x
