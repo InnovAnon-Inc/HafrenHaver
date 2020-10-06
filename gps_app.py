@@ -2,9 +2,11 @@
 
 import pygame
 
-from map_app import MapApp
+from map_app import MapApp, random_projection
 
 from circle_app import CircleApp
+from square_app import SquareApp
+from client import Client
 
 class ThermometerApp (SquareApp): pass
 class   AltimeterApp (CircleApp): pass
@@ -72,7 +74,10 @@ class         GPSApp (SquareApp):
 		print ("leave gps_app.draw_foreground ()")
 	# has-a map, has-a selector for projection
 	# has-a selector for ClientGPS, AddrGPS, CityGPS
-	pass
+	
+	def run_loop (self, events, keys):
+		SquareApp.run_loop (self, events, keys)
+		if isinstance (self.gps, Client): self.gps.Loop ()
 		 		 
 if __name__ == "__main__":
 	from gps_client import GPSClient

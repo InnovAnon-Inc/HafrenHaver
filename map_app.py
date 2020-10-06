@@ -43,6 +43,9 @@ def random_projection (): return choice (projections_db)
 
 from pygameplotlib import PyGamePlotLib
 
+from scipy.constants import golden
+from math import isnan, isinf, sqrt, pow
+
 class MapApp (PyGamePlotLib):
 	def __init__ (self, *args, **kwargs):
 		PyGamePlotLib.__init__ (self, *args, **kwargs)
@@ -59,23 +62,51 @@ class MapApp (PyGamePlotLib):
 		
 		if self.projection is None: return
 		
-		projection = self.projection (self.lon, self.lat)
+		lon = float (self.lon)
+		lat = float (self.lat)
+		assert not isnan (lon)
+		assert not isinf (lon)
+		assert not isnan (lat)
+		assert not isinf (lat)
+		
+		projection = self.projection (lon, lat)
 		#ax  = fig.add_subplot (1, 1, 1, projection=projection) # nrows, ncols, index
-		ax  = fig.add_subplot (projection=projection)
+		ax  = fig.add_subplot (projection=projection, facecolor='black')
 		ax.set_global    ()
 		
+		###fargs = { 'linewidth': pow (golden, 5) } # TODO magic numbers
+		w, h = self.dims ()
+		hyp = sqrt (pow (w, 2) + pow (h, 2))
+		fargs = { 'linewidth' : hyp / pow (golden, 7) }
 		ax.stock_img     ()
-		ax.add_feature   (cartopy.feature.LAND, edgecolor='black') # TODO why don't these show up
+		ax.add_feature   (cartopy.feature.LAND,                        edgecolor='black', **fargs)
 		ax.add_feature   (cartopy.feature.OCEAN)
-		ax.add_feature   (cartopy.feature.COASTLINE, edgecolor='black')
-		ax.add_feature   (cartopy.feature.BORDERS, linestyle='dotted', edgecolor='black')
-		ax.add_feature   (cartopy.feature.LAKES, alpha=0.5)
-		ax.add_feature   (cartopy.feature.RIVERS)
-		ax.gridlines     ()
+		ax.add_feature   (cartopy.feature.COASTLINE,                   edgecolor='black', **fargs)
+		ax.add_feature   (cartopy.feature.BORDERS, linestyle='dotted', edgecolor='black', **fargs)
+		ax.add_feature   (cartopy.feature.STATES,  linestyle='dotted', edgecolor='black', **fargs)
+		ax.add_feature   (cartopy.feature.LAKES, alpha=0.5, facecolor='aqua', edgecolor='black', **fargs)
+		ax.add_feature   (cartopy.feature.RIVERS,                      edgecolor='blue',  **fargs)
+		###fargs['linewidth'] = pow (golden, 7) # TODO magic numbers
+		fargs['linewidth'] = hyp / pow (golden, 6)
+		#ax.gridlines     (crs=projection,                                                 **fargs)
+		ax.gridlines     (                                                **fargs)
 		#ax.coastlines  ()
 		
-		ax.plot (self.lon, self.lat, 'ro') # plot the user's position (this dot is literally the point of the whole app)
-		#ax.plot (self.lon, self.lat, 'ro', transform=projection)
+		print ("lon: %s, lat: %s" % (self.lon, self.lat))
+		print ("lon: %s, lat: %s" % (lon, lat))
+		#ax.plot ([self.lon], [self.lat], mfc='red', mec='red', marker='o', ms='8') # plot the user's position (this dot is literally the point of the whole app)
+		#ax.plot ([self.lon], [self.lat], color='red', marker='o', transform=projection)
+		pt = (lon, lat)
+		#ax.hlines (lon, -180, +180, transform=projection, color='red', **fargs)
+		#ax.vlines (lat, -180, +180, transform=projection, color='red', **fargs)
+		###fargs['markersize'] = pow (golden, 10) # TODO magic numbers
+		fargs['markersize'] = hyp / pow (golden, 3)
+		#for marker in ['o', '_', '|']:
+		for marker in ['o',]:
+			#ax.plot (*pt, transform=projection, color='red', marker=marker, **fargs)
+			ax.plot (*pt, color='red', marker=marker, **fargs)
+		
+		#if self.lat != 0 or self.lon != 0: quit ()
 		
 		print ("leave map_app.compute ()")
 	def notify (self, lat, lon):
@@ -161,7 +192,7 @@ class AngleMapApp (MapApp, AngleApp):
 	def positive_space (self, is_root=True): raise Exception ()
 	def negative_space (self, is_root=True): raise Exception ()
 	def minsz          (self): raise Exception ()
-		 		 
+ 
 if __name__ == "__main__":
 	from gps_client import GPSClient
 	from hal import HAL9000
@@ -182,7 +213,7 @@ if __name__ == "__main__":
 			p = 1717
 			n = lambda observer: a.notify (observer.lat, observer.lon)
 			g = GPSClient (h, p, n)
-			
+			#g.run ()
 			G.run ()
 	main ()
 	quit ()
