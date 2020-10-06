@@ -14,7 +14,7 @@ class Server (PSNServer):
 		while self.is_running:
 			self.Pump ()
 			#sleep (0.0001)
-			self.do_tick
+			self.do_tick ()
 	def do_tick (self): pass
 
 from PodSixNet.Channel import Channel

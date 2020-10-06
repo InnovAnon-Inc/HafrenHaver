@@ -7,6 +7,7 @@ from map_app import MapApp, random_projection
 from circle_app import CircleApp
 from square_app import SquareApp
 from client import Client
+from server import Server
 
 class ThermometerApp (SquareApp): pass
 class   AltimeterApp (CircleApp): pass
@@ -78,9 +79,12 @@ class         GPSApp (SquareApp):
 	def run_loop (self, events, keys):
 		SquareApp.run_loop (self, events, keys)
 		if isinstance (self.gps, Client): self.gps.Loop ()
+		if isinstance (self.gps, Server): self.gps.Pump ()
 		 		 
 if __name__ == "__main__":
 	from gps_client import GPSClient
+	from gps_server import GPSServer
+	from gps import AddrGPS
 	from hal import HAL9000
 	
 	def main ():
@@ -89,10 +93,14 @@ if __name__ == "__main__":
 			p = random_projection ()
 			a.set_projection (p)
 			
-			h = "localhost"
-			p = 1717
-			n = a.set_observer
-			g = GPSClient (h, p, n)
+			#h = "localhost"
+			#p = 1717
+			#n = a.set_observer
+			#g = GPSClient (h, p, n)
+			g = AddrGPS ("7271 Wurzbach Rd, San Antonio, TX 78240")
+			#g = CityGPS ("Dallas, TX")
+			host, port = "0.0.0.0", 1717
+			g = GPSServer (g, localaddr=(host, int (port)))
 			a.set_gps (g)
 			
 			G.run ()
