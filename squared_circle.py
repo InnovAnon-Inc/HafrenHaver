@@ -80,7 +80,7 @@ class SquaredCircle (SquareApp, CompositeApp):
 		return x, y, w2, h2
 		return self.child.outer_rect ()
 	def minsz_helper (self):
-		w, h = SquareApp.minsz_helper (self)
+		w, h = SquareApp.minsz_helper (self) # TODO child's minsz ?
 		if self.rotation == STRAIGHT: return pi * w, pi * h
 		assert self.rotation == ANGLED
 		return pi * sqrt (2) * w, pi * sqrt (2) * h

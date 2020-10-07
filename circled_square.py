@@ -182,7 +182,7 @@ class CircledSquare (CircleApp, CompositeApp):
 		return self.child.outer_rect ()
 	def minsz_helper (self):
 		print ("enter circled_square.minsz_helper ()")
-		w, h = CircleApp.minsz_helper (self)
+		w, h = CircleApp.minsz_helper (self) # TODO child's minsize ?
 		if self.rotation == STRAIGHT: a = pi * sqrt (2) * w, pi * sqrt (2) * h
 		else:
 			assert self.rotation == ANGLED

@@ -32,8 +32,16 @@ class CircledCircle (CircleApp, CompositeApp):
 		print ("leave circled_circle.stop_running ()")
 	def set_subsurface (self, ss):
 		print ("enter circled_circle.set_subsurface (%s)", (ss,))
+		(X, Y), (W2, H2) = self.bounds
+		(x, y), (w2, h2) = self.inner_bounds
+		rw, rh = W2 / w2, H2 / h2
 		CircleApp   .set_subsurface (self, ss)
 		CompositeApp.set_subsurface (self, None, True)
+		if child is not None: self.inner_bounds = child.inner_bounds
+		else:
+			(X, Y), (W2, H2) = self.bounds
+			w2, h2 = rw * W2, rh * H2
+			self.inner_bounds = ORIGIN, (w2, h2)
 		print ("leave circled_circle.set_subsurface ()")
 	def draw_cropped_scene (self, temp):
 		print ("enter circled_circle.draw_cropped_scene (%s)", (temp,))
@@ -72,57 +80,46 @@ class CircledCircle (CircleApp, CompositeApp):
 	def inner_area          (self):
 		print ("enter circled_circle.inner_area ()")
 		o, (w2, h2) = self.inner_bounds # self.child.bounds
-		a = # TODO area of ellipse
+		a = pi * w2 * h2
 		print ("leave circled_circle.inner_area ()")
 		return a
 	def inner_rect (self):
 		print ("enter circled_circle.inner_rect ()")
 		o, (w2, h2) = self.inner_bounds # self.child.bounds
-		rect = # TODO bounding rect of circle
+		X, Y = o
+		x = X - w2
+		y = Y - h2
+		w = w2 * 2
+		h = h2 * 2
+		rect = x, y, w, h
 		print ("leave circled_circle.inner_rect ()")
 		return rect
 		return self.child.outer_rect ()
 	def minsz_helper (self):
-		print ("enter circled_square.minsz_helper ()")
-		# TODO if child is None, use inner_bounds, else use child.minsz
+		print ("enter circled_circle.minsz_helper ()")
+		if self.child is not None: return self.child.minsz ()
 		w, h = CircleApp.minsz_helper (self)
-		if self.rotation == STRAIGHT: a = pi * sqrt (2) * w, pi * sqrt (2) * h
-		else:
-			assert self.rotation == ANGLED
-			a = pi * w, pi * h
-		print ("leave circled_square.minsz_helper ()")
+		a = w, h
+		print ("leave circled_circle.minsz_helper ()")
 		return a
 	def recursion_rect (self, geom=SQUARE):
-		print ("enter circled_square.recursion_rect (%s)" % (geom,))
-		if self.rotation == STRAIGHT: g = SQUARE
-		if self.rotation == ANGLED:   g = DIAMOND
-		rect =  CircleApp.recursion_rect (self, g)
+		print ("enter circled_circle.recursion_rect (%s)" % (geom,))
+		rect =  CircleApp.recursion_rect (self, CIRCLE)
 		X, Y, W, H = rect
 		if self.child is None:
-			if self.rotation == ANGLED   and geom == DIAMOND: pass
-			if self.rotation == STRAIGHT and geom == SQUARE:
-				print ("circled_square using circle_app for recursion_rect")
-				pass
-			if self.rotation == ANGLED   and geom == SQUARE:
-				w, h = W / sqrt (2), H / sqrt (2)
+			x, y, w, h = self.inner_rect ()
+			if geom == SQUARE:
+				w, h = w / sqrt (2), h / sqrt (2)
 				x, y = X + (W - w) / 2, Y + (H - h) / 2
 				rect = x, y, w, h
-			if self.rotation == STRAIGHT and geom == DIAMOND:
-				w, h = W / sqrt (2), H / sqrt (2)
-				#w, h = w / sqrt (2), h / sqrt (2)
+			if geom == DIAMOND:
 				x, y = X + (W - w) / 2, Y + (H - h) / 2
 				rect = x, y, w, h
-			if self.rotation == ANGLED and geom == CIRCLE:
-				w, h = W / sqrt (2), H / sqrt (2)
-				x, y = X + (W - w) / 2, Y + (H - h) / 2
-				rect = x, y, w, h
-			if self.rotation == STRAIGHT and geom == CIRCLE:
-				w, h = W, H
-				#w, h = W / sqrt (2), H / sqrt (2)
+			if geom == CIRCLE:
 				x, y = X + (W - w) / 2, Y + (H - h) / 2
 				rect = x, y, w, h
 		else:
-			print ("circled_square deferring to child for recursion_rect")
+			print ("circled_circle deferring to child for recursion_rect")
 			rect = self.child.recursion_rect (geom)
 			x, y, w, h = rect
 			
@@ -137,7 +134,7 @@ class CircledCircle (CircleApp, CompositeApp):
 			#rect = (X + x, Y + y, W / w, H / h)
 			#rect = X + x, Y + y, w, h
 			rect = X + (W - w) / 2, Y + (H - h) / 2, w, h
-		print ("leave circled_square.recursion_rect ()")
+		print ("leave circled_circle.recursion_rect ()")
 		return rect
 class PolygonApp (CircleApp): pass
 class EqualPolygonApp (PolygonApp): pass
@@ -150,16 +147,17 @@ class StatChartInner (EqualPolygonApp):
 	def __init__ (self, n):
 		EqualPolygonApp.__init__ (self, n)
 class StatChart (TextRing):
-	def __init__ (self, n):
+	def __init__ (self, labels):
+		n = len (labels)
 		TextRing.__init__ (self, n, StatChartInner (n))
-
+		
 
 
 
 
 class ATP (StatChart):
 	def __init__ (self):
-		StatChart.__init__ (self, 3)
+		StatChart.__init__ (self, ('altitude', 'temperature', 'pressure'))
 	def get_radius (self, raw): # https://stackoverflow.com/questions/42140347/normalize-any-value-in-range-inf-inf-to-0-1-is-it-possible
 		if raw is None: return 0
 		radius   = (erf (raw) + 1) / 2
