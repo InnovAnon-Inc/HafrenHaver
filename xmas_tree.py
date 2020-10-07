@@ -277,6 +277,7 @@ if __name__ == "__main__":
 		# TODO use binning to discretize the continuous points?
 		#npi.group_by (np.digitize (coords, bins)).mean (coords))        # map from continuous 2-space to discrete 2-space
 		
+		# TODO is there a way to make side lengths odd, so the first ornament is properly centered ?
 		#p = ?
 		N = 2
 		hilbert_curve = HilbertCurve (p, N)                             # map from 2-space to 1-space
@@ -285,7 +286,8 @@ if __name__ == "__main__":
 		nornament = randrange (3, ncoord)                               # get number of ornaments
 
 		pattern = bjorklund (ncoord, nornament)                         # evenly distribute ornaments along space-filling curve
-		coords  = zip (pattern, coords)
+		pattern = pattern[ncoord//2:] + pattern[:ncoord//2]             # hilbjork starts at the bottom-left of the screen,
+		coords  = zip (pattern, coords)                                 # so rotate that start point to the center (i.e., top of the tree)
 		f       = lambda t: t[0]
 		coords  = filter (f, coords)
 		f       = lambda t: t[1]

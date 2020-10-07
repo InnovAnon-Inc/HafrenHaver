@@ -13,11 +13,22 @@ from math import sin, cos
 from constants import ORIGIN
 
 class StatChart (CircleApp): # TODO need an abstract class bc this is similar to the magic circle text
-	def __init__ (self, rads):
+	# TODO axis label, value, radius
+	#def __init__ (self, rads):
+	def __init__ (self):
 		CircleApp.__init__ (self)
+		self.rads = None
+		"""
 		rads      = tuple (rads)
 		self.rads = rads
 		#self.lbls = lbls
+		"""
+	def set_radii (self, rads):
+		rads = tuple (rads)
+		self.rads = rads
+		self.compute ()
+	def compute (self):
+		rads = self.rads
 		n         = len (rads)
 		#assert n == len (lbls)
 		
@@ -101,7 +112,9 @@ if __name__ == "__main__":
 		assert len (rng) == n
 		f    = lambda k: uniform (0, 1)
 		rads = map (f, rng)
-		a    = StatChart (rads)
+		#a    = StatChart (rads)
+		a    = StatChart ()
+		a.set_radii (rads)
 		with HAL9000 (app=a, exit_on_close=False) as g:
 			#g.setApp (a)
 			g.run ()

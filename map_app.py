@@ -52,10 +52,10 @@ class MapApp (PyGamePlotLib):
 		self.lat        = 0
 		self.lon        = 0
 		self.projection = None
-	def set_subsurface (self, ss=None, second_run=False): # TODO apps should pre render images here
-		print ("enter map_app.set_subsurface (%s)" % (ss,))
-		PyGamePlotLib.set_subsurface (self, ss, second_run)
-		print ("leave map_app.set_subsurface ()")
+	#def set_subsurface (self, ss=None, second_run=False): # TODO apps should pre render images here
+	#	print ("enter map_app.set_subsurface (%s)" % (ss,))
+	#	PyGamePlotLib.set_subsurface (self, ss, second_run)
+	#	print ("leave map_app.set_subsurface ()")
 	def compute_helper (self, fig):
 		print ("enter map_app.compute ()")
 		PyGamePlotLib.compute_helper (self, fig)
