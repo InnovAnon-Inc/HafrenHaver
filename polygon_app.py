@@ -12,13 +12,19 @@ from orientation import NORTH, SOUTH, EAST, WEST
 class PolygonApp (CroppingApp): # divide circle into segments
 	def __init__ (self, pts, *args, **kwargs):
 		CroppingApp.__init__ (self, *args, **kwargs)
-		self.pts = pts
+		f = lambda pt: tuple (pt)
+		pts = map (f, pts)
+		self.pts = tuple (pts)
 	def set_subsurface (self, ss):
+		print ("enter polygon_app.set_subsurface (%s)" % (ss,))
 		CroppingApp.set_subsurface (self, ss)
 		rect = self.ss.get_rect ()
 		self.compute_points (rect)
+		print ("leave polygon_app.set_subsurface ()")
 	def compute_points (self, rect):
+		print ("enter polygon_app.compute_points (%s)" % (rect,))
 		pts = self.pts
+		assert len (pts) >= 3
 		pts    = scale_points      (pts, rect)
 		f = lambda pt: tuple (pt)
 		pts = map (f, pts)
@@ -26,10 +32,16 @@ class PolygonApp (CroppingApp): # divide circle into segments
 		#print ("pts: %s" % (pts,))
 		#quit ()
 		self.bounds       = pts
+		print ("leave polygon_app.compute_points ()")
 	def crop (self):
+		print ("enter polygon_app.crop ()")
 		#w, h = self.ss.get_size ()
 		#w, h = round (w / 2), round (h / 2)
 		pts = self.bounds
+		#if len (pts) == 0:
+		#	self.compute_points (self.outer_rect ())
+		#	pts = self.bounds
+		#if len (pts) == 0: return
 		print ("pts: %s" % (pts,))
 		pts = map (tr, pts)
 		print ("pts: %s" % (pts,))
@@ -39,11 +51,15 @@ class PolygonApp (CroppingApp): # divide circle into segments
 		print ("pts: %s" % (pts,))
 		pygame.gfxdraw.     aapolygon (self.cropped_background, pts, OPAQUE)
 		pygame.gfxdraw.filled_polygon (self.cropped_background, pts, OPAQUE)
-
+		print ("leave polygon_app.crop ()")
+		
 	def minsz_helper (self):
+		print ("enter polygon_app.minsz_helper ()")
 		w, h = CroppingApp.minsz_helper (self)
 		#w, h = CroppingApp.minsz (self)
-		return pi * w, pi * h
+		a = pi * w, pi * h
+		print ("leave polygon_app.minsz_helper ()")
+		return a
 	#def outer_area (self): return CroppingApp.area (self)
 	def inner_area (self):
 		w, h = self.dims ()
@@ -145,7 +161,8 @@ if __name__ == "__main__":
 	from hal import HAL9000
 	
 	def main ():
-		a = EqualPolygonApp (5)
+		n = 5
+		a = EqualPolygonApp (n)
 		with HAL9000 (app=a) as g: g.run ()
 	main ()
 	quit ()

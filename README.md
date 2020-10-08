@@ -67,6 +67,9 @@ Display Arbitrary Code using Patterns based on (Relatively) Prime Numbers
 ==========
 Implies the mathematical nature of existence.
 
+Code is preprocessed for display. Comments and imports are removed.
+TODO shorten/rename variables
+
 Currently available in Circular Ring pattern and in filled square pattern.
 TODO filled circle and rectangular frame.
 TODO figure out something with triangles, etc.
@@ -106,7 +109,7 @@ Manages Color Palettes and Color Schemes for Apps
 Color palettes as a function of base frequency, scale, and brainwave:
 the formula for synesthesia.
 
-The above subprojects are the requirements for the pre-alpha release.
+The above subprojects are the requirements for the pre-alpha release: Tuning the Yellow Bell
 The alpha release will actually have sound.
 
 TODO

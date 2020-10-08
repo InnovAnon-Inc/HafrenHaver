@@ -15,15 +15,20 @@ from math import erf
 from circled_circle import AbsoluteCircledCircle
 
 from polygon_app import PolygonApp, EqualPolygonApp
-	
-	
-	
-	
-class CircledPolygon (CircleApp, CompositeApp): pass
-class TextRing (CircledCircle, EqualPolygonApp): # circled polygon with polygon'd circle # number of sides of polygon based on text
+from circled_polygon import CircledPolygon
+
+class PolygonedCircle (PolygonApp, CompositeApp): pass
+
+
+
+
+
+
+class TextRing (CircledPolygon): # circled polygon with polygon'd circle # number of sides of polygon based on text
 	def __init__ (self, n, child):
 		CircledCircle.__init__ (self, child)
 		EqualPolygonApp.__init__ (self, n)
+		assert isinstance (child, PolygonedCircle)
 
 class CircleStatChartInner (EqualPolygonApp): # polygon radii as a function of stats
 	def __init__ (self, n):
