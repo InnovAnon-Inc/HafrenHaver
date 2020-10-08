@@ -10,6 +10,7 @@ from geom import SQUARE, DIAMOND, CIRCLE, ANGLE_N, ANGLE_E, ANGLE_S, ANGLE_W
 
 class PolygonedCircle (PolygonApp, CompositeApp):
 	def __init__ (self, pts, child, *args, **kwargs):
+		raise Exception ("fuck")
 		PolygonApp   .__init__ (self, pts, *args, **kwargs)
 		CompositeApp.__init__ (self, child,    *args, **kwargs)
 		assert child is None or isinstance (child, CircleApp)

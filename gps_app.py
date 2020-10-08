@@ -19,32 +19,31 @@ from circled_polygon import CircledPolygon
 from polygoned_circle import PolygonedCircle, EqualPolygonedCircle
 from text_ring import TextRing
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class CircleStatChartInner (CircledPolygon): # polygon radii as a function of stats
-	def __init__ (self, n):
-		CircledPolygon.__init__ (self, n)
-class CircleStatChart (TextRing): # labelled stat chart inner
+	def __init__ (self, rads):
+		n = len (rads)
+		#child = EqualPolygonApp (n)
+		angles = inscribe_angles (n)
+		ars = zip (angles, rads)
+		pts = inscribe (ars)
+		child = PolygonApp (pts)
+		CircledPolygon.__init__ (self, child)
+	def set_radii (self, rads):
+		n = len (rads)
+		#child = EqualPolygonApp (n)
+		angles = inscribe_angles (n)
+		ars = zip (angles, rads)
+		pts = inscribe (ars)
+		self.child.set_pts (pts)
+#class CircleStatChart (TextRing): # labelled stat chart inner
+class CircleStatChart (AbsoluteCircledCircle)
 	def __init__ (self, labels, font=None):
 		n     = len (labels)
 		child = CircleStatChartInner (n)
 		text  = ' '.join (labels)
 		TextRing.__init__ (self, child, text, font)
-	
+	def set_radii (self, rads):
+		self.child.set_radii (rads)
 		
 class SquareStatChartInner (SquareApp): pass
 class SquareStatChart (SquareApp): pass

@@ -9,6 +9,7 @@ from geom import SQUARE, DIAMOND, CIRCLE, ANGLE_N, ANGLE_E, ANGLE_S, ANGLE_W
 	
 class CircledPolygon (CircleApp, CompositeApp):
 	def __init__ (self, child, *args, **kwargs):
+		raise Exception ("fuck")
 		assert child is not None
 		CircleApp   .__init__ (self,        *args, **kwargs)
 		CompositeApp.__init__ (self, child, *args, **kwargs)

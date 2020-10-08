@@ -98,13 +98,80 @@ class StatChart (CircleApp): # TODO need an abstract class bc this is similar to
 			assert len (o)    == 2, "o:  %s" % (o,)
 			assert len (axis) == 2, "pt: %s" % (axis,)
 			pygame.gfxdraw.line (temp, *o, *axis, color)
+			
+			
+			
+			
+			
+from circled_circle import AbsoluteCircledCircle
+
+from polygon_app import PolygonApp, EqualPolygonApp
+from circled_polygon import CircledPolygon
+from polygoned_circle import PolygonedCircle, EqualPolygonedCircle
+from text_ring import TextRing
+
+def inscribe (pv):
+	f           = lambda theta, radius: (radius * cos (theta), radius * sin (theta))
+	#pv          = zip (angles, rads)
+	pts         = starmap (f, pv)
+	return pts
+def inscribe2 (angles, rads):
+	pv = zip (angles, rads)
+	return inscribe (pv)
+def inscribe3 (rads):
+	rads = tuple (rads)
+	n = len (rads)
+	angles = inscribe_angles (n)
+	return inscribe2 (angles, rads)
+	
+from constants import SECONDARY_BACKGROUND
+"""
+class CircleStatChartInner (CircledPolygon): # polygon radii as a function of stats
+	def __init__ (self, rads, *args, **kwargs):
+		if rads is not None:
+			rads = tuple (rads)
+			n = len (rads)
+			#child = EqualPolygonApp (n)
+			#angles = inscribe_angles (n)
+			#ars = zip (angles, rads)
+			#pts = inscribe (ars)
+			pts = inscribe3 (rads)
+			f = lambda pt: tuple (pt)
+			pts = map (f, pts)
+			pts = tuple (pts)
+		else: pts = None
+		child = PolygonApp (pts, background=SECONDARY_BACKGROUND, *args, **kwargs)
+		CircledPolygon.__init__ (self, child, *args, **kwargs)
+	def set_radii (self, rads):
+		rads = tuple (rads)
+		n = len (rads)
+		#child = EqualPolygonApp (n)
+		#angles = inscribe_angles (n)
+		#ars = zip (angles, rads)
+		#pts = inscribe (ars)
+		#pts = inscribe (angles, rads)
+		pts = inscribe3 (rads)
+		f = lambda pt: tuple (pt)
+		pts = map (f, pts)
+		pts = tuple (pts)
+		self.child.set_pts (pts)
+"""
+
+#class CircleStatChart (TextRing): # labelled stat chart inner
+class CircleStatChart (AbsoluteCircledCircle):
+	def __init__ (self, labels, font=None):
+		child = StatChart (None)
+		text  = ' '.join (labels)
+		TextRing.__init__ (self, child, text, font)
+	def set_radii (self, rads):
+		self.child.set_radii (rads)
 
 if __name__ == "__main__":
 	from gui import GUI, BLACK
 	from hal import HAL9000
 	from random import uniform, randrange
 	
-	def main ():
+	def main ():	
 		n    = randrange (3, 12 + 1)
 		assert n >= 3
 		rng  = range (1, n + 1)
@@ -112,8 +179,8 @@ if __name__ == "__main__":
 		assert len (rng) == n
 		f    = lambda k: uniform (0, 1)
 		rads = map (f, rng)
-		#a    = StatChart (rads)
-		a    = StatChart ()
+		#a = StatChart ()
+		a = CircleStatChart ()
 		a.set_radii (rads)
 		with HAL9000 (app=a, exit_on_close=False) as g:
 			#g.setApp (a)

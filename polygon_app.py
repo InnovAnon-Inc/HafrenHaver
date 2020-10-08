@@ -18,6 +18,9 @@ class PolygonApp (CroppingApp): # divide circle into segments
 			pts = map (f, pts)
 			self.pts = tuple (pts)
 	def set_pts (self, pts):
+		f = lambda pt: tuple (pt)
+		pts = map (f, pts)
+		pts = tuple (pts)
 		self.pts = pts
 		self.set_subsurface (None)
 	def set_subsurface (self, ss):
@@ -180,6 +183,8 @@ if __name__ == "__main__":
 	def main ():
 		n = 5
 		a = EqualPolygonApp (n)
+		#a = EqualPolygonApp (None)
+		#a.set_n (n)
 		with HAL9000 (app=a) as g: g.run ()
 	main ()
 	quit ()
