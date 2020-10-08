@@ -29,7 +29,7 @@ phrases differ from each other, but rather than generating a unique
 phrase cadence for the second one, it might reuse a phrase cadence 
 from elsewhere in the piece).
 
-# SevernSieve
+# SevernSieve (TODO needs to be rewritten. expensive ops don't have to be done so often)
 P.o.C. for variable-length wheel factorization
 ==========
 An implementation of variable-length wheel factorization
@@ -39,6 +39,75 @@ asymptotic complexity.
 
 There's one problem of efficiency to be resolved in the implementation.
 Hashing could be used as a work-around until a formula is derived.
+
+# HAL
+Primitive Precursor of the YellShell
+==========
+Uses speech recognition to convert voice commands to text,
+which are preprocessed (i.e., stopwords are removed,
+NATO phonetics are converted, etc.),
+then interpreted as an English-like domain-specific language,
+converting the commands to Event objects the underlying GUI
+can recognize and forward to the contained App(s).
+
+# CircleApp, SquareApp, AngleApp, PentaApp, HexaApp (TODO semi-complete)
+App Geometries based on 2D Projections of Platonic Solids
+==========
+Animations can rotate the underlying 3D shape implied by these app
+geometries, implying that what we perceive is the shadow of the true
+nature of things.
+
+# RecursiveComposite
+Automatic Fractalizer to Fill Negative Space caused by Null Child Nodes
+==========
+Implies the fractal nature of existence.
+
+# Magic/Matrix
+Display Arbitrary Code using Patterns based on (Relatively) Prime Numbers
+==========
+Implies the mathematical nature of existence.
+
+Currently available in Circular Ring pattern and in filled square pattern.
+TODO filled circle and rectangular frame.
+TODO figure out something with triangles, etc.
+
+# AestheticLayout (TODO)
+Layout Manager for Non-Standard Geometries
+==========
+The specialized layout manager will manage app geometries,
+positive and negative space, etc., as well as framing sets of apps.
+These "frames" will be decorated with designs such as the recursive
+composite and the matrix text.
+
+# GPS App (TODO temp, pressure, alt display and underlying middleware)
+Graphical Representation of an Astronomical Observer
+==========
+Allows user to select map projection,
+centering the projection at the user's coordinates.
+Uses an 
+
+Uses an exotic-style display for temperature, pressure and altitude.
+
+# Classical Clock App
+Graphical Representation of the Classical Time given an Astronomical Observer
+==========
+It's gonna be steam punk, yo.
+
+# Solfeggio App (TODO)
+Graphical Selector for Base Frequency
+==========
+Two Styles:
+- Using traditional solfeggio frequencies, and the option of standard or classical hertz
+- Empirical tuning, initial guess based on temperature and pressure
+
+# ColorManager (TODO)
+Manages Color Palettes and Color Schemes for Apps
+==========
+Color palettes as a function of base frequency, scale, and brainwave:
+the formula for synesthesia.
+
+The above subprojects are the requirements for the pre-alpha release.
+The alpha release will actually have sound.
 
 TODO
 ----------

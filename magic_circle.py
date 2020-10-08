@@ -244,9 +244,11 @@ class MagicCircle (CircleApp): # composite app, child is also circle, animated a
 		
 	# def minsz: minsz of inner circle... + tw, th => minsz of outer
 	# 3 * 4 = 12 points on polygon...  
-	def draw_foreground (self, temp):
+	#def draw_foreground (self, temp):
+	def draw_cropped_scene (self, temp):
 		print ("circular_matrix_text.draw_foreground ()")
-		CircleApp.draw_foreground (self, temp)
+		#CircleApp.draw_foreground (self, temp)
+		CircleApp.draw_cropped_scene (self, temp)
 		xforms = self.xforms # image, w, h
 		n      = self.n
 		ndx    = self.sectioni

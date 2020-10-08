@@ -163,9 +163,6 @@ class AbsoluteCircledCircle (CircledCircle):
 		x, y = X + (W - w) / 2, Y + (H - h) / 2
 		return x, y, w, h
 		
-		
-		
-		
 if __name__ == "__main__":
 	from constants import SECONDARY_BACKGROUND
 	from gui import GUI
@@ -173,10 +170,11 @@ if __name__ == "__main__":
 	from recursive_composite import RecursiveComposite
 	
 	def main ():
-		c = CircleApp (background=SECONDARY_BACKGROUND)
-		if True: b = RelativeCircledCircle (c, 9 / 10, 1 / 2)
-		else:    b = AbsoluteCircledCircle (c, 10, 20)
+		c = CircleApp ()
+		if False: b = RelativeCircledCircle (c, 9 / 10, 1 / 2, background=SECONDARY_BACKGROUND)
+		else:     b = AbsoluteCircledCircle (c, 10, 20, background=SECONDARY_BACKGROUND)
 		a = RecursiveComposite (b)
+		#a = b
 		with HAL9000 (app=a) as g:
 			#g.setApp (a)
 			#print ("minsz: (%s, %s)" % a.minsz ())

@@ -138,10 +138,16 @@ def angles_to_polygon (angles):
 	tmp = map (f, angles)
 	if False: tmp = tuple (tmp)
 	return tmp
-def inscribe_polygon (n, theta):
+def inscribe_polygon (n, theta, reflect=False):
 	angles = inscribe_angles   (n)
 	angles =   rotate_angles   (angles, theta)
+	if reflect: angles =  reflect_angles   (angles)
 	pts    = angles_to_polygon (angles)
+	return pts
+
+def inscribe_graphics_polygon (n, theta, reflect=True):
+	pts = inscribe_polygon (n, theta, reflect)
+	pts    = graphics_affines  (pts)
 	return pts
 
 #@jit	
