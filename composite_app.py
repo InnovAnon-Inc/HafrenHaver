@@ -78,9 +78,10 @@ class CompositeApp (CroppingApp):
 			assert ss is None
 			ss = self.ss
 		rect = self.inner_rect ()
-		rect = pygame.Rect (*rect)			
-		ss2 = ss.subsurface (rect)
-		if self.child is not None: self.child.set_subsurface (ss2)
+		if rect is not None:
+			rect = pygame.Rect (*rect)			
+			ss2 = ss.subsurface (rect)
+			if self.child is not None: self.child.set_subsurface (ss2)
 		print ("leave composite_app.set_subsurface ()")
 	
 	def minsz_helper (self):

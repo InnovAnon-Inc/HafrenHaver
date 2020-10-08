@@ -17,15 +17,20 @@ class PolygonApp (CroppingApp): # divide circle into segments
 			f = lambda pt: tuple (pt)
 			pts = map (f, pts)
 			self.pts = tuple (pts)
+	def set_pts (self, pts):
+		self.pts = pts
+		self.set_subsurface (None)
 	def set_subsurface (self, ss):
 		print ("enter polygon_app.set_subsurface (%s)" % (ss,))
 		CroppingApp.set_subsurface (self, ss)
-		rect = self.ss.get_rect ()
-		self.compute_points (rect)
+		if self.ss is not None:
+			rect = self.ss.get_rect ()
+			self.compute_points (rect)
 		print ("leave polygon_app.set_subsurface ()")
 	def compute_points (self, rect):
 		print ("enter polygon_app.compute_points (%s)" % (rect,))
 		pts = self.pts
+		if pts is None: return
 		assert len (pts) >= 3
 		pts    = scale_points      (pts, rect)
 		f = lambda pt: tuple (pt)
@@ -156,8 +161,18 @@ from geometry import inscribe_graphics_polygon
 
 class EqualPolygonApp (PolygonApp): # equal-sized angles
 	def __init__ (self, n, orientation=NORTH, reflect=False, *args, **kwargs):
-		pts = inscribe_graphics_polygon (n, orientation.radians (), reflect)
+		if n is None: pts = None
+		else: pts = inscribe_graphics_polygon (n, orientation.radians (), reflect)
 		PolygonApp.__init__ (self, pts, *args, **kwargs)
+		self.n = n
+		self.orientation = orientation
+		self.reflect = reflect
+	def set_n (self, n):
+		self.n = n
+		orientation = self.orientation
+		reflect = self.reflect
+		pts = inscribe_graphics_polygon (n, orientation.radians (), reflect)
+		PolygonApp.set_pts (self, pts)
 			 		 
 if __name__ == "__main__":
 	from hal import HAL9000

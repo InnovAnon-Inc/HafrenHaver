@@ -11,7 +11,7 @@ from itertools import cycle, starmap
 from constants import OPAQUE
 from geometry import to_degrees, reflect_angles
 from circle_app import CircleApp
-"""
+
 class MagicCircle (CircleApp): # composite app, child is also circle, animated app, pos/neg space has ranges
 	def __init__ (self, text=None, font=None, *args, **kwargs):
 		CircleApp.__init__ (self, *args, **kwargs)
@@ -290,6 +290,7 @@ from text_ring import TextRing
 
 class MagicCircle (TextRing): # composite app, child is also circle, animated app, pos/neg space has ranges
 	def __init__ (self, child, text=None, font=None, *args, **kwargs):
+		#assert child is not None
 		if text is None:
 			# if child is none, use own source (get subtype source), else query child for model source, else use child source
 			text = f2lc   (MagicCircle)
@@ -299,6 +300,7 @@ class MagicCircle (TextRing): # composite app, child is also circle, animated ap
 		self.a = None
 		self.b = None
 		self.n = None
+		#assert self.child is not None
 
 	def set_subsurface (self, ss):
 		TextRing.set_subsurface (self, ss)
@@ -318,11 +320,14 @@ class MagicCircle (TextRing): # composite app, child is also circle, animated ap
 		self.a        = a
 		self.b        = b
 		self.n        = n
-		self.pts      = pts
+		self.set_n (n)
+		#self.pts      = pts
+		self.set_pts (pts)
 		self.angles   = angles
 		self.xforms   = self.get_transforms ()
 		self.sections = tuple (self.get_sections (first_cycle))
 		self.sectioni = 0
+		if self.child is not None: self.child.pts = pts
 		
 	def get_text_for_transforms (self): return cycle (self.texts)
 		
@@ -414,6 +419,7 @@ class MagicCircle (TextRing): # composite app, child is also circle, animated ap
 		
 	def draw_cropped_scene (self, temp):
 		print ("circular_matrix_text.draw_foreground ()")
+		#assert self.child is not None
 		TextRing.draw_cropped_scene (self, temp)
 		self.increment_section_index () # TODO move this to the troller
 		
@@ -430,18 +436,28 @@ class MagicCircle (TextRing): # composite app, child is also circle, animated ap
 		n = self.n
 		while n >= N: n = n - N
 		self.texts = tuple (texts[n:] + texts[:n])
-
+"""
 
 if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT
 	from orientation import NORTH, SOUTH, EAST, WEST
 	from gui import GUI
 	from hal import HAL9000
+	from constants import SECONDARY_BACKGROUND
+	from polygoned_circle import EqualPolygonedCircle
 	
 	def main ():
-		b = None
-		a = MagicCircle (b)
-		#a = RecursiveCompositeTest ()
+		if False:
+			b = None
+			###b = CircleApp (background=SECONDARY_BACKGROUND)
+			##c = None
+			#c = CircleApp ()
+			#b = EqualPolygonedCircle (None, c, background=SECONDARY_BACKGROUND)
+			a = MagicCircle (b)
+			#a = RecursiveCompositeTest ()
+		else:
+			#b = None
+			a = MagicCircle ()
 		with HAL9000 (app=a, exit_on_close=False) as g:
 			#g.setApp (a)
 			g.run ()

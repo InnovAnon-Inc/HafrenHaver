@@ -12,18 +12,25 @@ class App:
 	def __init__ (self, background=DEFAULT_BACKGROUND):
 		#self.clock = pygame.time.Clock ()
 		self.ss = None
+		self.background_name = background
+		self.raw_background = None
+		self.background = None
 		self.set_background (background)
 		self.clock = pygame.time.Clock ()
 		
+		#self.raw_background = None
+		
 	def set_background (self, background=None):
 		print ("enter app.set_background (%s)" % (background,))
-		if background is not None: self.raw_background = pygame.image.load (background)
+		if background is not None:
+			self.background_name = background
+			self.raw_background = pygame.image.load (background)
 		if self.ss is None:
 			print ("leave app.set_background ()")
 			return
 		w = self.ss.get_width  ()
 		h = self.ss.get_height ()
-		self.background = pygame.transform.scale (self.raw_background.convert_alpha (), (w, h))
+		if self.raw_background is not None: self.background = pygame.transform.scale (self.raw_background.convert_alpha (), (w, h))
 		print ("leave app.set_background ()")
 		
 	def set_subsurface (self, ss):
@@ -34,7 +41,7 @@ class App:
 
 	def start_running (self):
 		print ("enter app.start_running ()")
-		assert self.ss is not None
+		#assert self.ss is not None
 		# TODO
 		print ("leave app.start_running ()")
 	def  stop_running (self):
@@ -66,8 +73,12 @@ class App:
 		print ("leave app.draw_scene ()")
 	def draw_background (self, temp):
 		print ("enter app.draw_background (%s)" % (temp,))
-		temp.fill (BLACK)
-		temp.blit (self.background, ORIGIN)
+		if self.background is not None:
+			temp.fill (BLACK)
+			temp.blit (self.background, ORIGIN)
+			#from polygon_app import PolygonApp
+			#if isinstance (self, PolygonApp):
+			#	raise Exception ()
 		print ("leave app.draw_background ()")
 	def draw_foreground (self, temp):
 		print ("enter app.draw_foreground (%s)" % (temp,))

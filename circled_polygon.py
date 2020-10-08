@@ -9,12 +9,14 @@ from geom import SQUARE, DIAMOND, CIRCLE, ANGLE_N, ANGLE_E, ANGLE_S, ANGLE_W
 	
 class CircledPolygon (CircleApp, CompositeApp):
 	def __init__ (self, child, *args, **kwargs):
+		assert child is not None
 		CircleApp   .__init__ (self,        *args, **kwargs)
 		CompositeApp.__init__ (self, child, *args, **kwargs)
 		assert child is None or isinstance (child, PolygonApp)
 		#assert (child is None) != (orientation is None)
 		#if child is None: self.orientation = orientation
 		#else:             self.orientation = child.orientation
+		assert self.child is not None
 	def start_running (self):
 		print ("enter circled_polygon.start_running ()")
 		CircleApp   .start_running (self)
@@ -76,6 +78,14 @@ class CircledPolygon (CircleApp, CompositeApp):
 		print ("leave circled_polygon.inner_area ()")
 		return a
 		return self.child.inner_area ()     # area of square/diamond
+		
+	def set_n (self, n):
+		if self.child is not None: self.child.set_n (n)
+		self.n = n
+	def set_pts (self, pts):
+		if self.child is not None: self.child.set_pts (pts)	
+		self.pts = pts
+		
 	def inner_rect (self):
 		print ("enter circled_polygon.inner_rect ()")
 		return self.outer_rect ()

@@ -12,13 +12,18 @@ from constants import OPAQUE
 from geometry import to_degrees
 
 class TextRing (CircledPolygon): # circled polygon with polygon'd circle # number of sides of polygon based on text
-	def __init__ (self, child, text, font=None):
-		if not isinstance (child, PolygonedCircle):
+	def __init__ (self, child, text, font=None, *args, **kwargs):
+		#assert child is not None
+		if not isinstance (child, PolygonedCircle) and not isinstance (child, EqualPolygonedCircle):
 			assert child is None or isinstance (child, CircleApp)
-			child = PolygonedCircle.__init__ (self, None, child)
-		CircledPolygon.__init__ (self, child)
+			child = EqualPolygonedCircle (None, child, background=None, *args, **kwargs)
+			#child = EqualPolygonedCircle (None, child, *args, **kwargs)
+		#assert child is not None
+		CircledPolygon.__init__ (self, child, *args, **kwargs)
 		self.text = text
 		self.font = font
+		#assert self.child is not None
+		self.th = None
 	def set_subsurface (self, ss):
 		CircledPolygon.set_subsurface (self, ss)
 		if self.font is None:
@@ -30,6 +35,10 @@ class TextRing (CircledPolygon): # circled polygon with polygon'd circle # numbe
 		self.texts    = texts
 		self.tw       = tw
 		self.th       = th
+		if self.child is not None:
+			rect = self.inner_rect ()
+			ss2 = ss.subsurface (rect)
+			self.child.set_subsurface (ss2)
 		self.minn     = minn
 		self.maxn     = maxn
 		self.x        = x
@@ -144,6 +153,17 @@ class TextRing (CircledPolygon): # circled polygon with polygon'd circle # numbe
 			temp.blit (xform, rect)			
 			
 		#self.increment_section_index () # TODO move this to the troller
+
+	def inner_rect (self):
+		rect = self.outer_rect ()
+		X, Y, W, H = rect
+		th = self.th
+		if th is None: return rect
+		w, h = W - 2 * th, H - 2 * th
+		x, y = X + (W - w) / 2, Y + (H - h) / 2
+		rect = x, y, w, h
+		return rect
+		
 
 if __name__ == "__main__":
 	def main ():

@@ -19,7 +19,6 @@ class PolygonedCircle (PolygonApp, CompositeApp):
 	def  stop_running (self):
 		PolygonApp    .stop_running (self)
 		CompositeApp .stop_running (self)
-	
 	def set_subsurface (self, ss):
 		PolygonApp   .set_subsurface (self, ss)
 		CompositeApp.set_subsurface (self, None, True)
@@ -144,7 +143,6 @@ class EqualPolygonedCircle (EqualPolygonApp, CompositeApp):
 	def  stop_running (self):
 		EqualPolygonApp    .stop_running (self)
 		CompositeApp .stop_running (self)
-	
 	def set_subsurface (self, ss):
 		EqualPolygonApp   .set_subsurface (self, ss)
 		CompositeApp.set_subsurface (self, None, True)
@@ -172,9 +170,13 @@ class EqualPolygonedCircle (EqualPolygonApp, CompositeApp):
 		return self.child.inner_area ()     # area of circle
 	def inner_rect (self):
 		print ("equal_polygoned_circle.inner_rect ()")
+		if self.ss is None: return None
 		rect = self.outer_rect ()
 		X, Y, W, H = rect
-		n = len (self.pts)
+		if self.n is None: return rect
+		n = self.n
+		#if self.pts is None: return rect
+		#n = len (self.pts)
 		#n = n * 2
 		theta0 = 0 / n * 2 * pi
 		theta1 = 1 / n * 2 * pi
