@@ -12,9 +12,11 @@ from orientation import NORTH, SOUTH, EAST, WEST
 class PolygonApp (CroppingApp): # divide circle into segments
 	def __init__ (self, pts, *args, **kwargs):
 		CroppingApp.__init__ (self, *args, **kwargs)
-		f = lambda pt: tuple (pt)
-		pts = map (f, pts)
-		self.pts = tuple (pts)
+		if pts is None: self.pts = None
+		else:
+			f = lambda pt: tuple (pt)
+			pts = map (f, pts)
+			self.pts = tuple (pts)
 	def set_subsurface (self, ss):
 		print ("enter polygon_app.set_subsurface (%s)" % (ss,))
 		CroppingApp.set_subsurface (self, ss)

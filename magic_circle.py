@@ -11,6 +11,7 @@ from itertools import cycle, starmap
 from constants import OPAQUE
 from geometry import to_degrees, reflect_angles
 from circle_app import CircleApp
+"""
 class MagicCircle (CircleApp): # composite app, child is also circle, animated app, pos/neg space has ranges
 	def __init__ (self, text=None, font=None, *args, **kwargs):
 		CircleApp.__init__ (self, *args, **kwargs)
@@ -283,6 +284,153 @@ class MagicCircle (CircleApp): # composite app, child is also circle, animated a
 		n = self.n
 		while n >= N: n = n - N
 		self.texts = tuple (texts[n:] + texts[:n])
+"""
+
+from text_ring import TextRing
+
+class MagicCircle (TextRing): # composite app, child is also circle, animated app, pos/neg space has ranges
+	def __init__ (self, child, text=None, font=None, *args, **kwargs):
+		if text is None:
+			# if child is none, use own source (get subtype source), else query child for model source, else use child source
+			text = f2lc   (MagicCircle)
+			text = lc2str (text)
+		TextRing.__init__ (self, child, text, font, *args, **kwargs)
+
+		self.a = None
+		self.b = None
+		self.n = None
+
+	def set_subsurface (self, ss):
+		TextRing.set_subsurface (self, ss)
+		self.next_cycle ()
+		
+	def next_cycle (self):
+		a             = self.a
+		b             = self.b
+		n             = self.n
+		first_cycle   = True
+		if a is None or b is None or n is None:
+			assert a is None
+			assert b is None
+			assert n is None
+		else: first_cycle = False
+		a, b, n, pts, angles = self.get_polygons (a, b, n)
+		self.a        = a
+		self.b        = b
+		self.n        = n
+		self.pts      = pts
+		self.angles   = angles
+		self.xforms   = self.get_transforms ()
+		self.sections = tuple (self.get_sections (first_cycle))
+		self.sectioni = 0
+		
+	def get_text_for_transforms (self): return cycle (self.texts)
+		
+	def get_polygons (self, a=None, b=None, n=None):
+		texts = self.texts # image, w, h
+		tw    = self.tw
+		th    = self.th
+		minn  = self.minn
+		maxn  = self.maxn
+		X, Y, W, H = self.get_rect ()
+		x, y, w, h = self.x, self.y, self.w, self.h
+		
+		if a is None or b is None or n is None:
+			assert a is None
+			assert b is None
+			assert n is None
+			a, b, n = random_relatively_prime_pair (minn, maxn)             # relatively prime pair a, b s.t. a >= minn, b >= minn, a * b <= maxn
+			if a > b: # smooth out first frame
+				c = a
+				a = b
+				b = c
+		else:
+			a = b
+			b, n = random_relatively_prime_to (a, minn, maxn) # random number b, relatively prime to a, s.t., minn <= a * b <= maxn
+		print ("a: %s, b: %s, n: %s" % (a, b, n))
+
+		orientation = NORTH
+		#pts = inscribe_polygon (n, orientation.radians ())
+		angles = inscribe_angles   (n)
+		angles =   rotate_angles   (angles, orientation.radians ())
+		angles =  reflect_angles   (angles)
+		angles = tuple (angles)
+		pts    = angles_to_polygon (angles)
+		pts    = graphics_affines  (pts)
+		rect   = x, y, w, h # text center
+		pts    = scale_points      (pts, rect)
+		pts    = map (lambda pt: tuple (pt), pts)
+		pts    = tuple (pts)
+		print ("pts: %s" % (pts,))
+		
+		#while True:
+		#	a = b
+		#	b, n = random_relatively_prime_to (a, minn, maxn)
+		#	print ("a: %s, b: %s, n: %s" % (a, b, n))
+		
+		return a, b, n, pts, angles
+		
+	def section_helper (self, a, b, n, rev, first_section):
+		rng = range (0, n, b) # main points: render a chars, skip n / b at a time
+		rng = tuple (rng)
+		assert len (rng) == a
+		
+		nloop = b // 2 # number of chars on either side of main points until they meet
+		#sections = []
+		if first_section: kstart = 0
+		else:             kstart = 1
+		K = range (first_section, nloop)
+		if rev: K = K[::-1]
+		for p in K: # k chars on either side
+			section = []
+			P = range (0, p + 1)
+			#if rev: P = P[::-1]
+			for k in P:
+				for base in rng: # for each of the main points
+					section.append (base)
+					if k == 0: continue
+					section = [base - k] + section
+					#section.prepend (base - k)
+					#section.append  (base + k)
+					section = section + [base + k]
+				#sections.extend (section)
+				#sections = sections + [section]
+				#yield a, tuple (section)
+				# TODO a or b ?
+				#yield b, tuple (section)
+			yield tuple (section)
+			
+		#f = lambda ndx: texts[ndx][0], pts[ndx]
+		#sections = map (f, sections)
+		#sections = tuple (sections)
+		#yield a, sections
+		
+	def get_sections (self, first_section):
+		n = self.n
+		a = self.a
+		b = self.b
+		yield from self.section_helper (a, b, n, False, first_section) # first section starts at 0
+		yield from self.section_helper (b, a, n, True,  b % 2 != 0)    # if odd, then n sections don't display long enough
+		
+	def draw_cropped_scene (self, temp):
+		print ("circular_matrix_text.draw_foreground ()")
+		TextRing.draw_cropped_scene (self, temp)
+		self.increment_section_index () # TODO move this to the troller
+		
+	def increment_section_index (self):
+		ndx = self.sectioni + 1
+		if ndx == len (self.sections):
+			self.rotate_texts ()
+			self.next_cycle ()
+		else: self.sectioni = ndx
+		
+	def rotate_texts (self):
+		texts = self.texts
+		N = len (texts)
+		n = self.n
+		while n >= N: n = n - N
+		self.texts = tuple (texts[n:] + texts[:n])
+
 
 if __name__ == "__main__":
 	from rotation import ANGLED, STRAIGHT
@@ -291,26 +439,8 @@ if __name__ == "__main__":
 	from hal import HAL9000
 	
 	def main ():
-		if False:
-			j = AngleApp     (orientation=NORTH)
-			i = CircledAngle (j, background=SECONDARY_BACKGROUND)
-			h = AngledCircle (i, orientation=WEST)
-			g = CircledAngle (h, background=SECONDARY_BACKGROUND)
-			f = AngledCircle (g, orientation=SOUTH)
-			e = CircledAngle (f, background=SECONDARY_BACKGROUND)
-			d = AngledCircle (e, orientation=EAST)
-			c = CircledAngle (d, background=SECONDARY_BACKGROUND)
-			b = AngledCircle (c, orientation=NORTH)
-			a = CircledAngle (b, background=SECONDARY_BACKGROUND)
-		elif False:
-			#d = SquareApp     (background=DEFAULT_BACKGROUND)
-			d = None
-			c = CircledSquare (d, rotation=STRAIGHT)
-			b = SquaredCircle (c, background=SECONDARY_BACKGROUND)
-			a = RecursiveComposite (b)
-			#a = b
-		else:
-			a = MagicCircle ()
+		b = None
+		a = MagicCircle (b)
 		#a = RecursiveCompositeTest ()
 		with HAL9000 (app=a, exit_on_close=False) as g:
 			#g.setApp (a)
