@@ -16,30 +16,29 @@ from circled_circle import AbsoluteCircledCircle
 
 from polygon_app import PolygonApp, EqualPolygonApp
 from circled_polygon import CircledPolygon
-
-class PolygonedCircle (PolygonApp, CompositeApp): pass
-
-
+from polygoned_circle import PolygonedCircle, EqualPolygonedCircle
 
 
 
 
 class TextRing (CircledPolygon): # circled polygon with polygon'd circle # number of sides of polygon based on text
 	def __init__ (self, n, child):
-		CircledCircle.__init__ (self, child)
-		EqualPolygonApp.__init__ (self, n)
-		assert isinstance (child, PolygonedCircle)
+		assert isinstance (child, CircleApp)
+		child = PolygonedCircle.__init__ (self, n, child)
+		CircledPolygon.__init__ (self, child)
+	
+# TODO after TextRing, rewrite MagicCircle
 
-class CircleStatChartInner (EqualPolygonApp): # polygon radii as a function of stats
+class CircleStatChartInner (CircledPolygon): # polygon radii as a function of stats
 	def __init__ (self, n):
-		EqualPolygonApp.__init__ (self, n)
-class CircleStatChart (TextRing, CompositeApp): # labelled stat chart inner
+		CircledPolygon.__init__ (self, n)
+class CircleStatChart (TextRing): # labelled stat chart inner
 	def __init__ (self, labels):
 		n = len (labels)
 		TextRing.__init__ (self, n, CircleStatChartInner (n))
 		
-class SquareStatChartInner (): pass
-class SquareStatChart (): pass
+class SquareStatChartInner (SquareApp): pass
+class SquareStatChart (SquareApp): pass
 
 
 

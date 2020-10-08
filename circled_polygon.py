@@ -154,10 +154,12 @@ if __name__ == "__main__":
 	from hal import HAL9000
 	from polygon_app import EqualPolygonApp
 	from constants import SECONDARY_BACKGROUND
+	from polygoned_circle import EqualPolygonedCircle
 	
 	def main ():
+		c = CircleApp ()
 		n = 6
-		b = EqualPolygonApp (n, background=SECONDARY_BACKGROUND)
+		b = EqualPolygonedCircle (n, c, background=SECONDARY_BACKGROUND)
 		a = CircledPolygon (b)
 		with HAL9000 (app=a) as g: g.run ()
 	main ()
