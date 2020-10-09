@@ -176,7 +176,8 @@ class MagicCircle (CircleApp): # composite app, child is also circle, animated a
 		#sections = []
 		if first_section: kstart = 0
 		else:             kstart = 1
-		K = range (first_section, nloop)
+		#K = range (first_section, nloop)
+		K = range (kstart, nloop)
 		if rev: K = K[::-1]
 		for p in K: # k chars on either side
 			section = []

@@ -158,6 +158,7 @@ class AbsoluteCircledCircle (CircledCircle):
 	def inner_rect (self):
 		X, Y, W, H = self.outer_rect ()
 		dw, dh = self.xoff, self.yoff
+		if dh is None: return X, Y, W, H
 		dw, dh = dw * 2, dh * 2
 		w, h = W - dw, H - dh
 		x, y = X + (W - w) / 2, Y + (H - h) / 2
