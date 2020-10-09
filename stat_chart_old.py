@@ -312,13 +312,10 @@ class CircleStatChart (AbsoluteCircledCircle):
 from itertools import chain
 from geometry import reflect_angles, to_degrees
 from constants import OPAQUE
-from constants import SECONDARY_BACKGROUND
-from composite_app import CompositeApp
 
-class StatChart (AbsoluteCircledCircle): # composite app, child is also circle, animated app, pos/neg space has ranges
-	def __init__ (self, labels, font=None, rads=None, *args, **kwargs):
-		child = StatChartInner (rads, background=SECONDARY_BACKGROUND, *args, **kwargs)
-		AbsoluteCircledCircle.__init__ (self, child, None, None, *args, **kwargs)
+class StatChartOuter (CircleApp): # composite app, child is also circle, animated app, pos/neg space has ranges
+	def __init__ (self, labels, font=None, *args, **kwargs):
+		CircleApp.__init__ (self, *args, **kwargs)
 
 		self.labels = labels
 		
@@ -326,10 +323,13 @@ class StatChart (AbsoluteCircledCircle): # composite app, child is also circle, 
 		
 		self.n = None
 		
-	def set_radii (self, rads): self.child.set_radii (rads)
+	#def set_radii (self, rads):
+	#	# TODO
+	#	#self.child.set_radii (rads)
+	#	pass
 		
 	def set_subsurface (self, ss):
-		CircleApp   .set_subsurface (self, ss)
+		CircleApp.set_subsurface (self, ss)
 		if self.font is None:
 			df        = pygame.font.get_default_font ()
 			font      = pygame.font.Font (df, 8)
@@ -345,8 +345,6 @@ class StatChart (AbsoluteCircledCircle): # composite app, child is also circle, 
 		self.y        = y
 		self.w        = w
 		self.h        = h
-		self.xoff = self.yoff = self.th
-		CompositeApp.set_subsurface (self, None, True)
 		self.next_cycle ()
 		
 	def next_cycle (self):
@@ -587,7 +585,7 @@ class StatChart (AbsoluteCircledCircle): # composite app, child is also circle, 
 	def draw_cropped_scene (self, temp):
 		print ("circular_matrix_text.draw_foreground ()")
 		#CircleApp.draw_foreground (self, temp)
-		AbsoluteCircledCircle.draw_cropped_scene (self, temp)
+		CircleApp.draw_cropped_scene (self, temp)
 		xforms = self.xforms # image, w, h
 		n      = self.n
 		#ndx    = self.sectioni
@@ -610,9 +608,39 @@ class StatChart (AbsoluteCircledCircle): # composite app, child is also circle, 
 			
 		#self.increment_section_index () # TODO move this to the troller
 		
+from constants import SECONDARY_BACKGROUND
 
-
-
+class StatChart (StatChartOuter, AbsoluteCircledCircle):
+	def __init__ (self, labels, font=None, rads=None, *args, **kwargs):
+		#StatChartOuter.__init__ (self, labels, font, *args, **kwargs)
+		StatChartOuter.__init__ (self, labels, font, background=None, *args, **kwargs)
+		child = StatChartInner (rads, background=SECONDARY_BACKGROUND, *args, **kwargs)
+		AbsoluteCircledCircle.__init__ (self, child, None, None, background=None, *args, **kwargs)
+		#AbsoluteCircledCircle.__init__ (self, child, None, None, *args, **kwargs)
+	
+	def set_radii (self, rads): self.child.set_radii (rads)
+		
+	def set_subsurface (self, ss):
+		StatChartOuter.set_subsurface (self, ss)
+		self.xoff = self.yoff = self.th
+		AbsoluteCircledCircle.set_subsurface (self, self.ss)
+		
+	def draw_cropped_scene (self, temp):
+		#StatChartOuter.draw_cropped_scene (self, temp)	# draw text
+		#AbsoluteCircledCircle.draw_cropped_scene (self, temp) # draw inner, no bg
+		# => text, but no bg
+		
+		# with bg => no text
+		
+		AbsoluteCircledCircle.draw_cropped_scene (self, temp) # draw inner, no bg
+		StatChartOuter.draw_cropped_scene (self, temp)	# draw text
+		# => no graph
+		
+		
+		
+		
+		
+		
 		
 		
 if __name__ == "__main__":
