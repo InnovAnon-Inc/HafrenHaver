@@ -12,7 +12,7 @@ from itertools import starmap
 from math import sin, cos, pi, sqrt
 from constants import ORIGIN
 
-class StatChart (CircleApp): # TODO need an abstract class bc this is similar to the magic circle text... nvm fuck it to death and burn it.
+class StatChartInner (CircleApp): # TODO need an abstract class bc this is similar to the magic circle text... nvm fuck it to death and burn it.
 	# TODO axis label, value, radius
 	#def __init__ (self, rads):
 	def __init__ (self, rads=None, *args, **kwargs):
@@ -313,7 +313,7 @@ from itertools import chain
 from geometry import reflect_angles, to_degrees
 from constants import OPAQUE
 
-class CircleStatChart (CircleApp): # composite app, child is also circle, animated app, pos/neg space has ranges
+class StatChartOuter (CircleApp): # composite app, child is also circle, animated app, pos/neg space has ranges
 	def __init__ (self, labels, font=None, *args, **kwargs):
 		CircleApp.__init__ (self, *args, **kwargs)
 
@@ -323,10 +323,10 @@ class CircleStatChart (CircleApp): # composite app, child is also circle, animat
 		
 		self.n = None
 		
-	def set_radii (self, rads):
-		# TODO
-		#self.child.set_radii (rads)
-		pass
+	#def set_radii (self, rads):
+	#	# TODO
+	#	#self.child.set_radii (rads)
+	#	pass
 		
 	def set_subsurface (self, ss):
 		CircleApp.set_subsurface (self, ss)
@@ -448,8 +448,9 @@ class CircleStatChart (CircleApp): # composite app, child is also circle, animat
 		orientation = NORTH
 		#pts = inscribe_polygon (n, orientation.radians ())
 		angles = inscribe_angles   (n)
-		angles =   rotate_angles   (angles, orientation.radians ())
 		angles =  reflect_angles   (angles)
+		angles =   rotate_angles   (angles, orientation.radians ())
+		#angles =  reflect_angles   (angles)
 		angles = tuple (angles)
 		pts    = angles_to_polygon (angles)
 		pts    = graphics_affines  (pts)
@@ -607,6 +608,41 @@ class CircleStatChart (CircleApp): # composite app, child is also circle, animat
 			
 		#self.increment_section_index () # TODO move this to the troller
 		
+from constants import SECONDARY_BACKGROUND
+
+class StatChart (StatChartOuter, AbsoluteCircledCircle):
+	def __init__ (self, labels, font=None, rads=None, *args, **kwargs):
+		#StatChartOuter.__init__ (self, labels, font, *args, **kwargs)
+		StatChartOuter.__init__ (self, labels, font, background=None, *args, **kwargs)
+		child = StatChartInner (rads, background=SECONDARY_BACKGROUND, *args, **kwargs)
+		AbsoluteCircledCircle.__init__ (self, child, None, None, background=None, *args, **kwargs)
+		#AbsoluteCircledCircle.__init__ (self, child, None, None, *args, **kwargs)
+	
+	def set_radii (self, rads): self.child.set_radii (rads)
+		
+	def set_subsurface (self, ss):
+		StatChartOuter.set_subsurface (self, ss)
+		self.xoff = self.yoff = self.th
+		AbsoluteCircledCircle.set_subsurface (self, self.ss)
+		
+	def draw_cropped_scene (self, temp):
+		#StatChartOuter.draw_cropped_scene (self, temp)	# draw text
+		#AbsoluteCircledCircle.draw_cropped_scene (self, temp) # draw inner, no bg
+		# => text, but no bg
+		
+		# with bg => no text
+		
+		AbsoluteCircledCircle.draw_cropped_scene (self, temp) # draw inner, no bg
+		StatChartOuter.draw_cropped_scene (self, temp)	# draw text
+		# => no graph
+		
+		
+		
+		
+		
+		
+		
+		
 if __name__ == "__main__":
 	from gui import GUI, BLACK
 	from hal import HAL9000
@@ -623,7 +659,7 @@ if __name__ == "__main__":
 		rads = map (f, rng)
 		#a = StatChart ()
 		l = ('altitude', 'pressure', 'temperature')
-		a = CircleStatChart (l)
+		a = StatChart (l)
 		a.set_radii (rads)
 		with HAL9000 (app=a, exit_on_close=False) as g:
 			#g.setApp (a)
