@@ -317,7 +317,7 @@ from composite_app import CompositeApp
 
 class StatChart (AbsoluteCircledCircle): # composite app, child is also circle, animated app, pos/neg space has ranges
 	def __init__ (self, labels, font=None, rads=None, *args, **kwargs):
-		child = StatChartInner (rads, background=SECONDARY_BACKGROUND, *args, **kwargs)
+		child = StatChartInner (rads, background=None, *args, **kwargs)
 		AbsoluteCircledCircle.__init__ (self, child, None, None, *args, **kwargs)
 
 		self.labels = labels
