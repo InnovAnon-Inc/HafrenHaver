@@ -140,7 +140,7 @@ class SquareMapApp (MapApp, SquareApp):
 	def draw_cropped_scene (self, temp):
 		#MapApp   .draw_scene         (self, temp)
 		SquareApp.draw_cropped_scene (self, temp)
-		MapApp   .draw_foreground    (self, temp)	
+		MapApp   .draw_scene    (self, temp)	
 	def positive_space (self, is_root=True): raise Exception ()
 	def negative_space (self, is_root=True): raise Exception ()
 	def minsz          (self): raise Exception ()
@@ -164,7 +164,7 @@ class CircleMapApp (MapApp, CircleApp):
 	def draw_cropped_scene (self, temp):
 		#MapApp   .draw_scene         (self, temp)
 		CircleApp.draw_cropped_scene (self, temp)
-		MapApp   .draw_foreground    (self, temp)	
+		MapApp   .draw_scene    (self, temp)	
 	def positive_space (self, is_root=True): raise Exception ()
 	def negative_space (self, is_root=True): raise Exception ()
 	def minsz          (self): raise Exception ()
@@ -188,7 +188,7 @@ class AngleMapApp (MapApp, AngleApp):
 	def draw_cropped_scene (self, temp):
 		#MapApp   .draw_scene         (self, temp)
 		AngleApp.draw_cropped_scene (self, temp)
-		MapApp   .draw_foreground    (self, temp)	
+		MapApp   .draw_scene    (self, temp)	
 	def positive_space (self, is_root=True): raise Exception ()
 	def negative_space (self, is_root=True): raise Exception ()
 	def minsz          (self): raise Exception ()
@@ -211,7 +211,13 @@ if __name__ == "__main__":
 			
 			h = "localhost"
 			p = 1717
-			n = lambda observer: a.notify (observer.lat, observer.lon)
+			#n = lambda observer: a.notify (observer.lat, observer.lon)
+			def cb (observer):
+				print ("cb (%s)" % (observer,))
+				g.is_running = False
+				G.is_running = False
+				quit ()
+			n = cb
 			g = GPSClient (h, p, n)
 			#g.run ()
 			G.run ()

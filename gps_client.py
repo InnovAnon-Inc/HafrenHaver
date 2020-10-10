@@ -37,7 +37,11 @@ if __name__ == "__main__":
 	def main ():
 		host = "localhost"
 		port = 1717
-		c = GPSClient (host, port)
+		def cb (observer):
+			print ("cb (%s)" % (observer,))
+			c.is_running = False
+		n = cb
+		c = GPSClient (host, port, n)
 		c.run ()
 	main ()
 	quit ()

@@ -19,62 +19,12 @@ from circled_polygon import CircledPolygon
 from polygoned_circle import PolygonedCircle, EqualPolygonedCircle
 from text_ring import TextRing
 
-class CircleStatChartInner (CircledPolygon): # polygon radii as a function of stats
-	def __init__ (self, rads):
-		n = len (rads)
-		#child = EqualPolygonApp (n)
-		angles = inscribe_angles (n)
-		ars = zip (angles, rads)
-		pts = inscribe (ars)
-		child = PolygonApp (pts)
-		CircledPolygon.__init__ (self, child)
-	def set_radii (self, rads):
-		n = len (rads)
-		#child = EqualPolygonApp (n)
-		angles = inscribe_angles (n)
-		ars = zip (angles, rads)
-		pts = inscribe (ars)
-		self.child.set_pts (pts)
-#class CircleStatChart (TextRing): # labelled stat chart inner
-class CircleStatChart (AbsoluteCircledCircle)
-	def __init__ (self, labels, font=None):
-		n     = len (labels)
-		child = CircleStatChartInner (n)
-		text  = ' '.join (labels)
-		TextRing.__init__ (self, child, text, font)
-	def set_radii (self, rads):
-		self.child.set_radii (rads)
-		
 class SquareStatChartInner (SquareApp): pass
 class SquareStatChart (SquareApp): pass
 
+from stat_chart import StatChart
 
-
-class ATP (StatChart):
-	def __init__ (self):
-		StatChart.__init__ (self, ('altitude', 'temperature', 'pressure'))
-	def set_inner_background (self, background): self.child.set_background (background)
-	def get_radius (self, raw): # https://stackoverflow.com/questions/42140347/normalize-any-value-in-range-inf-inf-to-0-1-is-it-possible
-		if raw is None: return 0
-		radius   = (erf (raw) + 1) / 2
-		return radius
-	
-	def get_altitude_radius    (self, alti): return self.get_radius (alti)
-	def get_temperature_radius (self, temp): return self.get_radius (temp)
-	def get_pressure_radius    (self, pres): return self.get_radius (pres)
-		
-	def set_altitude (self, alt):
-		self.rads['altitude'] = (alt, self.get_altitude_radius (alt))
-		self.compute ()
-	def set_temperature (self, temp):
-		self.rads['temperature'] = (temp, self.get_temperature_radius (temp))
-		self.compute ()
-	def set_pressure (self, press):
-		self.rads['pressure'] = (press, self.get_pressure_radius (press))
-		self.compute ()
-	
-
-
+from atp import ATP
 
 
 
@@ -204,7 +154,7 @@ class         GPSApp (SquareApp):
 		#self.altimeter   = SquareAltimeterApp   ()
 		#self.thermometer = ThermometerApp ()
 		#self.barometer   = BarometerApp   ()
-		self.atp = AngleATP ()
+		self.atp = ATP ()
 	def set_projection (self, projection):
 		print ("enter gps_app.set_projection (%s)" % (projection,))
 		self.map.set_projection (projection)
@@ -219,9 +169,7 @@ class         GPSApp (SquareApp):
 		if observer is None: return
 		#epoch     = observer.epoch
 		self.map        .notify (observer.lat, observer.lon)
-		#self.altimeter  .notify (observer.elevation)
-		self.thermometer.notify (observer.temp)
-		#self.barometer  .notify (observer.pressure)
+		self.atp        .notify (observer.elevation, observer.temp, observer.pressure)
 		print ("leave gps_app.set_observer ()")
 	def set_subsurface (self, ss=None):
 		print ("enter gps_app.set_subsurface (%s)" % (ss,))
@@ -229,35 +177,24 @@ class         GPSApp (SquareApp):
 		ss = self.ss
 		if ss is None: return
 		x, y, w, h = ss.get_rect ()
-		rect0 = x        , y        , w / 2, h / 2
-		rect1 = x + w / 2, y        , w / 2, h / 2
-		rect2 = x        , y + h / 2, w / 2, h / 2
-		rect3 = x + w / 2, y + h / 2, w / 2, h / 2
+		rect0 = x        , y        , w / 2, h
+		rect1 = x + w / 2, y        , w / 2, h
 		ss0 = ss.subsurface (rect0)
-		ss1 = ss.subsurface (rect1)
-		ss2 = ss.subsurface (rect2)
-		ss3 = ss.subsurface (rect3)
 		self.map        .set_subsurface (ss0)
-		#self.altimeter  .set_subsurface (ss1)
-		self.thermometer.set_subsurface (ss2)
-		#self.barometer  .set_subsurface (ss3)
+		ss1 = ss.subsurface (rect1)
+		self.atp        .set_subsurface (ss1)
 		print ("leave gps_app.set_subsurface ()")
-	def draw_foreground (self, temp):
+	def draw_scene (self, temp=None):
 		print ("enter gps_app.draw_foreground (%s)" % (temp,))
-		SquareApp.draw_foreground (self, temp)	
+		SquareApp.draw_scene (self, temp)
+		if temp is None: temp = self.ss	
 		x, y, w, h = temp.get_rect ()
-		rect0 = x        , y        , w / 2, h / 2
-		rect1 = x + w / 2, y        , w / 2, h / 2
-		rect2 = x        , y + h / 2, w / 2, h / 2
-		rect3 = x + w / 2, y + h / 2, w / 2, h / 2
+		rect0 = x        , y        , w / 2, h
+		rect1 = x + w / 2, y        , w / 2, h
 		ss0 = temp.subsurface (rect0)
+		self.map        .draw_cropped_scene (ss0)
 		ss1 = temp.subsurface (rect1)
-		ss2 = temp.subsurface (rect2)
-		ss3 = temp.subsurface (rect3)
-		self.map        .draw_foreground (ss0)
-		#self.altimeter  .draw_foreground (ss1)
-		self.thermometer.draw_foreground (ss2)
-		#self.barometer  .draw_foreground (ss3)
+		self.atp        .draw_scene (ss1)
 		print ("leave gps_app.draw_foreground ()")
 	# has-a map, has-a selector for projection
 	# has-a selector for ClientGPS, AddrGPS, CityGPS
@@ -282,6 +219,12 @@ if __name__ == "__main__":
 			h = "localhost"
 			p = 1717
 			n = a.set_observer
+			#def cb (observer):
+			#	print ("cb (%s)" % (observer,))
+			#	g.is_running = False
+			#	G.is_running = False
+			#	quit ()
+			#n = cb
 			g = GPSClient (h, p, n)
 			#g = AddrGPS ("7271 Wurzbach Rd, San Antonio, TX 78240")
 			#g = CityGPS ("Dallas, TX")

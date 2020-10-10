@@ -19,6 +19,8 @@ class StatChartInner (CircleApp): # TODO need an abstract class bc this is simil
 		CircleApp.__init__ (self, *args, **kwargs)
 		self.rads = None
 		if rads is not None: self.set_radii (rads)
+
+		self.pts = self.axes = None
 		"""
 		rads      = tuple (rads)
 		self.rads = rads
@@ -28,6 +30,7 @@ class StatChartInner (CircleApp): # TODO need an abstract class bc this is simil
 		rads = tuple (rads)
 		self.rads = rads
 		self.compute ()
+	def get_radii (self): return self.rads # TODO defensive copy
 	def compute (self):
 		rads = self.rads
 		n         = len (rads)
@@ -59,6 +62,7 @@ class StatChartInner (CircleApp): # TODO need an abstract class bc this is simil
 	def draw_background (self, temp):
 		CircleApp.draw_background (self, temp)
 		pts  = self.pts
+		if self.pts is None: return
 		assert len (pts) > 0
 		rect = temp.get_rect ()
 		pts  = scale_points (pts, rect)
@@ -74,6 +78,7 @@ class StatChartInner (CircleApp): # TODO need an abstract class bc this is simil
 	def draw_foreground (self, temp):
 		CircleApp.draw_foreground (self, temp)
 		pts  = self.axes
+		if self.axes is None: return
 		assert len (pts) > 0
 		rect = temp.get_rect ()
 		pts  = scale_points (pts, rect)
@@ -328,6 +333,7 @@ class StatChart (AbsoluteCircledCircle): # composite app, child is also circle, 
 		self.n = None
 		
 	def set_radii (self, rads): self.child.set_radii (rads)
+	def get_radii (self):       self.child.get_radii ()
 		
 	def set_subsurface (self, ss):
 		CircleApp   .set_subsurface (self, ss)
