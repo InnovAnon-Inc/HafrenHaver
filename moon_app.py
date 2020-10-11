@@ -48,13 +48,30 @@ def filled_arc (center, r, theta1, theta2): # https://stackoverflow.com/question
 """
 
 import math
+from math import pi
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 from constants import ORIGIN
 
-# TODO the moon doesn't look like this
+"""
+def dual_half_circle(center, radius, angle=0, ax=None, colors=('w','k'),
+                     **kwargs):
+    ""
+    Add two half circles to the axes *ax* (or the current axes) with the 
+    specified facecolors *colors* rotated at *angle* (in degrees).
+    ""
+    if ax is None:
+        ax = plt.gca()
+    theta1, theta2 = angle, angle + 180
+    w1 = Wedge(center, radius, theta1, theta2, fc=colors[0], **kwargs)
+    w2 = Wedge(center, radius, theta2, theta1, fc=colors[1], **kwargs)
+    for wedge in [w1, w2]:
+        ax.add_artist(wedge)
+    return [w1, w2]
+"""
+
 # TODO alpha values suck
 def arc_patch (ax, lunacity): # https://stackoverflow.com/questions/58263608/fill-between-arc-patches-matplotlib
 	ax.grid (False)
@@ -73,47 +90,45 @@ def arc_patch (ax, lunacity): # https://stackoverflow.com/questions/58263608/fil
 	# Draw multiple ellipses with different colors and style. All are perfectly superposed
 	ellipse = mpl.patches.Ellipse (  # Base one, with big black line for reference
 		ORIGIN, xrng, yrng,
-		color='k', fill=False, zorder=100) # TODO what is zorder ?
+		color='k', fill=False, zorder=3) # TODO what is zorder ?
 
 	# Define some clipping paths
 	# One for each area
-	clips = [
-		mpl.patches.Arc (  # One covering right half of your ellipse
-			ORIGIN, xrng, yrng, theta1=0, theta2=360,
-			visible=False  # We do not need to display it, just to use it for clipping
-		),
-	]
-	colormap.append ('purple')
+	#clips = [
+	#	mpl.patches.Arc (  # One covering right half of your ellipse
+	#		ORIGIN, xrng, yrng, theta1=0, theta2=360,
+	#		visible=False  # We do not need to display it, just to use it for clipping
+	#	),
+	#]
+	clips = []
+	#colormap.append ('purple')
 	
-	#lunacity = lunacity - .25
+	X, Y = ORIGIN
+	ll = xmin, ymin
+	w, h = xrng / 2, yrng
+	lrect = ll, w, h
+	ll = xmin + w, ymin
+	rrect = ll, w, h
 	
 	if lunacity < .25:       # 0   ,  .25 => new moon, first quarter moon
 		print ("q0-q1")
 		
 		lun = lunacity * 4   # 0   , 1.
 		lun = 1 - lun        # 1   , 0.
-		lun = 1 / lun        # 1   , inf
-
-		rx, ry = xrng, yrng * lun
-	
-		X, Y = ORIGIN        # center of light circle
-		X = X - (rx / 2) * ((lunacity - 0) * 4) # X + rx / 2 to X
-		x, y = X, Y # center of dark circle
-		Arc1_xy = x, y
 		
-		# draw light circle, then dark circle
-		light_patch = mpl.patches.Ellipse (  # A small area on the left
-			ORIGIN, xrng, yrng,
-			visible=False  # We do not need to display it, just to use it for clipping
-		)
-		dark_patch = mpl.patches.Ellipse (  # A small area on the left
-			Arc1_xy, rx, ry,
-			visible=False  # We do not need to display it, just to use it for clipping
-		)
-		#colormap.append ('black')
+		rx, ry = xrng * lun, yrng
+		
+		# dark left, dark middle, light right
+		light_patch = mpl.patches.Rectangle ( # right half
+			*rrect, visible=False)
+		dark_patch = mpl.patches.Ellipse ( # center
+			ORIGIN, rx, ry, visible=False)
+		dark_patch2 = mpl.patches.Rectangle ( # left half
+			*lrect, visible=False)
+		colormap.append ('black')
 		colormap.append ('white')
 		colormap.append ('black')
-		#clips.append ( dark_patch)
+		clips.append ( dark_patch2)
 		clips.append (light_patch)
 		clips.append ( dark_patch)
 		
@@ -127,34 +142,22 @@ def arc_patch (ax, lunacity): # https://stackoverflow.com/questions/58263608/fil
 		lun = lun * 4        # 0.  , 1.
 		assert lun >= 0
 		assert lun < 1
-		lun = 1 / lun        # inf , 1.
-		assert lun >= 1
-		print ("lun: %s" % (lun,))
 		
-		rx, ry = xrng, yrng * lun
-	
-		X, Y = ORIGIN        # center of dark circle
-		X = X + (rx / 2) * (1 - ((lunacity - .25) * 4)) # X + rx / 2 to X
-		x, y = X, Y # center of light circle
-		Arc1_xy = x, y
+		rx, ry = xrng * lun, yrng
 		
-		print ("(x: %s, y: %s), (w: %s, h: %s)" % (x, y, rx, ry))
-		
-		# draw dark circle, then light circle
-		dark_patch = mpl.patches.Ellipse (  # A small area on the left
-			ORIGIN, xrng, yrng,
-			visible=False  # We do not need to display it, just to use it for clipping
-		)
-		light_patch = mpl.patches.Ellipse (  # A small area on the left
-			Arc1_xy, rx, ry,
-			visible=False  # We do not need to display it, just to use it for clipping
-		)
+		# dark left, light middle, light right
+		light_patch2 = mpl.patches.Rectangle (  # right
+			*rrect, visible=False)
+		dark_patch = mpl.patches.Rectangle (  # left
+			*lrect, visible=False)
+		light_patch = mpl.patches.Ellipse (  # middle
+			ORIGIN, rx, ry, visible=False)
+		colormap.append ('white')
 		colormap.append ('black')
 		colormap.append ('white')
-		#colormap.append ('black')
+		clips.append (light_patch2)
 		clips.append ( dark_patch)
 		clips.append (light_patch)
-		#clips.append ( dark_patch)
 	elif lunacity < .75:     #  .5 ,  .75 => full moon, third quarter moon
 		print ("q2-q3")
 		
@@ -168,34 +171,21 @@ def arc_patch (ax, lunacity): # https://stackoverflow.com/questions/58263608/fil
 		lun = 1 - lun        # 1.  , 0.
 		assert lun > 0
 		assert lun <= 1
-		lun = 1 / lun        # 1.  , inf
-		assert lun >= 1
-		print ("lun: %s" % (lun,))
-		
-		rx, ry = xrng, yrng * lun
+		rx, ry = xrng * lun, yrng
 	
-		X, Y = ORIGIN        # center of light circle
-		X = X - (rx / 2) * ((lunacity - .5) * 4) # X + rx / 2 to X
-		x, y = X, Y # center of dark circle
-		Arc1_xy = x, y
-		
-		print ("(x: %s, y: %s), (w: %s, h: %s)" % (x, y, rx, ry))
-		
-		# draw dark circle, then light circle
-		dark_patch = mpl.patches.Ellipse (  # A small area on the left
-			ORIGIN, xrng, yrng,
-			visible=False  # We do not need to display it, just to use it for clipping
-		)
-		light_patch = mpl.patches.Ellipse (  # A small area on the left
-			Arc1_xy, rx, ry,
-			visible=False  # We do not need to display it, just to use it for clipping
-		)
+		# light left, light middle, dark right
+		light_patch2 = mpl.patches.Rectangle (  # left
+			*lrect, visible=False)
+		dark_patch = mpl.patches.Rectangle (  # right
+			*rrect, visible=False)
+		light_patch = mpl.patches.Ellipse (  # middle
+			ORIGIN, rx, ry, visible=False)
+		colormap.append ('white')
 		colormap.append ('black')
 		colormap.append ('white')
-		#colormap.append ('black')
+		clips.append (light_patch2)
 		clips.append ( dark_patch)
 		clips.append (light_patch)
-		#clips.append ( dark_patch)
 	elif lunacity < 1.0:     #  .75, 1.   => third quarter moon, full moon
 		print ("q3-q4")
 
@@ -206,35 +196,27 @@ def arc_patch (ax, lunacity): # https://stackoverflow.com/questions/58263608/fil
 		lun = lun * 4        # 0.  , 1.
 		assert lun >= 0
 		assert lun < 1
-		#print ("lun: %s" % (lun,))
-		lun = 1 / lun        # inf , 1.
-		assert lun > 1
-		print ("lun: %s" % (lun,))
 		
-		rx, ry = xrng, yrng * lun
-	
-		X, Y = ORIGIN        # center of light circle
-		X = X + (rx / 2) * (1 - ((lunacity - .75) * 4)) # X + rx / 2 to X
-		x, y = X, Y # center of dark circle
-		Arc1_xy = x, y
+		rx, ry = xrng * lun , yrng
 		
-		print ("(x: %s, y: %s), (w: %s, h: %s)" % (x, y, rx, ry))
-		#quit ()
-		
-		# draw light circle, then dark circle
-		light_patch = mpl.patches.Ellipse (  # A small area on the left
-			ORIGIN, xrng, yrng,
-			visible=False  # We do not need to display it, just to use it for clipping
-		)
-		dark_patch = mpl.patches.Ellipse (  # A small area on the left
-			Arc1_xy, rx, ry,
-			visible=False  # We do not need to display it, just to use it for clipping
-		)
-		#colormap.append ('black')
-		colormap.append ('white')
+		# light left, dark middle, dark right
+		dark_patch2 = mpl.patches.Rectangle (  # right
+			*rrect, visible=False)
+		light_patch = mpl.patches.Rectangle (  # left
+			# apparently +90 to +270 is the same as +0 to +360 in matplotlib.
+			*lrect, visible=False)
+		# because matplotlib doesn't understand angles, drawing patch3 will hide light_patch
+		#dark_patch3 = mpl.patches.Arc (  # right
+		#	ORIGIN, xrng, yrng, theta1=-90, theta2=+90, visible=False)
+		dark_patch = mpl.patches.Ellipse (  # middle
+			ORIGIN, rx, ry, visible=False)
 		colormap.append ('black')
-		#clips.append ( dark_patch)
+		colormap.append ('white')
+		#colormap.append ('black')
+		colormap.append ('black')
+		clips.append ( dark_patch2)
 		clips.append (light_patch)
+		#clips.append ( dark_patch3)
 		clips.append ( dark_patch)
 	
 	n = len (clips)
@@ -246,7 +228,7 @@ def arc_patch (ax, lunacity): # https://stackoverflow.com/questions/58263608/fil
 			ORIGIN, xrng, yrng,  # Perfectly fit your base ellipse
 			color=colormap [i], fill=True, alpha=1.0,  # Add some style, fill, color, alpha
 			zorder=i)
-		for i in range (n)  # Here, we have 4 areas
+		for i in range (n)  # Here, we have 3 areas
 	]
 
 	# Add all your components to your axe
@@ -378,6 +360,7 @@ def blit_alpha (target, source, location, opacity): # https://nerdparadise.com/p
 	target.blit (temp, location)
 	
 class CircleMoonApp (CircleApp, MoonApp):
+	# TODO compute moon name, fetch background
 	def __init__ (self, rotation=None, *args, **kwargs):
 		CircleApp.__init__ (self, rotation, *args, **kwargs)
 		MoonApp   .__init__ (self,           *args, **kwargs)
