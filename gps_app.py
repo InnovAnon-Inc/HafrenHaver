@@ -199,7 +199,7 @@ class         GPSApp (SquareApp):
 	# has-a map, has-a selector for projection
 	# has-a selector for ClientGPS, AddrGPS, CityGPS
 	
-	def run_loop (self, events, keys):
+	def run_loop (self, events, keys): # TODO move this to the GUI ?
 		SquareApp.run_loop (self, events, keys)
 		if isinstance (self.gps, Client): self.gps.Loop ()
 		if isinstance (self.gps, Server): self.gps.Pump ()

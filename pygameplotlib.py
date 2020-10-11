@@ -35,6 +35,7 @@ class PyGamePlotLib (App): # integrates matplotlib with pygame
 		fig.patch.set_visible (False)
 		
 		self.compute_helper (fig)
+		fig.tight_layout () # https://stackoverflow.com/questions/4042192/reduce-left-and-right-margins-in-matplotlib-plot
 		
 		canvas = agg.FigureCanvasAgg (fig) # https://stackoverflow.com/questions/48093361/using-matplotlib-in-pygame
 		canvas.draw ()		

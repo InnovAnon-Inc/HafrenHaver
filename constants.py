@@ -17,7 +17,7 @@ RUNNING_ICONTITLE = "HH FFF"
 CLOSING_TITLE     = "Hafren Haver: Innovations Anonymous"
 CLOSING_ICONTITLE = "HH InnovAnon"
 
-DEFAULT_CREDITS   = ('InnovAnon', 'S. Faust', 'Terry A. Davis', 'A. Severn', 'Zantedeschia')
+DEFAULT_CREDITS   = ('InnovAnon', 'S. Faust', 'Terry A. Davis', 'Mediocrates', 'A. Severn', 'Zantedeschia')
 DEFAULT_SUBLIMINAL_THRESHOLD = 16.7 # milliseconds
 
 BLACK    = (  0, 0, 0)

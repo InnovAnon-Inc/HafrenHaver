@@ -156,6 +156,8 @@ def addr2gps (addr):
 	pressure = latlonalt2pressure (lat, lon, alt)
 	return lat, lon, alt, temp, pressure
 
+# TODO also send time ?
+
 
 import ephem
 

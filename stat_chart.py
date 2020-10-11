@@ -335,7 +335,7 @@ class StatChart (AbsoluteCircledCircle): # composite app, child is also circle, 
 	def set_radii (self, rads): self.child.set_radii (rads)
 	def get_radii (self):       self.child.get_radii ()
 		
-	def set_subsurface (self, ss):
+	def set_subsurface (self, ss): # the types aren't wrong: had to get low-level here
 		CircleApp   .set_subsurface (self, ss)
 		if self.font is None:
 			df        = pygame.font.get_default_font ()

@@ -89,86 +89,129 @@ from recursive_composite import RecursiveComposite
 
 
 # TODO use special music and colors for synchronizing users engaging in diversions... like tetris
-def cacher (f, *args):
-	fname = "%s-%s.cache" % (str (f), str (args))
-	my_file = Path (fname)
-	if my_file.is_file ():
-		with open (fname, "r") as f: mylist = tuple (map (make_tuple, f))
-		assert len (mylist) == 1
-		mylist = mylist[0]
-		#assert len (mylist) == 2
-		return mylist	
-	ret = f (*args)
-	with open (fname, "w") as f: f.write (str (ret))
-	return ret
-	
-def addr2gps (addr):
-	geolocator = Nominatim (user_agent="Hafren Haver")
-	location   = geolocator.geocode (addr)
-	ret        = (location.latitude, location.longitude, location.altitude)
-	return ret
-def addr2gps_cacher (addr): return cacher (addr2gps, addr)
+import ephem
+import datetime
 
-def gps2observer (lat, lon, alt):
-	lowell           = ephem.Observer()
-	lowell.lon       = lon
-	lowell.lat       = lat
-	lowell.elevation = alt
-	#lowell.date = '1986/3/13'
-	return lowell
-	
-def addr2observer (addr):
-	tmp = addr2gps_cacher (addr)
-	return gps2observer (*tmp)
-	
-def city2observer_lookup        (city): return cities.lookup (city)
-def city2observer_lookup_cacher (city): return cacher (city2observer_lookup, city)
-def city2observer (city):
-	try:    ret = ephem.city                  (city)
-	except: ret = city2observer_lookup_cacher (city)
-	return ret
+class SunApp (CircleApp):
+	#def __init__ (self, observer=None, *args, **kwargs):
+	#	CircleApp.__init__ (self, *args, **kwargs)
+	#	#self.observer = observer
+	#def notify (self, observer): self.set_observer (observer)
+	#def set_observer (self, observer):
+	#	self.observer = observer
+	#	self.compute ()
+	#def compute (self):
+	#	observer = self.observer
+	# TODO just set a special background ?
+	pass	
+from constants import ORIGIN
+from circle_app import CircleApp
+from client import Client
+from server import Server
+from math import radians as rad,degrees as deg  
+class MoonApp (CircleApp):
+	def __init__ (self, observer=None, *args, **kwargs):
+		CircleApp.__init__ (self, *args, **kwargs)
+		#self.moon     = ephem.Moon ()
+		self.set_time (compute=False)
+		#self.set_observer (observer)
+		#self.gps = None
+	#def notify (self, observer): self.set_observer (observer)
+	#def set_observer (self, observer, compute=True):
+	#	self.observer = observer
+	#	if compute: self.compute ()
+	def notify (self, time=None): self.set_time (time)
+	def set_time (self, time=None, compute=True):
+		if time is None: time = datetime.datetime.utcnow ()
+		self.time = time
+		if compute: self.compute ()
+	def compute (self):
+	#	observer = self.observer
+	#	if observer is None: return
+		time     = self.time
+	#	observer.date = time
+		#self.moon.compute (observer)
+		self.phase = self.get_moon_phase ()
+		ss = self.ss
+		if ss is None: return
 
-class GPS:
-	def __init__ (self, observer): self.observer = observer
-class CityGPS (GPS):
-	def __init__ (self, city):
-		observer = city2observer (city)
-		GPS.__init__ (self, observer)
-class AddrGPS (GPS):
-	def __init__ (self, addr):
-		observer = addr2observer (addr)
-		GPS.__init__ (self, observer)
-class GPSClient (Client, GPS):
-	def __init__ (self, host, port):
-		Client.__init__ (self, host, port)
-		GPS   .__init__ (self, None)
-	def Network_observer (self, data):
-		print("*** observer: " + data['observer'])
-		self.observer = data['observer']
-		# TODO notify GUI
-		#self.is_running = False
-class GPSChannel (PlayerChannel):
-	def __init__ (self, *args, **kwargs): PlayerChannel.__init__ (self, *args, **kwargs)
-	#def Network_message (self, data):
-    #    self._server.SendToAll({"action": "message", "message": data['message'], "who": self.nickname})
-class GPSServer (PlayerServer, GPS):
-	channelClass = GPSChannel
-	def __init__ (self, gps, *args, **kwargs):
-		PlayerServer.__init__ (self, *args, **kwargs)
-		GPS.__init__ (self, gps.observer)
-		self.gps = gps
-	def Connected (self, channel, addr):
-		PlayerServer.Connected (self, channel, addr)
-		self.SendObserver (channel)
-	def SendObserver  (self, player): player.Send      ({"action": "observer", "observer": self.observer})
-	def SendObservers (self):         self  .SendToAll ({"action": "observer", "observer": self.observer})
-	def set_gps (self, gps):
-		self.gps = gps
-		self.SendObservers ()
-		 # TODO notiy GUI
-		 
-	
-	
+			
+		
+		if self.phase < .25:
+			# TODO waxing crescent
+			x = w / 2
+			y = h / 2
+			start_angle = SOUTH.radians ()
+			stop_angle  = NORTH.radians ()
+			color = (200, 200, 200)
+			for r in range (1, inf):
+				pygame.gfxdraw.arc (self.ss, x, y, r, start_angle, stop_angle, color)
+			pass
+		elif self.phase == .25:
+			# TODO first quarter
+			pass
+		elif self.phase < .5:
+			# TODO waxing gibbous
+			pass
+		elif self.phase == .5:
+			# TODO full moon
+			pass
+		elif self.phase < .75:
+			# TODO waning gibbous
+			pass
+		elif self.phase == .75:
+			# TODO third quarter
+			pass
+		elif self.phase < 1:
+			# TODO waning crescent
+			pass
+		else:
+			# TODO new moon
+			pass
+			
+		
+		
+	def get_moon_phase (self): # https://michelanders.blogspot.com/2011/01/moon-phases-with-pyephem.html
+	#	g = self.observer
+		time = self.time
+		nnm = ephem.next_new_moon (time)  
+		pnm = ephem.previous_new_moon (time)  
+		# for use w. moon_phases.ttf A -> just past  newmoon,  
+		# Z just before newmoon  
+		# '0' is full, '1' is new  
+		# note that we cannot use m.phase as this is the percentage of the moon  
+		# that is illuminated which is not the same as the phase!  
+		lunation=(time-pnm)/(nnm-pnm)  
+		return symbol
+		symbol=lunation*26  
+		return symbol
+		if symbol < 0.2 or symbol > 25.8 :  
+			symbol = '1'  # new moon  
+		else:  
+			symbol = chr(ord('A')+int(symbol+0.5)-1)  
+	  
+		#m = self.moon
+		#print ("test")
+		#print(deg(m.alt),deg(m.az),m.phase,symbol)  
+		#quit ()  
+	def set_subsurface (self, ss):
+		CircleApp.set_subsurface (self, ss)
+		self.compute ()
+	def draw_scene (self, temp=None):
+		CircleApp.draw_scene (self, temp)
+		if temp is None: temp = self.ss
+		if self.computed_image is None: self.compute ()
+		if self.computed_image is None: return
+		temp.blit (self.computed_image, ORIGIN)
+	def run_loop (self, events, keys): # TODO move this to the GUI ?
+		if isinstance (self.gps, Client): self.gps.Loop ()
+		if isinstance (self.gps, Server): self.gps.Pump ()
+		self.set_time ()
+		CircleApp.run_loop (self, events, keys)
+	#def set_gps (self, gps):
+	#	self.gps = gps
+	#	self.set_observer (gps.observer)
+	"""
 class ClassicalClock:
 	def __init__ (self, gps, time=None):
 		self.gps      = gps
@@ -191,7 +234,7 @@ class ClassicalClock:
 		self.get_season ()
 		self.get_position_of_sun ()
 	def get_length_of_second (self): pass
-	
+	"""
 	
 	
 # pre alpha	(codename: nirvana)
@@ -208,7 +251,7 @@ class ClassicalClock:
 # IDE
 	
 
-
+"""
 from pyephem_sunpath.sunpath import sunpos
 from datetime import datetime
 
@@ -262,18 +305,19 @@ class TimeModel:
 
 class TimeController: # tells the app when to update, based on isochronic pulses + frame rate + audio sample rate
 	def get_tick (self): return 7.83 # TODO
-
+"""
 # TODO use flatlib for horoscopes/astrology... bitches love sun signs, and computing entire charts for entire congregrations on the daily... well... there might be some possibilities in that
 
 
 # has-a pos_of_sun + woy, pos_of_moon + moonphase, dow, clock, timer, tod
+"""
 class TimeApp (CircleApp): # gets data from model, renders it on screen
 	def __init__ (self):
 		CircleApp.__init__ (self)
 	def run_loop (self, events, keys):
 		#CenteredApp.run_loop (self, keys)
 		pass
-
+"""
 # show splash text re: lovecraftian stars aligning
 # day/night indicator... red during sunriset, no blue during night, bright during day (greenish?), dark at night
 # wheel of the year... can indicate position of sun in sky ?
@@ -303,33 +347,17 @@ class TimeApp (CircleApp): # gets data from model, renders it on screen
 
 
 if __name__ == "__main__":
-	from rotation import ANGLED, STRAIGHT
-	from orientation import NORTH, SOUTH, EAST, WEST
-	
+	from gps_client import GPSClient
+	from hal import HAL9000
+
 	def main ():
-		if False:
-			j = AngleApp     (orientation=NORTH)
-			i = CircledAngle (j, background=SECONDARY_BACKGROUND)
-			h = AngledCircle (i, orientation=WEST)
-			g = CircledAngle (h, background=SECONDARY_BACKGROUND)
-			f = AngledCircle (g, orientation=SOUTH)
-			e = CircledAngle (f, background=SECONDARY_BACKGROUND)
-			d = AngledCircle (e, orientation=EAST)
-			c = CircledAngle (d, background=SECONDARY_BACKGROUND)
-			b = AngledCircle (c, orientation=NORTH)
-			a = CircledAngle (b, background=SECONDARY_BACKGROUND)
-		elif False:
-			#d = SquareApp     (background=DEFAULT_BACKGROUND)
-			d = None
-			c = CircledSquare (d, rotation=STRAIGHT)
-			b = SquaredCircle (c, background=SECONDARY_BACKGROUND)
-			a = RecursiveComposite (b)
-			#a = b
-		else:
-			a = CircularMatrixText ()
-		#a = RecursiveCompositeTest ()
-		with GUI (app=a, exit_on_close=False) as g:
-			#g.setApp (a)
-			g.run ()
+		a = MoonApp ()
+		with HAL9000 (app=a) as G:
+			h = "localhost"
+			p = 1717
+			n = a.set_observer
+			g = GPSClient (h, p, n)
+			a.set_gps (g)
+			G.run ()
 	main ()
 	quit ()

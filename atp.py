@@ -27,7 +27,8 @@ class ATP (StatChart):
 		ret = raw / raw_rng
 		ret = self.get_radius (ret)
 		return ret
-		
+	
+	# https://en.wikipedia.org/wiki/Extreme_points_of_Earth
 	def get_altitude_radius (self, alt): # meters
 		alt_min = -12262 # Kola Superdeep Borehole
 		alt_max = + 8848 # Mount Everest 
@@ -38,7 +39,7 @@ class ATP (StatChart):
 		temp_max = +100    # boiling point of water
 		ret = self.get_scaled_radius (temp, temp_min, temp_max)
 		return ret
-	def get_pressure_radius (self, press): # mBar ???
+	def get_pressure_radius (self, press): # mBar
 		press_min = 0
 		press_max = 10000 # TODO learn chemistry or physics or whatever
 		ret = self.get_scaled_radius (press, press_min, press_max)
