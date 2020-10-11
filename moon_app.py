@@ -245,9 +245,16 @@ import datetime
 from datetime import timedelta
 import ephem
 
+moon_name_db = ('wolf', 'snow', 'worm', 'pink', 'flower', 'strawberry', 'buck', 'sturgeon', 'corn', 'harvest', "hunter's", 'beaver', 'cold', 'blue')
+def get_moon_name_helper (moon_no):
+	if moon_no is None: name = 'blue'
+	else:               name = moon_name_db[moon_no]
+	name = "%s moon" % (name,)
+	return name
 class MoonApp (PyGamePlotLib):
 	def __init__ (self, observer=None, *args, **kwargs):
 		PyGamePlotLib.__init__ (self, *args, **kwargs)
+		self.name = None
 		self.set_time (compute=False)
 	def notify (self, time=None): self.set_time (time)
 	def set_time (self, time=None, compute=True):
@@ -261,7 +268,6 @@ class MoonApp (PyGamePlotLib):
 		if time is None: return
 		
 		self.phase = self.get_moon_phase ()
-		# TODO get moon name: wolf, snow, worm, pink, flower, strawberry, buck, sturgeon, corn, harvest, hunter's, beaver, cold, blue
 		
 		#ax  = fig.add_subplot (facecolor='black')
 		ax  = fig.add_subplot ()
@@ -348,6 +354,47 @@ class MoonApp (PyGamePlotLib):
 	#def set_gps (self, gps):
 	#	self.gps = gps
 	#	self.set_observer (gps.observer)
+	
+	def get_moon_name (self): return self.get_moon_names ()[-1]
+	def get_moon_names (self):
+		times = self.get_full_moon_times ()
+		moon_no = 0
+		name    = get_moon_name_helper (moon_no)
+		names   = [name]
+		time    = times[0]
+		month   = time.month
+		for time in times[1:]:
+			month2 = time.month
+			if month == month2: name = get_moon_name_helper (None)
+			else:
+				moon_no = moon_no + 1
+				name    = get_moon_name_helper (moon_no)
+			names.append (name)
+			month = month2
+		names = tuple (names)
+		print ("names: %s" % (tuple (zip (names, times)),))
+		return names		
+		
+	def get_full_moon_times (self):
+		time = self.time
+		ny   = time.replace (month=1, day=1, hour=0, minute=0, second=0)
+		assert time > ny
+		#time = ephem.Date (time)
+		#ny   = ephem.Date (ny)
+		nfm  = ephem.    next_full_moon (time).datetime ()
+		
+		times = [nfm]
+		while True: # >= ?
+			pfm = ephem.previous_full_moon (time).datetime ()
+			if pfm <= ny: break
+			time = pfm
+			times.append (time)
+		assert pfm  <= ny
+		assert time >= ny
+		
+		times = times[::-1]
+		times = tuple (times)
+		return times
 
 from circle_app import CircleApp
 	
@@ -359,11 +406,18 @@ def blit_alpha (target, source, location, opacity): # https://nerdparadise.com/p
 	temp.set_alpha (opacity)        
 	target.blit (temp, location)
 	
+#def get_pic_name (name): # use name as query param, return URL of resource ?
+#	return "shiva.png"
+	
 class CircleMoonApp (CircleApp, MoonApp):
 	# TODO compute moon name, fetch background
-	def __init__ (self, rotation=None, *args, **kwargs):
+	def __init__ (self, notify_art=None, rotation=None, *args, **kwargs):
 		CircleApp.__init__ (self, rotation, *args, **kwargs)
 		MoonApp   .__init__ (self,           *args, **kwargs)
+		self.pic_name = None
+		self.raw_pic  = None
+		self.pic      = None
+		self.notify_art = notify_art
 	def start_running (self):
 		CircleApp.start_running (self)
 		MoonApp   .start_running (self)
@@ -374,6 +428,27 @@ class CircleMoonApp (CircleApp, MoonApp):
 		CircleApp.set_subsurface (self, ss)
 		# TODO handle geometries&rotations here
 		MoonApp   .set_subsurface (self, None, True)
+	def compute (self):
+		MoonApp.compute (self)
+		
+		name = self.name
+		self.name = self.get_moon_name ()
+		#pic_name = self.pic_name
+		if name != self.name:
+			if self.notify_art is not None: self.notify_art (self.name) # notify troller
+			#self.pic_name = get_pic_name (self.name)                # use self.name as query param to get resource
+		#raw_pic = self.raw_pic
+		#if pic_name != self.pic_name:
+		#	self.raw_pic = pygame.image.load (self.pic_name)             # load resource
+		#	self.raw_pic = self.raw_pic.convert_alpha ()
+		#	self.set_background (self.pic_name)
+		#pic = self.pic
+		#if raw_pic != self.raw_pic:
+		#	self.pic     = pygame.transform.scale (self.raw_pic, (w, h)) # prepare resource for blitting
+	def notify_bg (self, pic_name):
+		if pic_name == self.pic_name: return
+		self.pic_name = pic_name
+		self.set_background (self.pic_name)
 	#def draw_cropped_scene (self, temp):
 	#	#MapApp   .draw_scene         (self, temp)
 	#	CircleApp.draw_cropped_scene (self, temp)
@@ -396,11 +471,15 @@ class CircleMoonApp (CircleApp, MoonApp):
 	def minsz          (self): raise Exception ()
 
 if __name__ == "__main__":
-	from gps_client import GPSClient
+	#from gps_client import GPSClient
+	from artwork_client import ArtworkClient
 	from hal import HAL9000
 
 	def main ():
 		a = CircleMoonApp ()
+		n = a.notify_bg # cb for artwork client to set background of moon app
+		b = ArtworkClient (n)
+		a.notify_art = b.notify_request # cb for moon app to request background from artwork client
 		def new_loop (events, keys):
 			self = a
 			time = self.time
