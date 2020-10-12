@@ -41,18 +41,48 @@ class Artwork: # keyword => result list => image
 
 
 def use_api (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
-	url  = 'https://pixabay.com/api/'
-	key  = memoized_key (use_api)
-	q    = '+'.join (qs)
-	lang = 'en'
-	orientation = 'horizontal' # 'vertical'
-	# category
-	# min_width, min_height
-	# colors
-	# safesearch
-	# order
-	# page
-	# per_page
+	key    = memoized_key (use_api)
+	key    = RESTParam ('key', key)
+	params = [key]
+	
+	if qs          is not None:
+		q           = RESTParamQuery ('q'          , qs)
+		params.append (q)
+	if lang        is not None:
+		lang        = RESTParam      ('lang'       , lang)
+		params.append (lang)
+	if orientation is not None:
+		orientation = RESTParam      ('orientation', orientation)
+		params.append (orientation)
+	if category    is not None:
+		category    = RESTParam      ('category'   , category)
+		params.append (category)
+	if min_width   is not None:
+		min_width   = RESTParam      ('min_width'  , min_width)
+		params.append (min_width)
+	if min_height  is not None:
+		min_height  = RESTParam      ('min_height' , min_height)
+		params.append (min_height)
+	if colors      is not None:
+		colors      = RESTParamList  ('colors'     , colors)
+		params.append (colors)
+	if safesearch  is not None:
+		safesearch  = RESTParam      ('safesearch' , safesearch)
+		params.append (safesearch)
+	if order       is not None:
+		order       = RESTParam      ('order'      , order)
+		params.append (order)
+	if page        is not None:
+		page        = RESTParam      ('page'       , page)
+		params.append (page)
+	if per_page    is not None:
+		per_page    = RESTParam      ('per_page'   , per_page)
+		params.append (per_page)
+	
+	client = IARESTClient ('https', 'pixabay.com', 'api', params)
+	r      = client.post ()
+	
+	
 	
 
 if __name__ == "__main__":
