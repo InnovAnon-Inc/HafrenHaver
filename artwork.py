@@ -12,10 +12,6 @@
 # TODO
 ARTWORK_CREDITS = ('https://pixabay.com',)
 
-# 5,000 requests per hour
-# X-RateLimit-Limit     The maximum number of requests that the consumer is permitted to make in 30 minutes.
-# X-RateLimit-Remaining The number of requests remaining in the current rate limit window.
-# X-RateLimit-Reset     The remaining time in seconds after which the current rate limit window resets.
 
 # count distinct pairs of caller, keywords
 # record time of last call to web service
@@ -23,7 +19,7 @@ ARTWORK_CREDITS = ('https://pixabay.com',)
 
 # don't update cache until result list is exhausted, account for artwork's timeout
 class Results: # keyword => result list
-	def __ init__ (self):
+	def __init__ (self):
 		pass
 
 
@@ -40,10 +36,11 @@ class Artwork: # keyword => result list => image
 # cache name: OnePunch
 
 
-def use_api (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
-	key    = memoized_key (use_api)
+from rest import RESTParam, RESTParamList, RESTParamQuery, IAHeaderRESTClient
+
+def pixabay (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
 	key    = RESTParam ('key', key)
-	params = [key]
+	params = [key]	
 	
 	if qs          is not None:
 		q           = RESTParamQuery ('q'          , qs)
@@ -79,14 +76,39 @@ def use_api (qs=None, lang=None, orientation=None, category=None, min_width=None
 		per_page    = RESTParam      ('per_page'   , per_page)
 		params.append (per_page)
 	
-	client = IARESTClient ('https', 'pixabay.com', 'api', params)
-	r      = client.post ()
+	# 5,000 requests per hour
+	# X-RateLimit-Limit     The maximum number of requests that the consumer is permitted to make in 30 minutes.
+	# X-RateLimit-Remaining The number of requests remaining in the current rate limit window.
+	# X-RateLimit-Reset     The remaining time in seconds after which the current rate limit window resets.
+	headers = ('X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset')
+	client  = IAHeaderRESTClient ('https', 'pixabay.com', 'api', params, headers=headers)
+	r, lim, rem, reset = client.get ()
 	
+	#r = r[0] # most accurate
+	#print ("r: %s" % (r,))
+	#elevation = r['elevation']
+	#print ("elevation: %s" % (elevation,))
+	return r, lim, rem, reset, client.cred
+
+from cache import memoized_key
+
+def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
+	key = memoized_key (pixabay)
+	return pixabay (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)	
 	
-	
+"""
+def pixabay_cacher (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
+	ret = memoized_cacher (pixabay, key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)
+	ret, cred = ret
+	#ret = float (ret)
+	return ret, cred
+def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
+	key = memoized_key (pixabay)
+	return pixabay_cacher (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)	
+"""	
 
 if __name__ == "__main__":
 	def main ():
-		# TODO
+		print (pixabay2 ())
 	main ()
 	quit ()

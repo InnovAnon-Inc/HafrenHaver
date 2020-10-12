@@ -90,22 +90,56 @@ class RESTClient:
 		print ("q: %s" % (q,))
 		#quit ()
 		r = gp (q)
+		#if r.status_code != 200:
+		#	print ("error: %s" % (r,))
+		#	return None
+		#r = r.json ()  # json object, various ways you can extract value
+		#return r
+		return self.req_helper (r)
+	def req_helper (self, r):
 		if r.status_code != 200:
-			print ("error")
+			print ("error: %s" % (r,))
 			return None
-		r = r.json ()  # json object, various ways you can extract value
-		return r
+		return r.json ()
 	def get  (self): return self.req (requests.get)
 	def post (self): return self.req (requests.post)
 		
-class IARESTClient (RESTClient, InnovAnon):
-	def __init__ (self, proto, domain, api, params, cr=None, cred=None, lic=None, *args, **kwargs):
+class InnovAnon2 (InnovAnon):
+	def __init__ (self, proto, domain, *args, **kwargs):
+		cred = "%s://%s" % (proto, domain)
+		InnovAnon.__init__ (self, cred=cred, *args, **kwargs)
+class IARESTClient (RESTClient, InnovAnon2):
+	def __init__ (self, proto, domain, api, params, *args, **kwargs):
 		RESTClient.__init__ (self, proto, domain, api, params, *args, **kwargs)
-		if cred is None:
-			cred = "%s://%s" % (proto, domain)
-			cred = (cred,)
-		InnovAnon.__init__ (self, cr, cred, lic, *args, **kwargs)
+		InnovAnon2.__init__ (self, proto, domain, *args, **kwargs)
 	
+from constants import DEFAULT_USER_AGENT, DEFAULT_FROM
+	
+class HeaderRESTClient (RESTClient):
+	def __init__ (self, proto, domain, api, params, send_headers=None, headers=None, *args, **kwargs):
+		RESTClient.__init__ (self, proto, domain, api, params, *args, **kwargs)
+		if send_headers is None: send_headers = {}
+		if 'User-Agent' not in send_headers: send_headers['User-Agent'] = DEFAULT_USER_AGENT
+		if 'From'       not in send_headers: send_headers['From']       = DEFAULT_FROM
+		self.send_headers = send_headers
+		self.     headers =      headers
+	def req (self, gp):
+		if self.send_headers is None: GP = gp
+		else:                         GP = lambda q: gp (q, headers=self.send_headers)
+		return RESTClient.req (self, GP)
+	def req_helper (self, r):
+		ret = RESTClient.req_helper (self, r)
+		if self.headers is None: h = ()
+		else:
+			f   = lambda h: r.headers[h]
+			h   = map (f, self.headers)
+		ret = (ret, *h)
+		return ret
+class IAHeaderRESTClient (HeaderRESTClient, InnovAnon2):
+	def __init__ (self, proto, domain, api, params, send_headers=None, headers=None, *args, **kwargs):
+		HeaderRESTClient.__init__ (self, proto, domain, api, params, send_headers=send_headers, headers=headers)
+		InnovAnon2.__init__ (self, proto, domain, *args, **kwargs)
+		
 if __name__ == "__main__":
 	def main ():
 		# TODO

@@ -59,6 +59,7 @@ OPAQUE = (255, 255, 255, 255) # TODO I think this should be called TRANSPARENT
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = random_default_port ()
 DEFAULT_USER_AGENT = "HafrenHaver" # TODO maybe leak your info
+DEFAULT_FROM = "InnovAnon-Inc@protonmail.com"
 
 
 DEFAULT_BACKGROUND   = "background.png"

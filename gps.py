@@ -108,7 +108,7 @@ def latlon2elevation (lat, lon, key=None): # https://stackoverflow.com/questions
 	return elevation
 """
 
-from rest import RESTParamTuple, RESTParamList, RESTParam, IARESTClient
+from rest import RESTParamTuple, RESTParamList, RESTParam, IAHeaderRESTClient
 from itertools import starmap
 
 def latlon2elevation (lat, lon, key=None): # https://stackoverflow.com/questions/19513212/can-i-get-the-altitude-with-geopy-in-python-with-longitude-latitude
@@ -122,7 +122,7 @@ def latlon2elevation (lat, lon, key=None): # https://stackoverflow.com/questions
 	params = starmap (f, t)
 	params = [RESTParamList ('points', params)]
 	if key is not None: params.append (RESTParam ('key', key))
-	client = IARESTClient ('https', 'elevation-api.io', 'api/elevation', params)
+	client = IAHeaderRESTClient ('https', 'elevation-api.io', 'api/elevation', params)
 	r      = client.get ()
 	print ("r: %s" % (r,))
 	r = r['elevations'] # list
