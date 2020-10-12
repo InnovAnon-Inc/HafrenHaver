@@ -1,5 +1,8 @@
 #! /usr/bin/env python3
 
+# TODO
+GPS_CREDITS = ('geopy.geocoders Nominatim', 'elevation-api')
+
 class GPS:
 	def __init__ (self, observer): self.observer = observer
 	def __repr__ (self): return str (self.observer)
@@ -16,12 +19,12 @@ def addr2latlon (addr):
 	location   = geolocator.geocode (addr)
 	ret        = (location.latitude, location.longitude, location.altitude)
 	return ret
-from ast import literal_eval as make_tuple
+#from ast import literal_eval as make_tuple
 def addr2latlon_cacher (addr):
 	print ("addr2latlon_cacher (%s)" % (addr,))
 	ret = memoized_cacher (addr2latlon, addr)
-	print ("ret: %s" % (ret,))
-	ret = make_tuple (ret)
+	#print ("ret: %s" % (ret,))
+	#ret = make_tuple (ret)
 	print ("ret: %s" % (ret,))
 	lat, lon, alt = ret
 	assert type (lat) is float
@@ -42,8 +45,8 @@ def addr2gps (addr):
 """
 
 
-import requests
-import pandas as pd
+#import requests
+#import pandas as pd
 """
 # script for returning elevation from lat, long, based on open elevation data
 # which in turn is based on SRTM
@@ -76,6 +79,7 @@ def latlon2elevation (lat, lon): # https://stackoverflow.com/questions/19513212/
 """
 # script for returning elevation from lat, long, based on open elevation data
 # which in turn is based on SRTM
+"""
 def latlon2elevation (lat, lon, key=None): # https://stackoverflow.com/questions/19513212/can-i-get-the-altitude-with-geopy-in-python-with-longitude-latitude
 	print ("latlon2elevation (%s, %s)" % (lat, lon))
 	f = lambda k: "(%s,%s)" % (round (lat, k), round (lon, k))
@@ -102,24 +106,57 @@ def latlon2elevation (lat, lon, key=None): # https://stackoverflow.com/questions
 	elevation = r['elevation']
 	print ("elevation: %s" % (elevation,))
 	return elevation
+"""
+
+from rest import RESTParamTuple, RESTParamList, RESTParam, IARESTClient
+
+def latlon2elevation (lat, lon, key=None): # https://stackoverflow.com/questions/19513212/can-i-get-the-altitude-with-geopy-in-python-with-longitude-latitude
+	print ("latlon2elevation (%s, %s)" % (lat, lon))
+	
+	f = lambda k: (round (lat, k), round (lon, k))
+	r = range (0, 6 + 1)
+	r = r[::-1]
+	t = map (f, r)
+	params = []
+	for lat, lon in t:
+		param = RESTParamTuple (None, (lat, lon))
+		params.append (param)
+	params = [RESTParamList ('points', params)]
+	if key is not None: params.append (RESTParam ('key', key))
+	client = IARESTClient ('https', 'elevation-api.io', 'api/elevation', params)
+	r      = client.get ()
+	print ("r: %s" % (r,))
+	r = r['elevations'] # list
+	print ("r: %s" % (r,))
+	r = r[0] # most accurate
+	print ("r: %s" % (r,))
+	elevation = r['elevation']
+	print ("elevation: %s" % (elevation,))
+	return elevation, client.cred
 def latlon2elevation_cacher (lat, lon, key=None):
 	print ("latlon2elevation_cacher (%s, %s, %s)" % (lat, lon, key))
 	ret = memoized_cacher (latlon2elevation, lat, lon, key)
 	#print ("ret: %s" % (ret,))
+	ret, cred = ret
 	ret = float (ret)
 	#print ("ret: %s" % (ret,))
-	return ret
+	return ret, cred
 def latlon2elevation2 (lat, lon):
 	key = memoized_key (latlon2elevation)
 	return latlon2elevation_cacher (lat, lon, key)
 def addr2latlonalt (addr):
 	lat, lon, alt = addr2latlon_cacher (addr)
-	if alt == 0: alt = latlon2elevation2 (lat, lon) # if Nominatim doesn't have altitude info for this address
-	return lat, lon, alt
+	if alt == 0:
+		alt, cred = latlon2elevation2 (lat, lon) # if Nominatim doesn't have altitude info for this address
+	else: cred = None
+	return lat, lon, alt, cred
 
 from weatherbit.api import Api
 def latlon2temperature (lat, lon):
-	return None
+	creds = 'weatherbit' # TODO
+	creds = (creds,)
+	return None, creds
+	
 	# TODO
 	lat = float (lat)
 	lon = float (lon)
@@ -143,7 +180,7 @@ def latlon2temperature (lat, lon):
 	# TODO snow, wind, clouds, rain
 	print ("temps: %s" % (temps,))
 	
-	return temps
+	return temps, creds
 #def latlon2temperature_cacher (lat, lon): return memoized_cacher (latlon2temperature, lat, lon)
 	
 def latlonalt2pressure (lat, lon, alt):
@@ -151,17 +188,20 @@ def latlonalt2pressure (lat, lon, alt):
 	return None
 	
 def addr2gps (addr):
-	lat, lon, alt = addr2latlonalt (addr)
-	temp = latlon2temperature (lat, lon)
+	lat, lon, alt, cred1 = addr2latlonalt (addr)
+	temp, cred2 = latlon2temperature (lat, lon)
 	pressure = latlonalt2pressure (lat, lon, alt)
-	return lat, lon, alt, temp, pressure
+	print ("cred1: %s" % (cred1,))
+	print ("cred2: %s" % (cred2,))
+	cred = tuple (cred1) + cred2
+	return lat, lon, alt, temp, pressure, cred
 
 # TODO also send time ?
 
 
 import ephem
 
-def gps2observer (lat, lon, alt, temp, pressure):
+def gps2observer (lat, lon, alt, temp, pressure, cred):
 	lowell           = ephem.Observer ()
 	lowell.lon       = lon
 	lowell.lat       = lat
@@ -169,17 +209,19 @@ def gps2observer (lat, lon, alt, temp, pressure):
 	if temp     is not None: lowell.temp      = temp
 	if pressure is not None: lowell.pressure  = pressure
 	#lowell.date = '1986/3/13'
-	return lowell
+	return lowell, cred
 	
 def addr2observer (addr):
 	tmp = addr2gps (addr)
 	return gps2observer (*tmp)
 
-class AddrGPS (GPS):
-	def __init__ (self, addr):
-		observer = addr2observer (addr)
-		GPS.__init__ (self, observer)
+from rest import InnovAnon
 
+class AddrGPS (GPS, InnovAnon):
+	def __init__ (self, addr, *args, **kwargs):
+		observer, cred = addr2observer (addr)
+		GPS.__init__ (self, observer, *args, **kwargs)
+		InnovAnon.__init__ (self, cred=cred, *args, **kwargs)
 
 	
 def city2observer_lookup        (city): return ephem.cities.lookup (city)
@@ -190,28 +232,37 @@ def city2observer (city):
 	return ret
 def city2observer2 (city):
 	observer      = city2observer (city)
-	temp = latlon2temperature (observer.lat, observer.lon)
+	temp, cred = latlon2temperature (observer.lat, observer.lon)
 	if temp is not None: observer.temp = temp
 	pressure      = latlonalt2pressure (observer.lat, observer.lon, observer.elevation)
 	if pressure is not None: observer.pressure = pressure
-	return observer
-class CityGPS (GPS):
-	def __init__ (self, city):
-		observer = city2observer2 (city)
-		GPS.__init__ (self, observer)
-		 
+	return observer, cred
+class CityGPS (GPS, InnovAnon):
+	def __init__ (self, city, *args, **kwargs):
+		observer, cred = city2observer2 (city)
+		GPS.__init__ (self, observer, *args, **kwargs)
+		InnovAnon.__init__ (self, cred=cred, *args, **kwargs)
 		 
 		 
 if __name__ == "__main__":
 	def main ():
 		g = AddrGPS ("7271 Wurzbach Rd, San Antonio, TX 78240")
 		print (g)
+		g.credits ()
+		print ()
+		
 		lat = g.observer.lat
 		lon = g.observer.lon
 		print (latlon2temperature (lat, lon))
+		
 		g = CityGPS ("Dallas")
 		print (g)
+		g.credits ()
+		print ()
+		
 		g = CityGPS ("San Antonio, Texas") # TODO
 		print (g)
+		g.credits ()
+		print ()
 	main ()
 	quit ()

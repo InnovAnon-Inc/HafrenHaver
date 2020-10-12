@@ -25,11 +25,18 @@ def cacher_indb (key):                                                  # I thou
 	my_file = Path (key)
 	return my_file.is_file ()
 def cacher_getdb (key):
+	#print ("cacher_getdb (%s)" % (key,))
 	with open (key, "r") as f: ret = f.read ()
 	return ret
+from ast import literal_eval as make_tuple
+def cacher_getdb_eval (key):
+	ret = cacher_getdb (key)
+	ret = make_tuple (ret)
+	return ret
 def cacher_setdb (key, val):
-	with open (key, "w") as f: f.write (str (val))
-def cacher (f, *args): return helper (cacher_key, cacher_indb, cacher_getdb, cacher_setdb, f, *args)
+	val = str (val)
+	with open (key, "w") as f: f.write (val)
+def cacher (f, *args): return helper (cacher_key, cacher_indb, cacher_getdb_eval, cacher_setdb, f, *args)
 def memoized_cacher (f, *args): return memoize (cacher, f, *args)
 
 def key_indb (key):  return cacher_indb  (key)                          # abandon all hope, ye who enter here
