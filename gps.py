@@ -123,7 +123,7 @@ def latlon2elevation (lat, lon, key=None): # https://stackoverflow.com/questions
 	params = [RESTParamList ('points', params)]
 	if key is not None: params.append (RESTParam ('key', key))
 	client = IAHeaderRESTClient ('https', 'elevation-api.io', 'api/elevation', params)
-	r      = client.get ()
+	r, h   = client.get ()
 	print ("r: %s" % (r,))
 	r = r['elevations'] # list
 	print ("r: %s" % (r,))
@@ -131,7 +131,10 @@ def latlon2elevation (lat, lon, key=None): # https://stackoverflow.com/questions
 	print ("r: %s" % (r,))
 	elevation = r['elevation']
 	print ("elevation: %s" % (elevation,))
-	return elevation, client.cred
+	c = client.cred
+	assert c is not None
+	assert len (c) > 0
+	return elevation, c
 def latlon2elevation_cacher (lat, lon, key=None):
 	print ("latlon2elevation_cacher (%s, %s, %s)" % (lat, lon, key))
 	ret = memoized_cacher (latlon2elevation, lat, lon, key)

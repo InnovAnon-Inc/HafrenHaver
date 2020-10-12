@@ -107,6 +107,7 @@ class RESTClient:
 class InnovAnon2 (InnovAnon):
 	def __init__ (self, proto, domain, *args, **kwargs):
 		cred = "%s://%s" % (proto, domain)
+		cred = (cred,)
 		InnovAnon.__init__ (self, cred=cred, *args, **kwargs)
 class IARESTClient (RESTClient, InnovAnon2):
 	def __init__ (self, proto, domain, api, params, *args, **kwargs):
@@ -129,11 +130,14 @@ class HeaderRESTClient (RESTClient):
 		return RESTClient.req (self, GP)
 	def req_helper (self, r):
 		ret = RESTClient.req_helper (self, r)
-		if self.headers is None: h = ()
-		else:
-			f   = lambda h: r.headers[h]
-			h   = map (f, self.headers)
-		ret = (ret, *h)
+		h = {}
+		if self.headers is not None:
+			for header in self.headers:
+				if header not in r.headers: continue
+				h[header] = r.headers[header]
+			#f   = lambda h: r.headers[h]
+			#h   = map (f, self.headers)
+		ret = (ret, h)
 		return ret
 class IAHeaderRESTClient (HeaderRESTClient, InnovAnon2):
 	def __init__ (self, proto, domain, api, params, send_headers=None, headers=None, *args, **kwargs):

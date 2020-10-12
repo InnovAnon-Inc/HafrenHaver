@@ -1,42 +1,7 @@
 #! /usr/bin/env python3
 
-# map keywords => [(image, credits), ...]
-# TODO how to decide when to pull more images
-
-# db1[keywords] = [(image, credits), ...]
-
-# db2[caller] = [keywords, ...]
-# check whether caller has used these keywords
-# if so, pull more images ?
-
-# TODO
-ARTWORK_CREDITS = ('https://pixabay.com',)
-
-
-# count distinct pairs of caller, keywords
-# record time of last call to web service
-# if sufficient time has passed, select a keyword pair
-
-# don't update cache until result list is exhausted, account for artwork's timeout
-class Results: # keyword => result list
-	def __init__ (self):
-		pass
-
-
-class Artwork: # keyword => result list => image
-	def __init__ (self, results):
-		self.results = results
-
-
-
-		
-
-		
-
-# cache name: OnePunch
-
-
 from rest import RESTParam, RESTParamList, RESTParamQuery, IAHeaderRESTClient
+from rest import IARESTClient
 
 def pixabay (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
 	key    = RESTParam ('key', key)
@@ -82,13 +47,26 @@ def pixabay (key, qs=None, lang=None, orientation=None, category=None, min_width
 	# X-RateLimit-Reset     The remaining time in seconds after which the current rate limit window resets.
 	headers = ('X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset')
 	client  = IAHeaderRESTClient ('https', 'pixabay.com', 'api', params, headers=headers)
-	r, lim, rem, reset = client.get ()
+	#client  = IARESTClient ('https', 'pixabay.com', 'api', params)
+	r, h = client.get ()
+	#r = client.get ()
+	lim   = h.get ('X-RateLimit-Limit')
+	rem   = h.get ('X-RateLimit-Remaining')
+	reset = h.get ('X-RateLimit-Reset')
+	
+	total      = r['total']
+	total_hits = r['totalHits']
+	hits       = r['hits'] # {'id': int, 'pageURL': url, 'type': str, 'tags': strs, 'previewURL': url, 'previewWidth': int, 'previewHeight': int, 'webformatURL': url, 'webformatWidth': int, 'webformatHeight': int, 'largeImageURL': url, 'imageWidth': int, 'imageHeight': int, 'imageSize': int, 'views': int, 'downloads': int, 'favorites': int, 'likes': int, 'comments': int, 'user_id': int, 'user': str, 'userImageURL': url}
 	
 	#r = r[0] # most accurate
 	#print ("r: %s" % (r,))
 	#elevation = r['elevation']
 	#print ("elevation: %s" % (elevation,))
-	return r, lim, rem, reset, client.cred
+	c = client.cred
+	assert c is not None
+	assert len (c) > 0
+	return total, total_hits, hits, lim, rem, reset, c
+	#return total, total_hits, hits, c
 
 from cache import memoized_key
 
@@ -107,8 +85,35 @@ def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=Non
 	return pixabay_cacher (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)	
 """	
 
+# map keywords => [(image, credits), ...]
+# TODO how to decide when to pull more images
+
+# db1[keywords] = [(image, credits), ...]
+
+# db2[caller] = [keywords, ...]
+# check whether caller has used these keywords
+# if so, pull more images ?
+
+
+# count distinct pairs of caller, keywords
+# record time of last call to web service
+# if sufficient time has passed, select a keyword pair
+
+# don't update cache until result list is exhausted, account for artwork's timeout
+class Results: # keyword => result list
+	def __init__ (self):
+		pass
+
+
+class Artwork: # keyword => result list => image
+	def __init__ (self, results):
+		self.results = results
+
+# cache name: OnePunch
+
+
 if __name__ == "__main__":
 	def main ():
-		print (pixabay2 ())
+		print (pixabay2 (qs=('test',)))
 	main ()
 	quit ()
