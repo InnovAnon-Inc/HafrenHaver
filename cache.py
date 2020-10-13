@@ -35,6 +35,21 @@ def cacher_setdb (key, val):
 def cacher (f, *args): return helper (cacher_key, cacher_indb, cacher_getdb, cacher_setdb, f, *args)
 def memoized_cacher (f, *args): return memoize (cacher, f, *args)
 
+def cacher_setdb2 (key, val, nullify):                                  # nullify ephemeral data which should not be cached
+	val2 = []
+	for n in range (0, len (val)):
+		if n in nullify: val2.append (None)
+		else:            val2.append (val[n])
+	val = tuple (val2)
+	#for n in nullify: val[n] = None
+	cacher_setdb (key, val)
+def cacher2 (nullify, f, *args):
+	sdb = lambda key, val: cacher_setdb2 (key, val, nullify)
+	return helper (cacher_key, cacher_indb, cacher_getdb, sdb, f, *args)
+def memoized_cacher2 (nullify, f, *args):
+	g = lambda f, *a: cacher2 (nullify, f, *a)
+	return memoize (g, f, *args)
+
 def key_indb (key):  return cacher_indb  (key)                          # abandon all hope, ye who enter here
 def key_getdb (key):
 	with open (key, "r") as f: ret = f.read ()

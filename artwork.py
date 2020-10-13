@@ -68,22 +68,24 @@ def pixabay (key, qs=None, lang=None, orientation=None, category=None, min_width
 	return total, total_hits, hits, lim, rem, reset, c
 	#return total, total_hits, hits, c
 
-from cache import memoized_key
+from cache import memoized_key, memoized_cacher2
 
+"""
 def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
 	key = memoized_key (pixabay)
 	return pixabay (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)	
-	
 """
 def pixabay_cacher (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
-	ret = memoized_cacher (pixabay, key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)
-	ret, cred = ret
+	nullify = (3, 4, 5)
+	ret = memoized_cacher2 (nullify, pixabay, key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)
+	#ret, cred = ret
 	#ret = float (ret)
-	return ret, cred
+	#return ret, cred
+	return ret
 def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
 	key = memoized_key (pixabay)
 	return pixabay_cacher (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)	
-"""	
+#"""
 
 # map keywords => [(image, credits), ...]
 # TODO how to decide when to pull more images
@@ -102,12 +104,34 @@ def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=Non
 # don't update cache until result list is exhausted, account for artwork's timeout
 class Results: # keyword => result list
 	def __init__ (self):
-		pass
+		self.time      = None # time of last request
+		self.limit     = None
+		self.remaining = None
+		self.reset     = None
+	def req (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
+		ret = pixabay2 (qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)
+		total, total_hits, hits, lim, rem, reset, c = ret
+		if lim is not None or rem is not None or reset is not None:
+			assert lim   is not None
+			assert rem   is not None
+			assert reset is not None
+			self.time      = # current time
+			self.limit     = lim
+			self.remaining = rem
+			self.reset     = reset
+		return total, total_hits, hits, c
 
+# TODO handle pagination in Artwork ?
 
+# qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None
 class Artwork: # keyword => result list => image
 	def __init__ (self, results):
 		self.results = results
+
+	# TODO pagination
+	# TODO cache how many results have been consumed by each consumer... when a consumer exhausts results, 
+	# pages[qs, lang, orientation, category, min_width, min_height, colors, safesearch, order]
+
 
 # cache name: OnePunch
 
