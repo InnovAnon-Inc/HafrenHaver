@@ -3,7 +3,7 @@
 from pathlib import Path
 
 def helper (make_key, indb, getdb, setdb, f, *args):                    # this is the real logic. it seemed nice here
-	print ("helper (%s, %s, %s, %s, %s, %s)" % (make_key, indb, getdb, setdb, f, args))
+	#print ("helper (%s, %s, %s, %s, %s, %s)" % (make_key, indb, getdb, setdb, f, args))
 	key = make_key (f, *args)
 	if indb (key): return getdb (key)
 	val = f (*args)
@@ -46,9 +46,20 @@ def cacher_setdb2 (key, val, nullify):                                  # nullif
 def cacher2 (nullify, f, *args):
 	sdb = lambda key, val: cacher_setdb2 (key, val, nullify)
 	return helper (cacher_key, cacher_indb, cacher_getdb, sdb, f, *args)
+def setdb2 (key, db, val, nullify):
+	val2 = []
+	for n in range (0, len (val)):
+		if n in nullify: val2.append (None)
+		else:            val2.append (val[n])
+	val = tuple (val2)
+	setdb (key, db, val)
+def memoize_setdb2 (key, val, nullify):        setdb2 (key, memoize_db, val, nullify)
+def memoize2       (nullify, f, *args):
+	sdb = lambda key, val: memoize_setdb2 (key, val, nullify)
+	return helper (memoize_key, memoize_indb, memoize_getdb, sdb, f, *args)
 def memoized_cacher2 (nullify, f, *args):
 	g = lambda f, *a: cacher2 (nullify, f, *a)
-	return memoize (g, f, *args)
+	return memoize2 (nullify, g, f, *args)
 
 def key_indb (key):  return cacher_indb  (key)                          # abandon all hope, ye who enter here
 def key_getdb (key):
