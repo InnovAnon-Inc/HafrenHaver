@@ -108,7 +108,7 @@ class Results: # keyword => result list
 		self.limit     = None
 		self.remaining = None
 		self.reset     = None
-		self.cache     = {} # TODO load from disk
+		self.cache     = {} # TODO load cache from disk
 	def req (self, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
 		if page     is None: page     = 0 + 1
 		if per_page is None: per_page = 20
@@ -228,7 +228,7 @@ class Results: # keyword => result list
 		vrngs.extend (reqs)
 		vrngs.sort (key=f)
 		self.cache[key] = vtotal, vtotal_hits, vrngs, vcreds
-		
+		# TODO write cache to disk
 		return vtotal, vtotal_hits, ret, vcreds
 
 # TODO handle pagination in Artwork ?
@@ -251,20 +251,28 @@ if __name__ == "__main__":
 		r = Results ()
 		#print (pixabay2 (qs=('test',)))
 		print ("0-19")
-		r.req (qs=('test',))                      #  0-19
+		p0 = r.req (qs=('test',))                      #  0-19
 		print ()
 		
 		print ("40-59")
-		r.req (qs=('test',), page=3)              # 40-59
+		p1 = r.req (qs=('test',), page=3)              # 40-59
 		print ()
 		
 		print ("15-29")
-		r.req (qs=('test',), page=2, per_page=15) # 15-29
+		p2 = r.req (qs=('test',), page=2, per_page=15) # 15-29
 		print ()
 		
 		print ("25-49")
-		r.req (qs=('test',), page=2, per_page=25) # 25-49
+		p3 = r.req (qs=('test',), page=2, per_page=25) # 25-49
 		print ()
+
+		for p in (p0, p1, p2, p3):
+			print (p)
+			print ()
 		
+		print ("time     : %s" % (r.time,))
+		print ("limit    : %s" % (r.limit,))
+		print ("remaining: %s" % (r.remaining,))
+		print ("reset    : %s" % (r.reset,))
 	main ()
 	quit ()

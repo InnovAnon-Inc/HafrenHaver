@@ -35,23 +35,22 @@ def cacher_setdb (key, val):
 def cacher (f, *args): return helper (cacher_key, cacher_indb, cacher_getdb, cacher_setdb, f, *args)
 def memoized_cacher (f, *args): return memoize (cacher, f, *args)
 
-def cacher_setdb2 (key, val, nullify):                                  # nullify ephemeral data which should not be cached
+def nullify_helper (val, nullify):
 	val2 = []
 	for n in range (0, len (val)):
 		if n in nullify: val2.append (None)
 		else:            val2.append (val[n])
 	val = tuple (val2)
+	return val
+def cacher_setdb2 (key, val, nullify):                                  # nullify ephemeral data which should not be cached
+	val = nullify_helper (val, nullify)
 	#for n in nullify: val[n] = None
 	cacher_setdb (key, val)
 def cacher2 (nullify, f, *args):
 	sdb = lambda key, val: cacher_setdb2 (key, val, nullify)
 	return helper (cacher_key, cacher_indb, cacher_getdb, sdb, f, *args)
 def setdb2 (key, db, val, nullify):
-	val2 = []
-	for n in range (0, len (val)):
-		if n in nullify: val2.append (None)
-		else:            val2.append (val[n])
-	val = tuple (val2)
+	val = nullify_helper (val, nullify)
 	setdb (key, db, val)
 def memoize_setdb2 (key, val, nullify):        setdb2 (key, memoize_db, val, nullify)
 def memoize2       (nullify, f, *args):
