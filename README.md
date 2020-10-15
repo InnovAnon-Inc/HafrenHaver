@@ -87,7 +87,6 @@ Graphical Representation of an Astronomical Observer
 ==========
 Allows user to select map projection,
 centering the projection at the user's coordinates.
-Uses an 
 
 Uses an exotic-style display for temperature, pressure and altitude.
 
@@ -111,6 +110,15 @@ the formula for synesthesia.
 
 The above subprojects are the requirements for the pre-alpha release: Tuning the Yellow Bell
 The alpha release will actually have sound.
+
+# OnePunch (TODO)
+Paginated Rate-Limit-Aware Memoizing Cache for REST APIs
+==========
+Keeps track of API and artist credits.
+
+With logic for recycling cached results and fetching new results.
+
+Maybe with load balancing.
 
 TODO
 ----------
