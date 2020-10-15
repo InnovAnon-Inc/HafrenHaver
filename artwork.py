@@ -243,6 +243,7 @@ class PixabayResults (Results):
 	def __init__ (self, *args, **kwargs):
 		Results.__init__ (self, pixabay2, 3, 200, *args, **kwargs)
 	def make_key (self, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None):
+		qs  = tuple (qs)
 		key = (qs, lang, orientation, category, min_width, min_height, colors, safesearch, order)
 		return key
 
@@ -278,94 +279,53 @@ class PixabayResults (Results):
 
 
 
-def pexel (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
-	key    = RESTParam ('key', key)
-	params = [key]	
+def pexels (key, queries, locale=None, page=None, per_page=None):
+	q = RESTParamQuery ('query', queries)
+	params = [q]	
 	
-	if qs          is not None:
-		q           = RESTParamQuery ('q'          , qs)
-		params.append (q)
-	if lang        is not None:
-		lang        = RESTParam      ('lang'       , lang)
+	if locale is not None:
+		locale   = RESTParam ('locale'  , locale)
 		params.append (lang)
-	if orientation is not None:
-		orientation = RESTParam      ('orientation', orientation)
-		params.append (orientation)
-	if category    is not None:
-		category    = RESTParam      ('category'   , category)
-		params.append (category)
-	if min_width   is not None:
-		min_width   = RESTParam      ('min_width'  , min_width)
-		params.append (min_width)
-	if min_height  is not None:
-		min_height  = RESTParam      ('min_height' , min_height)
-		params.append (min_height)
-	if colors      is not None:
-		colors      = RESTParamList  ('colors'     , colors)
-		params.append (colors)
-	if safesearch  is not None:
-		safesearch  = RESTParam      ('safesearch' , safesearch)
-		params.append (safesearch)
-	if order       is not None:
-		order       = RESTParam      ('order'      , order)
-		params.append (order)
 	if page        is not None:
-		page        = RESTParam      ('page'       , page)
+		page     = RESTParam ('page'    , page)
 		params.append (page)
 	if per_page    is not None:
-		per_page    = RESTParam      ('per_page'   , per_page)
+		per_page = RESTParam ('per_page', per_page)
 		params.append (per_page)
 	
-	# 5,000 requests per hour
-	# X-RateLimit-Limit     The maximum number of requests that the consumer is permitted to make in 30 minutes.
-	# X-RateLimit-Remaining The number of requests remaining in the current rate limit window.
-	# X-RateLimit-Reset     The remaining time in seconds after which the current rate limit window resets.
+	send_headers = { "Authorization" : key, }
 	headers = ('X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset')
-	client  = IAHeaderRESTClient ('https', 'pixabay.com', 'api', params, headers=headers)
-	#client  = IARESTClient ('https', 'pixabay.com', 'api', params)
+	client  = IAHeaderRESTClient ('https', 'api.pexels.com', 'v1/search', params, send_headers=send_headers, headers=headers)
 	r, h = client.get ()
-	#r = client.get ()
 	lim   = h.get ('X-RateLimit-Limit')
 	rem   = h.get ('X-RateLimit-Remaining')
 	reset = h.get ('X-RateLimit-Reset')
 	
-	total      = r['total']
-	total_hits = r['totalHits']
-	hits       = r['hits'] # {'id': int, 'pageURL': url, 'type': str, 'tags': strs, 'previewURL': url, 'previewWidth': int, 'previewHeight': int, 'webformatURL': url, 'webformatWidth': int, 'webformatHeight': int, 'largeImageURL': url, 'imageWidth': int, 'imageHeight': int, 'imageSize': int, 'views': int, 'downloads': int, 'favorites': int, 'likes': int, 'comments': int, 'user_id': int, 'user': str, 'userImageURL': url}
+	total_hits = r['total_results']
+	total      = total_hits
+	#page_no    = r['page']
+	#pp         = r['per_page']
+	hits       = r['photos']
 	
-	#r = r[0] # most accurate
-	#print ("r: %s" % (r,))
-	#elevation = r['elevation']
-	#print ("elevation: %s" % (elevation,))
 	c = client.cred
 	assert c is not None
 	assert len (c) > 0
 	return total, total_hits, hits, lim, rem, reset, c
-	#return total, total_hits, hits, c
 
-from cache import memoized_key, memoized_cacher2
-
-"""
-def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
-	key = memoized_key (pixabay)
-	return pixabay (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)	
-"""
-def pixabay_cacher (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
+def pexels_cacher (key, queries, locale=None, page=None, per_page=None):
 	nullify = (3, 4, 5)
-	ret = memoized_cacher2 (nullify, pixabay, key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)
-	#ret, cred = ret
-	#ret = float (ret)
-	#return ret, cred
+	ret = memoized_cacher2 (nullify, pexels, key, queries, locale, page, per_page)
 	return ret
-def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
-	key = memoized_key (pixabay)
-	return pixabay_cacher (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)	
+def pexels2 (queries=None, locale=None, page=None, per_page=None):
+	key = memoized_key (pexels)
+	return pexels_cacher (key, queries, locale, page, per_page)	
 	
-class PexelResults (Results):
+class PexelsResults (Results):
 	def __init__ (self, *args, **kwargs):
-		Results.__init__ (pexel2, 1, 80, *args, **kwargs)
-	def make_key (self):
-		key = ()
+		Results.__init__ (self, pexels2, 1, 80, *args, **kwargs)
+	def make_key (self, queries, locale=None):
+		queries = tuple (queries)
+		key     = (queries, locale)
 		return key
 # TODO load balancing at next level: Aggregator
 # TODO recycling at next-next level: stream of unique combinations of results: Recycler
@@ -386,22 +346,27 @@ class Artwork: # keyword => result list => image
 
 if __name__ == "__main__":
 	def main ():
-		r = PixabayResults ()
+		#r = PixabayResults ()
+		r = PexelsResults ()
 		#print (pixabay2 (qs=('test',)))
 		print ("0-19")
-		p0 = r.req (qs=('test',))                      #  0-19
+		#p0 = r.req (qs=('test',))                           #  0-19
+		p0 = r.req (queries=('test',))                      #  0-19
 		print ()
 		
 		print ("40-59")
-		p1 = r.req (qs=('test',), page=3)              # 40-59
+		#p1 = r.req (qs=('test',), page=3)                   # 40-59
+		p1 = r.req (queries=('test',), page=3)              # 40-59
 		print ()
 		
 		print ("15-29")
-		p2 = r.req (qs=('test',), page=2, per_page=15) # 15-29
+		#p2 = r.req (qs=('test',), page=2, per_page=15)      # 15-29
+		p2 = r.req (queries=('test',), page=2, per_page=15) # 15-29
 		print ()
 		
 		print ("25-49")
-		p3 = r.req (qs=('test',), page=2, per_page=25) # 25-49
+		#p3 = r.req (qs=('test',), page=2, per_page=25)      # 25-49
+		p3 = r.req (queries=('test',), page=2, per_page=25) # 25-49
 		print ()
 
 		for p in (p0, p1, p2, p3):
