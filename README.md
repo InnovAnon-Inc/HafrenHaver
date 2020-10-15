@@ -122,27 +122,16 @@ Maybe with load balancing.
 
 # Usage Notes
 ==========
-
-(Un)Install:
-    ```bash
-    python3 -m pip {|un}install --upgrade . (TODO)
-    ```
-
-API Keys:
-    ```bash
-    grep -qF '*.key' .gitignore && \
-    echo -n '<API KEY>' >| <funcname>.key
-    ```
-    
-Clear the Caches:
-    ```bash
-    rm *.cache
-    ```
-    
-Run Unit Tests:
-    ```bash
-    for k in *.py ; do PATH=.:$PATH $k || break ; done
-    ```
+Common Operations:
+- (Un)Install:
+      ```python3 -m pip {|un}install --upgrade .``` (TODO)
+- API Keys:
+      ```grep -qF '*.key' .gitignore &&
+      echo -n '<API KEY>' >| <funcname>.key```
+- Clear the Caches:
+      ```rm *.cache```
+- Run Unit Tests:
+      ```for k in *.py ; do PATH=.:$PATH $k || break ; done```
 
 # TODO
 ----------
