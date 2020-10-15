@@ -120,7 +120,31 @@ With logic for recycling cached results and fetching new results.
 
 Maybe with load balancing.
 
-TODO
+# Usage Notes
+==========
+
+(Un)Install:
+    ```bash
+    python3 -m pip {|un}install --upgrade . (TODO)
+    ```
+
+API Keys:
+    ```bash
+    grep -qF '*.key' .gitignore && \
+    echo -n '<API KEY>' >| <funcname>.key
+    ```
+    
+Clear the Caches:
+    ```bash
+    rm *.cache
+    ```
+    
+Run Unit Tests:
+    ```bash
+    for k in *.py ; do PATH=.:$PATH $k || break ; done
+    ```
+
+# TODO
 ----------
 - binaural beats
 - isochronic pulses (including graphics)
@@ -130,7 +154,7 @@ TODO
 - subliminal programming
 - ndimensional and possibly true non-euclidean topologies
 
-Underlying Concepts
+# Underlying Concepts
 ----------
 - graphics based on sacred geometry
 - automatic management of aesthetics:
@@ -159,7 +183,7 @@ Underlying Concepts
   notes, instead deriving scale lengths using the harmonic variation of
   Euclid's algorithm.
 
-Project Name
+# Project Name
 ----------
 HafrenHaver (verb):
 
@@ -171,7 +195,7 @@ SevernSieve (noun):
 A device for separating wanted elements from unwanted material
 in the River Severn.
 
-Purpose
+# Purpose
 ----------
 To what end are we engineering literal mind control technology?
 
@@ -271,7 +295,7 @@ Well, we build drones to replace our niche in the ecosystem,
 making ourselves obselete to this world,
 and turn our attention toward getting the Hell off this rock.
 
-Credits
+# Credits
 ----------
 The lionshare of the credit goes to that inner monologue
 that gives voice to subtle and vague impressions from the
@@ -289,7 +313,7 @@ Other credits are specifically linked in the source,
 such as StackOverflow threads where the good people ensured
 forward progress, even on days when I watched several sunrises.
 
-Dedication
+# Dedication
 ----------
 Honorable mention to known Western code monks,
 who may not have contributed anything to this particular project,
@@ -297,7 +321,7 @@ but rather to the Western cyber-monastic tradition in general:
 - Terry A. Davis
 - Sasha Gallagher
 
-License
+# License
 ----------
 If we wrote it, then you own it:
 we write technology that no one should have,
