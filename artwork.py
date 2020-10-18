@@ -1,23 +1,7 @@
 #! /usr/bin/env python3
 
-#"""
-
-# map keywords => [(image, credits), ...]
-# TODO how to decide when to pull more images
-
-# db1[keywords] = [(image, credits), ...]
-
-# db2[caller] = [keywords, ...]
-# check whether caller has used these keywords
-# if so, pull more images ?
 
 
-# count distinct pairs of caller, keywords
-# record time of last call to web service
-# if sufficient time has passed, select a keyword pair
-
-# don't update cache until result list is exhausted, account for artwork's timeout
-# PaginatedCache
 class Results: # keyword => result list
 	def __init__ (self, result_f, min_page, max_page):
 		self.time      = None # time of last request
@@ -31,7 +15,9 @@ class Results: # keyword => result list
 	#def req (self, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
 	def req (self, page=None, per_page=None, **kwargs):
 		if page     is None: page     = 0 + 1
-		if per_page is None: per_page = 20
+		if per_page is None: per_page = 20 # TODO magic numbers
+		assert     page >= 1
+		assert per_page >= 1
 		
 		#key  = (qs, lang, orientation, category, min_width, min_height, colors, safesearch, order)
 		key = self.make_key (**kwargs)
@@ -46,6 +32,7 @@ class Results: # keyword => result list
 		req_max = (page + 1 - 1) * per_page                     # upper bound requested by user
 		print ("req_min: %s, req_max: %s" % (req_min, req_max))
 		
+		assert req_min < req_max
 		req_rng = range (req_min, req_max)                  # requested range
 		req_rng = list (req_rng)
 		
@@ -93,32 +80,47 @@ class Results: # keyword => result list
 			if vtotal_hits is None: vtotal_hits = total_hits
 			assert vtotal_hits == total_hits
 			if vcreds is None: vcreds = c
-			assert vcreds == c
+			#assert vcreds == c, "c: %s, vcreds: %s" % (c, vcreds)
+			assert c is None or vcreds == c, "c: %s, vcreds: %s" % (c, vcreds)
 		#print ("cached: %s" % (ret,))
 		
 		print ("req_rng: %s" % (req_rng,))
 		
+		"""
 		def pgpp (a, b):                                    # pp = b - a + 1 + c, s.t.
 			pp = b - a + 1                                  # (pg + 0) * pp <= a, b <= (pg + 1) * pp
 			pp = max (pp, self.min_page)                    # pp in [3, 200]
 			while True:
 				pg = a // pp + 1
 				if pp * (pg + 1 - 1) >= b: break
-				pp = pp + 1
+				pp = pp + 1 # TODO reverse order to prefer larger pages => fewer requests
 				if pp > self.max_page: raise Exception ()
+			return (a, b, pg, pp)
+		"""
+		def pgpp (a, b):                                    # pp = b - a + 1 + c, s.t.
+			pp = b - a + 1                                  # (pg + 0) * pp <= a, b <= (pg + 1) * pp
+			pp = max (pp, self.min_page)                    # pp in [3, 200]
+			PP = pp
+			pp = self.max_page
+			while True:
+				pg = a // pp + 1
+				if pp * (pg + 1 - 1) >= b: break
+				pp = pp - 1 # TODO reverse order to prefer larger pages => fewer requests
+				if pp < PP: raise Exception ()
 			return (a, b, pg, pp)
 		
 		reqs = []                                           # actual ranges to request
-		a    = req_rng[0]
-		for b, c in zip (req_rng[:-1], req_rng[1:]):
-			if c == b + 1: continue
+		if len (req_rng) != 0:
+			a    = req_rng[0]
+			for b, c in zip (req_rng[:-1], req_rng[1:]):
+				if c == b + 1: continue
+				tmp = pgpp (a, b)
+				reqs.append (tmp)
+				a   = c
+			b   = req_rng[-1]
 			tmp = pgpp (a, b)
 			reqs.append (tmp)
-			a   = c
-		b   = req_rng[-1]
-		tmp = pgpp (a, b)
-		reqs.append (tmp)
-		print ("reqs: %s" % (reqs,))
+			print ("reqs: %s" % (reqs,))
 			
 		for req in reqs:                                    # request new ranges
 			req_min, req_max, pg, pp = req
@@ -152,11 +154,15 @@ class Results: # keyword => result list
 		self.cache[key] = vtotal, vtotal_hits, vrngs, vcreds
 		# TODO write cache to disk
 		return vtotal, vtotal_hits, ret, vcreds
+	def get_time      (self): return self.time
+	def get_limit     (self): return self.limit
+	def get_remaining (self): return self.remaining
+	def get_reset     (self): return self.reset
 
 from rest import RESTParam, RESTParamList, RESTParamQuery, IAHeaderRESTClient
 from rest import IARESTClient
 
-def pixabay (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
+def pixabay (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None, session=None):
 	key    = RESTParam ('key', key)
 	params = [key]	
 	
@@ -199,7 +205,8 @@ def pixabay (key, qs=None, lang=None, orientation=None, category=None, min_width
 	# X-RateLimit-Remaining The number of requests remaining in the current rate limit window.
 	# X-RateLimit-Reset     The remaining time in seconds after which the current rate limit window resets.
 	headers = ('X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset')
-	client  = IAHeaderRESTClient ('https', 'pixabay.com', 'api', params, headers=headers)
+	client  = IAHeaderRESTClient ('https', 'pixabay.com', 'api/', params, headers=headers, session=session)
+	#client  = IAHeaderRESTClient ('https', 'pixabay.com', 'api', params, headers=headers, session=session)
 	#client  = IARESTClient ('https', 'pixabay.com', 'api', params)
 	r, h = client.get ()
 	#r = client.get ()
@@ -218,6 +225,7 @@ def pixabay (key, qs=None, lang=None, orientation=None, category=None, min_width
 	c = client.cred
 	assert c is not None
 	assert len (c) > 0
+	#          0           1     2    3    4      5  6
 	return total, total_hits, hits, lim, rem, reset, c
 	#return total, total_hits, hits, c
 
@@ -228,20 +236,22 @@ def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=Non
 	key = memoized_key (pixabay)
 	return pixabay (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)	
 """
-def pixabay_cacher (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
-	nullify = (3, 4, 5)
-	ret = memoized_cacher2 (nullify, pixabay, key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)
+def pixabay_cacher (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None, session=None):
+	nullify = (3, 4, 5,)
+	ret = memoized_cacher2 (nullify, pixabay, key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page, session)
 	#ret, cred = ret
 	#ret = float (ret)
 	#return ret, cred
 	return ret
-def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
+def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None, session=None):
 	key = memoized_key (pixabay)
-	return pixabay_cacher (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page)	
+	return pixabay_cacher (key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page, session)	
 	
 class PixabayResults (Results):
-	def __init__ (self, *args, **kwargs):
-		Results.__init__ (self, pixabay2, 3, 200, *args, **kwargs)
+	def __init__ (self, session=None, *args, **kwargs):
+		def pixabay3 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None): return pixabay2 (qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page, session)
+		Results.__init__ (self, pixabay3, 3, 200, *args, **kwargs)
+		#self.session = session
 	def make_key (self, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None):
 		qs  = tuple (qs)
 		key = (qs, lang, orientation, category, min_width, min_height, colors, safesearch, order)
@@ -279,7 +289,7 @@ class PixabayResults (Results):
 
 
 
-def pexels (key, queries, locale=None, page=None, per_page=None):
+def pexels (key, queries, locale=None, page=None, per_page=None, session=None):
 	q = RESTParamQuery ('query', queries)
 	params = [q]	
 	
@@ -295,7 +305,7 @@ def pexels (key, queries, locale=None, page=None, per_page=None):
 	
 	send_headers = { "Authorization" : key, }
 	headers = ('X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset')
-	client  = IAHeaderRESTClient ('https', 'api.pexels.com', 'v1/search', params, send_headers=send_headers, headers=headers)
+	client  = IAHeaderRESTClient ('https', 'api.pexels.com', 'v1/search', params, send_headers=send_headers, headers=headers, session=session)
 	r, h = client.get ()
 	lim   = h.get ('X-RateLimit-Limit')
 	rem   = h.get ('X-RateLimit-Remaining')
@@ -310,72 +320,235 @@ def pexels (key, queries, locale=None, page=None, per_page=None):
 	c = client.cred
 	assert c is not None
 	assert len (c) > 0
+	#          0           1     2    3    4      5  6
 	return total, total_hits, hits, lim, rem, reset, c
 
-def pexels_cacher (key, queries, locale=None, page=None, per_page=None):
-	nullify = (3, 4, 5)
-	ret = memoized_cacher2 (nullify, pexels, key, queries, locale, page, per_page)
+def pexels_cacher (key, queries, locale=None, page=None, per_page=None, session=None):
+	nullify = (3, 4, 5,)
+	ret = memoized_cacher2 (nullify, pexels, key, queries, locale, page, per_page, session)
 	return ret
-def pexels2 (queries=None, locale=None, page=None, per_page=None):
+def pexels2 (queries=None, locale=None, page=None, per_page=None, session=None):
 	key = memoized_key (pexels)
-	return pexels_cacher (key, queries, locale, page, per_page)	
+	return pexels_cacher (key, queries, locale, page, per_page, session)	
 	
 class PexelsResults (Results):
-	def __init__ (self, *args, **kwargs):
-		Results.__init__ (self, pexels2, 1, 80, *args, **kwargs)
+	def __init__ (self, session=None, *args, **kwargs):
+		def pexels3 (queries=None, locale=None, page=None, per_page=None): return pexels2 (queries, locale, page, per_page, session)
+		Results.__init__ (self, pexels3, 1, 80, *args, **kwargs)
+		#self.session = session
 	def make_key (self, queries, locale=None):
 		queries = tuple (queries)
 		key     = (queries, locale)
 		return key
-# TODO load balancing at next level: Aggregator
+		
+		
+		
+		
+		
+		
+		
+		
+		
+class Buffer:
+	def __init__ (self, results):
+		self.results  = results
+		#self.nquery   = 0
+		#self.page     = {}
+		self.per_page = results.max_page
+		#self.index    = {}
+		#self.session  = session
+	def req (self, **kwargs):
+		# TODO check rate limit ?
+		results  = self.results
+		per_page = self.per_page
+		
+		res  = results.req (1, per_page, **kwargs)
+		vtotal, vtotal_hits, hits, vcreds = res
+		for index in range (0, per_page):
+			res = hits[index]
+			ret = vtotal, vtotal_hits, res, vcreds
+			yield ret
+		
+		max_page = vtotal_hits // per_page
+		for page in range (2, max_page + 1):
+			res  = results.req (page, per_page, **kwargs)
+			vtotal, vtotal_hits, hits, vcreds = res
+			for index in range (0, per_page):
+				res = hits[index]
+				ret = vtotal, vtotal_hits, res, vcreds
+				yield ret
+				
+		page     = max_page + 1
+		max_ndx  = vtotal_hits - (max_page * per_page)
+		if max_ndx != 0:
+			res  = results.req (page, per_page, **kwargs)
+			vtotal, vtotal_hits, hits, vcreds = res
+			for index in range (0, max_ndx):
+				res = hits[index]
+				ret = vtotal, vtotal_hits, res, vcreds
+				yield ret
+				
+		# TODO append vcreds
+		
+	def get_time      (self): return self.results.get_time      ()
+	def get_limit     (self): return self.results.get_limit     ()
+	def get_remaining (self): return self.results.get_remaining ()
+	def get_reset     (self): return self.results.get_reset     ()
+class PixabayBuffer (Buffer):
+	def __init__ (self, session=None, *args, **kwargs):
+		results = PixabayResults (session, *args, **kwargs)
+		Buffer.__init__ (self, results, *args, **kwargs)
+class PexelsBuffer (Buffer):
+	def __init__ (self, session=None, *args, **kwargs):
+		results =  PexelsResults (session, *args, **kwargs)
+		Buffer.__init__ (self, results, *args, **kwargs) 
+
+
+
+
+
+
+		
+		
+# TODO fetch actual results from buffer
+		
+#"""
+
+# map keywords => [(image, credits), ...]
+# TODO how to decide when to pull more images
+
+# db1[keywords] = [(image, credits), ...]
+
+# db2[caller] = [keywords, ...]
+# check whether caller has used these keywords
+# if so, pull more images ?
+
+
+# count distinct pairs of caller, keywords
+# record time of last call to web service
+# if sufficient time has passed, select a keyword pair
+
+# don't update cache until result list is exhausted, account for artwork's timeout
+# PaginatedCache
+
+
+
+
+# TODO download results before aggregator ?
+# fetch ~page at a time ? ... function of page size and rate limit
+# prefetching functionality here, but multithreading in next level ?
+# fetch results one at a time until rate limit is exhausted ? no, bc other searches
+
+
+
+
+# return result from buffer
+# if buffer is nearly exhausted, spawn worker thread to prefetch another page ?
+# TODO fetch results one at a time until up to quota of rate limit is used
+
+# get rate limit, schedule requests to exhaust rate limit, repeat requests until cache miss
+
+
+		
+# TODO load balancing at next level: Aggregator		
+# one thread per buffer
+# filter unique results here ?
+class Aggregator:
+	def __init__ (self, buffers):
+		self.buffers = buffers
+	def get_results (self, qs, lang, page=None, per_page=None): # ?
+		# TODO get rate limits ?
+		# TODO select result with best limit ?
+		# query all that have not exhausted rate limits ?
+		pass
+	
 # TODO recycling at next-next level: stream of unique combinations of results: Recycler
+# only invoke aggregator when unique combos are exhausted
+class Recycler:
+	def __init__ (self, aggregator):
+		self.aggregator = aggregator
+	# cid, search => ?
+		
 # TODO level for managing multiple streams of unique combos... for networking: OnePunch
 
 # qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None
 class Artwork: # keyword => result list => image
-	def __init__ (self, results):
-		self.results = results
+	def __init__ (self, recycler):
+		self.recycler = recycler
 
 	# TODO pagination
 	# TODO cache how many results have been consumed by each consumer... when a consumer exhausts results, 
 	# pages[qs, lang, orientation, category, min_width, min_height, colors, safesearch, order]
+
+	# queries enter system here ?
+
+	def get_artwork (cid): pass
+	
 
 
 # cache name: OnePunch
 
 
 if __name__ == "__main__":
+	import requests
+	
 	def main ():
-		#r = PixabayResults ()
-		r = PexelsResults ()
-		#print (pixabay2 (qs=('test',)))
-		print ("0-19")
-		#p0 = r.req (qs=('test',))                           #  0-19
-		p0 = r.req (queries=('test',))                      #  0-19
-		print ()
+		type1 = True
+		layer = 1
+		if layer == 0:
+			if type1: r = PixabayResults ()
+			else:     r = PexelsResults ()
+		if layer == 1:
+			s = requests.Session ()
+			#s = None
+			if type1: r = PixabayBuffer (s)
+			else:     r = PexelsBuffer (s)
 		
-		print ("40-59")
-		#p1 = r.req (qs=('test',), page=3)                   # 40-59
-		p1 = r.req (queries=('test',), page=3)              # 40-59
-		print ()
-		
-		print ("15-29")
-		#p2 = r.req (qs=('test',), page=2, per_page=15)      # 15-29
-		p2 = r.req (queries=('test',), page=2, per_page=15) # 15-29
-		print ()
-		
-		print ("25-49")
-		#p3 = r.req (qs=('test',), page=2, per_page=25)      # 25-49
-		p3 = r.req (queries=('test',), page=2, per_page=25) # 25-49
-		print ()
+		if layer == 0:
+			print ("0-19")
+			if type1: p0 = r.req (     qs=('test',))                      #  0-19
+			else:     p0 = r.req (queries=('test',))                      #  0-19
+			print ()
+			
+			print ("40-59")
+			if type1: p1 = r.req (     qs=('test',), page=3)              # 40-59
+			else:     p1 = r.req (queries=('test',), page=3)              # 40-59
+			print ()
+			
+			print ("15-29")
+			if type1: p2 = r.req (     qs=('test',), page=2, per_page=15) # 15-29
+			else:     p2 = r.req (queries=('test',), page=2, per_page=15) # 15-29
+			print ()
+			
+			print ("25-49")
+			if type1: p3 = r.req (     qs=('test',), page=2, per_page=25) # 25-49
+			else:     p3 = r.req (queries=('test',), page=2, per_page=25) # 25-49
+			print ()
 
-		for p in (p0, p1, p2, p3):
+			for p in (p0, p1, p2, p3):
+				print (p)
+				print ()
+		if layer == 1:
+			if type1: p = r.req (     qs=('test',))
+			else:     p = r.req (queries=('test',))
+			
 			print (p)
 			print ()
+			for h in p:
+				print (h)
+				print ()
+				
+			if type1: p = r.req (     qs=('test',))
+			else:     p = r.req (queries=('test',))
+			print (len (tuple (p)))
+		#print ("time     : %s" % (r.time,))
+		#print ("limit    : %s" % (r.limit,))
+		#print ("remaining: %s" % (r.remaining,))
+		#print ("reset    : %s" % (r.reset,))
 		
-		print ("time     : %s" % (r.time,))
-		print ("limit    : %s" % (r.limit,))
-		print ("remaining: %s" % (r.remaining,))
-		print ("reset    : %s" % (r.reset,))
+		print ("time     : %s" % (r.get_time      (),))
+		print ("limit    : %s" % (r.get_limit     (),))
+		print ("remaining: %s" % (r.get_remaining (),))
+		print ("reset    : %s" % (r.get_reset     (),))
 	main ()
 	quit ()

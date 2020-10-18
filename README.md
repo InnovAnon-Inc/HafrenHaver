@@ -121,17 +121,17 @@ With logic for recycling cached results and fetching new results.
 Maybe with load balancing.
 
 # Usage Notes
+Common Operations
 ==========
-Common Operations:
-- (Un)Install:
-      ```python3 -m pip {|un}install --upgrade .``` (TODO)
-- API Keys:
+- (Un)Install (TODO):
+      ```python3 -m pip {|un}install --upgrade .```
+- Install API Keys:
       ```grep -qF '*.key' .gitignore &&
       echo -n '<API KEY>' >| <funcname>.key```
-- Clear the Caches:
-      ```rm *.cache```
-- Run Unit Tests:
+- Run Unit Tests (TODO):
       ```for k in *.py ; do PATH=.:$PATH $k || break ; done```
+- Blast the Caches:
+      ```rm *.cache```
 
 # TODO
 ----------

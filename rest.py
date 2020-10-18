@@ -64,7 +64,7 @@ class RESTParamQuery (RESTParam):
 import requests
 
 class RESTClient:
-	def __init__ (self, proto, domain, api, params):
+	def __init__ (self, proto, domain, api, params, session=None):
 		assert proto  is not None
 		self.proto  = proto
 		assert domain is not None
@@ -74,6 +74,7 @@ class RESTClient:
 		#params = map (f, params)
 		params = stringify (params, None)
 		self.params = params
+		self.session = session
 	def param_str (self):
 		if self.params is None: s = None
 		else:                   s = '&'.join (self.params)
@@ -101,8 +102,15 @@ class RESTClient:
 			print ("error: %s" % (r,))
 			return None
 		return r.json ()
-	def get  (self): return self.req (requests.get)
-	def post (self): return self.req (requests.post)
+	def get  (self):
+		session = self.get_session ()
+		return self.req (session.get)
+	def post (self):
+		session = self.get_session ()
+		return self.req (session.post)
+	def get_session (self):
+		if self.session is not None: return self.session
+		return requests
 		
 class InnovAnon2 (InnovAnon):
 	def __init__ (self, proto, domain, *args, **kwargs):
@@ -110,15 +118,15 @@ class InnovAnon2 (InnovAnon):
 		cred = (cred,)
 		InnovAnon.__init__ (self, cred=cred, *args, **kwargs)
 class IARESTClient (RESTClient, InnovAnon2):
-	def __init__ (self, proto, domain, api, params, *args, **kwargs):
-		RESTClient.__init__ (self, proto, domain, api, params, *args, **kwargs)
+	def __init__ (self, proto, domain, api, params, session=None, *args, **kwargs):
+		RESTClient.__init__ (self, proto, domain, api, params, session, *args, **kwargs)
 		InnovAnon2.__init__ (self, proto, domain, *args, **kwargs)
 	
 from constants import DEFAULT_USER_AGENT, DEFAULT_FROM
 	
 class HeaderRESTClient (RESTClient):
-	def __init__ (self, proto, domain, api, params, send_headers=None, headers=None, *args, **kwargs):
-		RESTClient.__init__ (self, proto, domain, api, params, *args, **kwargs)
+	def __init__ (self, proto, domain, api, params, session=None, send_headers=None, headers=None, *args, **kwargs):
+		RESTClient.__init__ (self, proto, domain, api, params, session, *args, **kwargs)
 		if send_headers is None: send_headers = {}
 		if 'User-Agent' not in send_headers: send_headers['User-Agent'] = DEFAULT_USER_AGENT
 		if 'From'       not in send_headers: send_headers['From']       = DEFAULT_FROM
@@ -140,8 +148,8 @@ class HeaderRESTClient (RESTClient):
 		ret = (ret, h)
 		return ret
 class IAHeaderRESTClient (HeaderRESTClient, InnovAnon2):
-	def __init__ (self, proto, domain, api, params, send_headers=None, headers=None, *args, **kwargs):
-		HeaderRESTClient.__init__ (self, proto, domain, api, params, send_headers=send_headers, headers=headers)
+	def __init__ (self, proto, domain, api, params, session=None, send_headers=None, headers=None, *args, **kwargs):
+		HeaderRESTClient.__init__ (self, proto, domain, api, params, session=session, send_headers=send_headers, headers=headers, *args, **kwargs)
 		InnovAnon2.__init__ (self, proto, domain, *args, **kwargs)
 		
 if __name__ == "__main__":
