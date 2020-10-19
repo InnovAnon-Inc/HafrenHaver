@@ -229,7 +229,7 @@ def pixabay (key, qs=None, lang=None, orientation=None, category=None, min_width
 	return total, total_hits, hits, lim, rem, reset, c
 	#return total, total_hits, hits, c
 
-from cache import memoized_key, memoized_cacher2
+from cache import memoized_key, memoized_cacher3
 
 """
 def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None):
@@ -238,7 +238,9 @@ def pixabay2 (qs=None, lang=None, orientation=None, category=None, min_width=Non
 """
 def pixabay_cacher (key, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None, session=None):
 	nullify = (3, 4, 5,)
-	ret = memoized_cacher2 (nullify, pixabay, key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page, session)
+	kn      = (12,)
+	#                                               0   1     2            3         4          5           6       7           8      9    10        11       12
+	ret = memoized_cacher3 (nullify, kn, pixabay, key, qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page, session)
 	#ret, cred = ret
 	#ret = float (ret)
 	#return ret, cred
@@ -325,7 +327,9 @@ def pexels (key, queries, locale=None, page=None, per_page=None, session=None):
 
 def pexels_cacher (key, queries, locale=None, page=None, per_page=None, session=None):
 	nullify = (3, 4, 5,)
-	ret = memoized_cacher2 (nullify, pexels, key, queries, locale, page, per_page, session)
+	kn      = (5,)
+	#                                              0        1       2     3         4        5
+	ret = memoized_cacher3 (nullify, kn, pexels, key, queries, locale, page, per_page, session)
 	return ret
 def pexels2 (queries=None, locale=None, page=None, per_page=None, session=None):
 	key = memoized_key (pexels)
@@ -493,7 +497,7 @@ if __name__ == "__main__":
 	import requests
 	
 	def main ():
-		type1 = True
+		type1 = False
 		layer = 1
 		if layer == 0:
 			if type1: r = PixabayResults ()
