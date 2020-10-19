@@ -133,7 +133,7 @@ class Results: # keyword => result list
 			if vtotal_hits is None: vtotal_hits = total_hits
 			assert vtotal_hits == total_hits
 			if vcreds is None: vcreds = c
-			assert vcreds == c
+			assert vcreds == c, "vcreds: %s, c: %s" % (vcreds, c)
 			if lim is None or rem is None or reset is None: # cached results not registered at this level
 				assert lim   is None
 				assert rem   is None

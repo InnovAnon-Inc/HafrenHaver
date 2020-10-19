@@ -52,6 +52,15 @@ class PixabayPager (Pager):
 	def __init__ (self, session=None, *args, **kwargs):
 		results = PixabayResults (session, *args, **kwargs)
 		Pager.__init__ (self, results, *args, **kwargs)
+	def req (self, **kwargs):
+		rets    = Pager.req (self, **kwargs)
+		for ret in rets:
+			vtotal, vtotal_hits, res, vcreds = ret
+			vcreds = set (vcreds)
+			vcreds.add (res['user'])
+			res    = res['fullHDURL']
+			ret    = vtotal, vtotal_hits, res, vcreds
+			yield ret
 
 from pexels_results import PexelsResults
 
@@ -59,8 +68,24 @@ class PexelsPager (Pager):
 	def __init__ (self, session=None, *args, **kwargs):
 		results =  PexelsResults (session, *args, **kwargs)
 		Pager.__init__ (self, results, *args, **kwargs) 
+	def req (self, **kwargs):
+		rets    = Pager.req (self, **kwargs)
+		for ret in rets:
+			vtotal, vtotal_hits, res, vcreds = ret
+			vcreds = set (vcreds)
+			vcreds.add (res['photographer'])
+			res    = res['url']
+			ret    = vtotal, vtotal_hits, res, vcreds
+			yield ret
 
 
+
+class Buffer:
+	def __init__ (self, pager):
+		self.pager = pager
+	def req (self, **kwargs):
+		pager = self.pager
+		pager.req (**kwargs)
 
 
 
