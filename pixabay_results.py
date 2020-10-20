@@ -96,7 +96,7 @@ class PixabayResults (Results):
 	def __init__ (self, session=None, *args, **kwargs):
 		def pixabay3 (qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None, page=None, per_page=None): return pixabay2 (qs, lang, orientation, category, min_width, min_height, colors, safesearch, order, page, per_page, session)
 		Results.__init__ (self, pixabay3, 3, 200, *args, **kwargs)
-		#self.session = session
+		self.session = session
 	def make_key (self, qs=None, lang=None, orientation=None, category=None, min_width=None, min_height=None, colors=None, safesearch=None, order=None):
 		qs  = tuple (qs)
 		key = (qs, lang, orientation, category, min_width, min_height, colors, safesearch, order)

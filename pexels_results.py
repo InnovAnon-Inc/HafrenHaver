@@ -55,7 +55,7 @@ class PexelsResults (Results):
 	def __init__ (self, session=None, *args, **kwargs):
 		def pexels3 (queries=None, locale=None, page=None, per_page=None): return pexels2 (queries, locale, page, per_page, session)
 		Results.__init__ (self, pexels3, 1, 80, *args, **kwargs)
-		#self.session = session
+		self.session = session
 	def make_key (self, queries, locale=None):
 		queries = tuple (queries)
 		key     = (queries, locale)

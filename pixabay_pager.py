@@ -13,7 +13,8 @@ class PixabayPager (Pager):
 			vtotal, vtotal_hits, res, vcreds = ret
 			vcreds = set (vcreds)
 			vcreds.add (res['user'])
-			res    = res['fullHDURL']
+			#res    = res['fullHDURL']
+			res    = res['largeImageURL']
 			ret    = vtotal, vtotal_hits, res, vcreds
 			yield ret
 

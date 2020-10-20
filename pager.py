@@ -12,7 +12,11 @@ class Pager: # iterate results / pages
 		# TODO check rate limit ?
 		results  = self.results
 		per_page = self.per_page
-		
+	
+		# TODO might need to lock session
+		# TODO prefetch first page in bg thread
+		# TODO join bg thread
+		# TODO prefetch next page in bg thread
 		res  = results.req (1, per_page, **kwargs)
 		vtotal, vtotal_hits, hits, vcreds = res
 		for index in range (0, per_page):
@@ -20,8 +24,12 @@ class Pager: # iterate results / pages
 			ret = vtotal, vtotal_hits, res, vcreds
 			yield ret
 		
+		# TODO join bg thread
+		# TODO prefetch next page in bg thread
 		max_page = vtotal_hits // per_page
-		for page in range (2, max_page + 1):
+		for page in range (2, max_page + 1):			
+			# TODO join bg thread
+			# TODO prefetch next page in bg thread
 			res  = results.req (page, per_page, **kwargs)
 			vtotal, vtotal_hits, hits, vcreds = res
 			for index in range (0, per_page):
@@ -31,6 +39,7 @@ class Pager: # iterate results / pages
 				
 		page     = max_page + 1
 		max_ndx  = vtotal_hits - (max_page * per_page)
+		# TODO join bg thread
 		if max_ndx != 0:
 			res  = results.req (page, per_page, **kwargs)
 			vtotal, vtotal_hits, hits, vcreds = res

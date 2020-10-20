@@ -156,6 +156,9 @@ class Results: # keyword => result list
 	def get_limit     (self): return self.limit
 	def get_remaining (self): return self.remaining
 	def get_reset     (self): return self.reset
+	def get_session   (self):
+		if self.session is None: return requests
+		return self.session
 
 if __name__ == "__main__":
 	import requests
