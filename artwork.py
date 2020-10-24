@@ -47,9 +47,9 @@ class Aggregator:
 		# next run:
 		# return result from first thread to join (usually the one with the best rate limit, due to sorting order)
 		# restart thread
-		
-from prefetcher import PixabayPrefetcher, PexelsPrefetcher
 
+from prefetcher import PixabayPrefetcher, PexelsPrefetcher
+"""
 class DefaultAggregator (Aggregator):
 	def __init__ (self, session=None, *args, **kwargs):
 		b0 = PixabayPrefetcher (session, *args, **kwargs)
@@ -62,7 +62,16 @@ class DefaultAggregator (Aggregator):
 	def __exit__ (self, type, value, traceback):
 		for buf in self.buffers: buf.__exit__ (type, value, traceback)
 		return False
+"""
+from requests import Session
 
+def default_aggregator (cb, *args, **kwargs):
+	with Session () as s0, Session () as s1:
+		with PixabayPrefetcher (s0, *args, **kwargs) as b0, PexelsPrefetcher (s1, *args, **kwargs) as b1:
+			buffers = (b0, b1)
+			a = Aggregator (buffers, *args, **kwargs)
+			r = cb (a)
+	return r
 
 
 
@@ -167,14 +176,36 @@ if __name__ == "__main__":
 	import requests
 	
 	def main ():
-		with requests.Session () as s:		
-			#b0 = PixabayBuffer (s)
-			#b1 =  PexelsBuffer (s)
-			#bs = [b0, b1]
-			#a  = Aggregator (bs)
-			#a = DefaultAggregator (s)
-			#a = DefaultAggregator (None)
-			with DefaultAggregator (None) as a:
+		if False:
+			with requests.Session () as s:		
+				#b0 = PixabayBuffer (s)
+				#b1 =  PexelsBuffer (s)
+				#bs = [b0, b1]
+				#a  = Aggregator (bs)
+				#a = DefaultAggregator (s)
+				#a = DefaultAggregator (None)
+				with DefaultAggregator (None) as a:
+					p  = a.req (qs=('test',))
+					
+					print (p)
+					print ()
+					for h in p:
+						print (h)
+						#print ("time     : %s" % (a.get_time      (),))
+						#print ("limit    : %s" % (a.get_limit     (),))
+						#print ("remaining: %s" % (a.get_remaining (),))
+						#print ("reset    : %s" % (a.get_reset     (),))
+						print ()
+					
+					p  = a.req (qs=('test',))
+					print (len (tuple (p)))
+					
+					#print ("time     : %s" % (a.get_time      (),))
+					#print ("limit    : %s" % (a.get_limit     (),))
+					#print ("remaining: %s" % (a.get_remaining (),))
+					#print ("reset    : %s" % (a.get_reset     (),))
+		else:
+			def cb (a):
 				p  = a.req (qs=('test',))
 				
 				print (p)
@@ -194,5 +225,8 @@ if __name__ == "__main__":
 				#print ("limit    : %s" % (a.get_limit     (),))
 				#print ("remaining: %s" % (a.get_remaining (),))
 				#print ("reset    : %s" % (a.get_reset     (),))
+			r = default_aggregator (cb)
+			print ("r: %s" % (r,))
+				
 	main ()
 	quit ()

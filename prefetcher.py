@@ -89,12 +89,13 @@ class Prefetcher:
 		#self.pis.sort ()
 		self.l.release ()
 		#print ("pi enqueued")
-		#yield from pi.req ()                    # yield from prefetched results
-		for k in pi.req ():
-			assert k is not None
-			assert len (k) != 0
-			#print ("k: %s" % (k,))
-			yield k
+		# TODO verify validity
+		yield from pi.req ()                    # yield from prefetched results
+		#for k in pi.req ():
+		#	assert k is not None
+		#	assert len (k) != 0
+		#	#print ("k: %s" % (k,))
+		#	yield k
 		#return pi.req ()
 		self.l.acquire ()
 		self.pis.remove (pi)
@@ -140,12 +141,21 @@ class Prefetcher:
 	def get_limit     (self):           return self.buf.get_limit     ()
 	def get_remaining (self):           return self.buf.get_remaining ()
 	def get_reset     (self):           return self.buf.get_reset     ()
+	
+from requests import Session
+
+def prefetcher (P, cb, *args, **kwargs):
+	with Session () as s:
+		with P (s, *args, **kwargs) as p: r = cb (p)
+	return r
+		
 from buf import PixabayBuffer
 
 class PixabayPrefetcher (Prefetcher):
 	def __init__ (self, session=None, *args, **kwargs):
 		buf = PixabayBuffer (session,   *args, **kwargs)
 		Prefetcher.__init__ (self, buf, *args, **kwargs)
+def pixabay_prefetcher (cb, *args, **kwargs): return prefetcher (PixabayPrefetcher, cb, *args, **kwargs)
 
 from buf import PexelsBuffer
 
@@ -153,15 +163,78 @@ class PexelsPrefetcher (Prefetcher):
 	def __init__ (self, session=None, *args, **kwargs):
 		buf = PexelsBuffer  (session,   *args, **kwargs)
 		Prefetcher.__init__ (self, buf, *args, **kwargs)
-		
+def  pexels_prefetcher (cb, *args, **kwargs): return prefetcher ( PexelsPrefetcher, cb, *args, **kwargs)
+
 if __name__ == "__main__":
 	import requests
 	
 	def main ():
-		type1 = False
-		with requests.Session () as s:
+		type1 = True
+		if False:
+			with requests.Session () as s:
+				if type1:
+					with PixabayPrefetcher (s) as p:
+						r  = p.req (qs=('test',))
+						print ("r: %s" % (r,))
+						print ()
+						for h in r:
+							print ("h: %s" % (h,))
+							print ("time     : %s" % (p.get_time      (),))
+							print ("limit    : %s" % (p.get_limit     (),))
+							print ("remaining: %s" % (p.get_remaining (),))
+							print ("reset    : %s" % (p.get_reset     (),))
+							print ()
+						
+						#r  = p.req (qs=('test',))
+						#print (len (tuple (r)))
+						#
+						#print ("time     : %s" % (p.get_time      (),))
+						#print ("limit    : %s" % (p.get_limit     (),))
+						#print ("remaining: %s" % (p.get_remaining (),))
+						#print ("reset    : %s" % (p.get_reset     (),))
+				else:
+					with  PexelsPrefetcher (s) as p:
+						r  = p.req (queries=('test',))
+						print ("r: %s" % (r,))
+						print ()
+						for h in r:
+							print ("h: %s" % (h,))
+							print ("time     : %s" % (p.get_time      (),))
+							print ("limit    : %s" % (p.get_limit     (),))
+							print ("remaining: %s" % (p.get_remaining (),))
+							print ("reset    : %s" % (p.get_reset     (),))
+							print ()
+						
+						r  = p.req (queries=('test',))
+						print (len (tuple (r)))
+						
+						print ("time     : %s" % (p.get_time      (),))
+						print ("limit    : %s" % (p.get_limit     (),))
+						print ("remaining: %s" % (p.get_remaining (),))
+						print ("reset    : %s" % (p.get_reset     (),))
+				#if type1: b = PixabayBuffer (s)
+				#else:     b =  PexelsBuffer (s)
+				#with Prefetcher (b) as p:
+				#	if type1: r  = p.req (qs=('test',))
+				#	else:     r  = p.req (queries=('test',))
+				#	
+				#	print ("r: %s" % (r,))
+				#	print ()
+				#	for h in r:
+				#		print ("h: %s" % (h,))
+				#		print ()
+				#	
+				#	if type1: r  = p.req (qs=('test',))
+				#	else:     r  = p.req (queries=('test',))
+				#	print (len (tuple (r)))
+				#	
+				#	print ("time     : %s" % (p.get_time      (),))
+				#	print ("limit    : %s" % (p.get_limit     (),))
+				#	print ("remaining: %s" % (p.get_remaining (),))
+				#	print ("reset    : %s" % (p.get_reset     (),))
+		else:
 			if type1:
-				with PixabayPrefetcher (s) as p:
+				def cb (p):
 					r  = p.req (qs=('test',))
 					print ("r: %s" % (r,))
 					print ()
@@ -180,8 +253,10 @@ if __name__ == "__main__":
 					#print ("limit    : %s" % (p.get_limit     (),))
 					#print ("remaining: %s" % (p.get_remaining (),))
 					#print ("reset    : %s" % (p.get_reset     (),))
+				p = pixabay_prefetcher (cb)
+				print (p)
 			else:
-				with  PexelsPrefetcher (s) as p:
+				def cb (p):
 					r  = p.req (queries=('test',))
 					print ("r: %s" % (r,))
 					print ()
@@ -200,25 +275,7 @@ if __name__ == "__main__":
 					print ("limit    : %s" % (p.get_limit     (),))
 					print ("remaining: %s" % (p.get_remaining (),))
 					print ("reset    : %s" % (p.get_reset     (),))
-			#if type1: b = PixabayBuffer (s)
-			#else:     b =  PexelsBuffer (s)
-			#with Prefetcher (b) as p:
-			#	if type1: r  = p.req (qs=('test',))
-			#	else:     r  = p.req (queries=('test',))
-			#	
-			#	print ("r: %s" % (r,))
-			#	print ()
-			#	for h in r:
-			#		print ("h: %s" % (h,))
-			#		print ()
-			#	
-			#	if type1: r  = p.req (qs=('test',))
-			#	else:     r  = p.req (queries=('test',))
-			#	print (len (tuple (r)))
-			#	
-			#	print ("time     : %s" % (p.get_time      (),))
-			#	print ("limit    : %s" % (p.get_limit     (),))
-			#	print ("remaining: %s" % (p.get_remaining (),))
-			#	print ("reset    : %s" % (p.get_reset     (),))
+				p =  pexels_prefetcher (cb)
+				print (p)
 	main ()
 	quit ()
