@@ -1,18 +1,7 @@
 #! /usr/bin/env python3
 
-from aggregator import Aggregator
-#from aggregator import default_aggregator
+from recycler import Recycler, default_recycler
 
-class Recycler:
-	def __init__ (self, aggregator):
-		self.aggregator = aggregator
-	def req (self, n, **kwargs):
-		aggregator = self.aggregator
-		rets = aggregator.req ()
-		# TODO combos take n
-		pass
-	# cid, search => ?
-	
 class Artwork: # keyword => result list => image
 	def __init__ (self, recycler):
 		self.recycler = recycler
@@ -84,40 +73,13 @@ class Artwork: # keyword => result list => image
 
 
 if __name__ == "__main__":
-	import requests
+	from aggregator import default_aggregator
 	
 	def main ():
 		if False:
-			with requests.Session () as s:		
-				#b0 = PixabayBuffer (s)
-				#b1 =  PexelsBuffer (s)
-				#bs = [b0, b1]
-				#a  = Aggregator (bs)
-				#a = DefaultAggregator (s)
-				#a = DefaultAggregator (None)
-				with DefaultAggregator (None) as a:
-					p  = a.req (qs=('test',))
-					
-					print (p)
-					print ()
-					for h in p:
-						print (h)
-						#print ("time     : %s" % (a.get_time      (),))
-						#print ("limit    : %s" % (a.get_limit     (),))
-						#print ("remaining: %s" % (a.get_remaining (),))
-						#print ("reset    : %s" % (a.get_reset     (),))
-						print ()
-					
-					p  = a.req (qs=('test',))
-					print (len (tuple (p)))
-					
-					#print ("time     : %s" % (a.get_time      (),))
-					#print ("limit    : %s" % (a.get_limit     (),))
-					#print ("remaining: %s" % (a.get_remaining (),))
-					#print ("reset    : %s" % (a.get_reset     (),))
-		else:
 			def cb (a):
-				p  = a.req (qs=('test',))
+				r = Recycler (a)
+				p  = r.req (n=2, qs=('test',))
 				
 				print (p)
 				print ()
@@ -129,15 +91,37 @@ if __name__ == "__main__":
 					#print ("reset    : %s" % (a.get_reset     (),))
 					print ()
 				
-				p  = a.req (qs=('test',))
+				p  = r.req (n=2, qs=('test',))
 				print (len (tuple (p)))
 				
 				#print ("time     : %s" % (a.get_time      (),))
 				#print ("limit    : %s" % (a.get_limit     (),))
 				#print ("remaining: %s" % (a.get_remaining (),))
 				#print ("reset    : %s" % (a.get_reset     (),))
-			r = default_aggregator (cb)
-			print ("r: %s" % (r,))
+			a = default_aggregator (cb)
+			print ("a: %s" % (a,))
+		else:
+			def cb (r):
+				p  = r.req (n=2, qs=('test',))
 				
+				print (p)
+				print ()
+				for h in p:
+					print (h)
+					#print ("time     : %s" % (a.get_time      (),))
+					#print ("limit    : %s" % (a.get_limit     (),))
+					#print ("remaining: %s" % (a.get_remaining (),))
+					#print ("reset    : %s" % (a.get_reset     (),))
+					print ()
+				
+				p  = r.req (n=2, qs=('test',))
+				print (len (tuple (p)))
+				
+				#print ("time     : %s" % (a.get_time      (),))
+				#print ("limit    : %s" % (a.get_limit     (),))
+				#print ("remaining: %s" % (a.get_remaining (),))
+				#print ("reset    : %s" % (a.get_reset     (),))
+			r = default_recycler (cb)
+			print ("r: %s" % (r,))
 	main ()
 	quit ()
