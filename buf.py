@@ -32,8 +32,7 @@ def download_file (url, session=requests): # https://stackoverflow.com/questions
     return local_filename, lim, rem, reset
     
 class Buffer: # fetch / prefetch results
-	def __init__ (self, pager):
-		self.pager = pager
+	def __init__ (self, pager): self.pager = pager
 	def req (self, **kwargs):
 		pager = self.pager
 		rets  = pager.req (**kwargs)

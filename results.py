@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+import requests
+
 class Results: # keyword => result list
 	def __init__ (self, result_f, min_page, max_page):
 		self.time      = None # time of last request
@@ -24,18 +26,18 @@ class Results: # keyword => result list
 			vtotal = vtotal_hits = vcreds = None
 			vrngs = []
 		rngs = list (vrngs)
-		print ("rngs: %s" % (rngs,))
+		#print ("rngs: %s" % (rngs,))
 		
 		req_min = (page + 0 - 1) * per_page                     # lower bound requested by user
 		req_max = (page + 1 - 1) * per_page                     # upper bound requested by user
-		print ("req_min: %s, req_max: %s" % (req_min, req_max))
+		#print ("req_min: %s, req_max: %s" % (req_min, req_max))
 		
 		assert req_min < req_max
 		req_rng = range (req_min, req_max)                  # requested range
 		req_rng = list (req_rng)
 		
 		def result_slice (a, b, pg, pp):                    # results in [(pg + 0) * pp, (pg + 1) * pp)
-			print ("result_slice (a: %s, b: %s, pg: %s, pp: %s)" % (a, b, pg, pp))
+			#print ("result_slice (a: %s, b: %s, pg: %s, pp: %s)" % (a, b, pg, pp))
 			assert a  <= b                                  
 			assert pg >= 1
 			assert pp >= self.min_page
@@ -64,7 +66,7 @@ class Results: # keyword => result list
 			if n == N: continue
 			a   = max (req_min, rng_min)                    # append cached results
 			b   = min (req_max, rng_max)
-			print ("a: %s, b: %s, pg: %s, pp: %s" % (a, b, pg, pp))
+			#print ("a: %s, b: %s, pg: %s, pp: %s" % (a, b, pg, pp))
 			tmp = result_slice (a, b, pg, pp)
 			total, total_hits, hits, lim, rem, reset, c = tmp
 			assert lim   is None, str (lim)
@@ -82,7 +84,7 @@ class Results: # keyword => result list
 			assert c is None or vcreds == c, "c: %s, vcreds: %s" % (c, vcreds)
 		#print ("cached: %s" % (ret,))
 		
-		print ("req_rng: %s" % (req_rng,))
+		#print ("req_rng: %s" % (req_rng,))
 		
 		"""
 		def pgpp (a, b):                                    # pp = b - a + 1 + c, s.t.
@@ -118,11 +120,11 @@ class Results: # keyword => result list
 			b   = req_rng[-1]
 			tmp = pgpp (a, b)
 			reqs.append (tmp)
-			print ("reqs: %s" % (reqs,))
+			#print ("reqs: %s" % (reqs,))
 			
 		for req in reqs:                                    # request new ranges
 			req_min, req_max, pg, pp = req
-			print ("req_min: %s, req_max: %s, pg: %s, pp: %s" % (req_min, req_max, pg, pp))
+			#print ("req_min: %s, req_max: %s, pg: %s, pp: %s" % (req_min, req_max, pg, pp))
 			tmp = result_slice (*req)
 			total, total_hits, hits, lim, rem, reset, c = tmp
 			ret.extend (hits)

@@ -7,8 +7,7 @@
 from itertools import zip_longest, dropwhile, chain
 
 class Aggregator:
-	def __init__ (self, buffers):
-		self.buffers = buffers
+	def __init__ (self, buffers): self.buffers = buffers
 	def req_helper (self, qs=(), lang=None): # ?
 		#for buf in self.buffers:
 		#	kwargs = buf.convert (queries=qs, lang=lang)
@@ -50,6 +49,19 @@ class Aggregator:
 		# restart thread
 		
 from prefetcher import PixabayPrefetcher, PexelsPrefetcher
+
+class DefaultAggregator (Aggregator):
+	def __init__ (self, session=None, *args, **kwargs):
+		b0 = PixabayPrefetcher (session, *args, **kwargs)
+		b1 =  PexelsPrefetcher (session, *args, **kwargs)
+		buffers = (b0, b1)
+		Aggregator.__init__ (self, buffers, *args, **kwargs)
+	def __enter__ (self):
+		for buf in self.buffers: buf.__enter__ ()
+		return self
+	def __exit__ (self, type, value, traceback):
+		for buf in self.buffers: buf.__exit__ (self, type, value, traceback)
+		return False
 
 
 
@@ -156,24 +168,31 @@ if __name__ == "__main__":
 	
 	def main ():
 		with requests.Session () as s:		
-			b0 = PixabayBuffer (s)
-			b1 =  PexelsBuffer (s)
-			bs = [b0, b1]
-			a  = Aggregator (bs)
-			p  = a.req (qs=('test',))
-			
-			print (p)
-			print ()
-			for h in p:
-				print (h)
+			#b0 = PixabayBuffer (s)
+			#b1 =  PexelsBuffer (s)
+			#bs = [b0, b1]
+			#a  = Aggregator (bs)
+			#a = DefaultAggregator (s)
+			#a = DefaultAggregator (None)
+			with DefaultAggregator (None) as a:
+				p  = a.req (qs=('test',))
+				
+				print (p)
 				print ()
-			
-			p  = a.req (qs=('test',))
-			print (len (tuple (p)))
-			
-			print ("time     : %s" % (r.get_time      (),))
-			print ("limit    : %s" % (r.get_limit     (),))
-			print ("remaining: %s" % (r.get_remaining (),))
-			print ("reset    : %s" % (r.get_reset     (),))
+				for h in p:
+					print (h)
+					#print ("time     : %s" % (a.get_time      (),))
+					#print ("limit    : %s" % (a.get_limit     (),))
+					#print ("remaining: %s" % (a.get_remaining (),))
+					#print ("reset    : %s" % (a.get_reset     (),))
+					print ()
+				
+				p  = a.req (qs=('test',))
+				print (len (tuple (p)))
+				
+				#print ("time     : %s" % (a.get_time      (),))
+				#print ("limit    : %s" % (a.get_limit     (),))
+				#print ("remaining: %s" % (a.get_remaining (),))
+				#print ("reset    : %s" % (a.get_reset     (),))
 	main ()
 	quit ()
