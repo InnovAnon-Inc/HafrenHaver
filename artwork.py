@@ -60,7 +60,7 @@ class DefaultAggregator (Aggregator):
 		for buf in self.buffers: buf.__enter__ ()
 		return self
 	def __exit__ (self, type, value, traceback):
-		for buf in self.buffers: buf.__exit__ (self, type, value, traceback)
+		for buf in self.buffers: buf.__exit__ (type, value, traceback)
 		return False
 
 

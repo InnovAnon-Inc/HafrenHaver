@@ -158,7 +158,7 @@ if __name__ == "__main__":
 	import requests
 	
 	def main ():
-		type1 = True
+		type1 = False
 		with requests.Session () as s:
 			if type1:
 				with PixabayPrefetcher (s) as p:
