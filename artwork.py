@@ -1,7 +1,5 @@
 #! /usr/bin/env python3
 
-from buf import PixabayBuffer, PexelsBuffer
-
 # TODO load balancing at next level: Aggregator		
 # one thread per buffer
 # filter unique results here ?
@@ -51,6 +49,11 @@ class Aggregator:
 		# return result from first thread to join (usually the one with the best rate limit, due to sorting order)
 		# restart thread
 		
+from prefetcher import PixabayPrefetcher, PexelsPrefetcher
+
+
+
+
 
 
 class Recycler:
@@ -62,7 +65,9 @@ class Recycler:
 		# TODO combos take n
 		pass
 	# cid, search => ?
-
+	
+	
+	
 
 
 
