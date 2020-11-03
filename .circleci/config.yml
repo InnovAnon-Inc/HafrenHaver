@@ -14,7 +14,7 @@ jobs:
       #- python/save-cache
       - run:
           command: |
-            for k in src/*.py ; do PATH=.:$PATH $k ; done
+            for k in src/*.py ; do [[ -x $k ]] || continue && PATH=.:$PATH $k ; done
           name: Test
   build-and-release:
     executor: python/default
