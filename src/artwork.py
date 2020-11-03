@@ -1,10 +1,15 @@
 #! /usr/bin/env python3
 
+from itertools import starmap
+
 from recycler import Recycler, default_recycler
 
-class Artwork: # keyword => result list => image
-	def __init__ (self, recycler):
-		self.recycler = recycler
+# cid, [(n, kwargs)...] => [res...]
+class Artwork:
+	def __init__ (self, recycler): self.recycler = recycler
+	def req (self, *queries):
+		f = lambda n, kwargs: self.recycler.req (n, **kwargs)
+		return starmap (f, queries)
 
 	# TODO pagination
 	# TODO cache how many results have been consumed by each consumer... when a consumer exhausts results, 
@@ -12,8 +17,6 @@ class Artwork: # keyword => result list => image
 
 	# queries enter system here ?
 
-	def get_artwork (cid): pass
-	
 # TODO fetch actual results from buffer
 		
 #"""

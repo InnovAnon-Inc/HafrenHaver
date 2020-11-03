@@ -1,0 +1,39 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          command: |
+            for k in * ; do PATH=.:$PATH $k ; done
+          name: Test
+  build-and-release:
+    executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          command: |
+            python3 setup.py sdist bdist_wheel
+            python3 -m twine upload --repository HafrenHaver dist/*
+          name: Release
+
+workflows:
+  version: 2.0
+  main:
+    jobs:
+      - build-and-test
+      - build-and-release:
+          requires:
+            - build-and-test
+
