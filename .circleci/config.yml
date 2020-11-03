@@ -9,9 +9,9 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      #- python/load-cache
+      #- python/install-deps
+      #- python/save-cache
       - run:
           command: |
             for k in * ; do PATH=.:$PATH $k ; done
@@ -20,9 +20,9 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      #- python/load-cache
+      #- python/install-deps
+      #- python/save-cache
       #- add_ssh_keys:
       #    fingerprints:
       #      - "SO:ME:FIN:G:ER:PR:IN:T"
