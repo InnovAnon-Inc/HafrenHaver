@@ -54,7 +54,9 @@ jobs: # A basic unit of work in a run
           name: Generating Distribution Archive
           command: |
             python3 -m pip install --user --upgrade setuptools wheel
-            python3 setup.py sdist bdist_wheel
+            rm -rf dist/
+            python3 setup.py sdist bdist_wheel --universal
+            gpg --detach-sign -a dist/*
       # TODO how to sign artifacts and upload siggy
       - run:
           name: Uploading Distribution Archive Testing
