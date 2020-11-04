@@ -19,7 +19,7 @@ def read (fname):
 def get_version ():
     vers_name = "VERSION"
     vers_file = path.join (path.dirname (__file__), vers_name)
-    if vers_file.exists ():
+    if vers_file.is_file ():
         with open (vers_file) as f: return f.read ()
     result = run (["scripts/version.sh"])
     return result
