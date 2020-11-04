@@ -5,8 +5,12 @@
 *.pyc
 __pycache__/
 
+# sphinx
+docs/_build/
+
 # our stuff
 *.cache
 *.key
 cache/
+
 

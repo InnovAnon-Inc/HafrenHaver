@@ -50,6 +50,7 @@ jobs: # A basic unit of work in a run
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test-results
           destination: tr1
+
       - run:
           name: Generating Distribution Archive
           command: |
@@ -71,6 +72,11 @@ jobs: # A basic unit of work in a run
           name: Uninstalling Distribution Archive
           command: |
             python3 -m pip uninstall --yes HafrenHaver
+
+      - run:
+          name: Generating Documentation
+          command: |
+            scripts/build_push_doc.sh
       - run:
           name: Uploading Distribution Archive Testing
           command: |
@@ -89,6 +95,7 @@ jobs: # A basic unit of work in a run
             python3 -m pip   install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver
       # TODO integration tests
       # TODO deploy servers (testing)
+      
       - run:
           name: Uploading Distribution Archive Production
           command: |
