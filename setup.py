@@ -15,6 +15,7 @@ def read (fname): return open (path.join (path.dirname (__file__), fname)).read 
 
 setup (
    name='HafrenHaver',
+   # TODO create version.txt if not exists, then read()
    version='1.0.2',
    description=('Goes on and on about the River Severn'),
    author='InnovAnon, Inc.',

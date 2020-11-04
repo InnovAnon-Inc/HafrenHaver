@@ -71,7 +71,7 @@ if [[ "$CIRCLE_BRANCH" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
 
     # We have to re-add the origin with the GH_TOKEN credentials
     git remote rm origin
-    git remote add origin https://"$GITHUB_API_USERNAME":"$GITHUB_API_KEY"@github.com/"$GITHUB_API_USERNAME"/HafrenHaver.git
+    git remote add origin https://"$GITHUB_API_USERNAME":"$GITHUB_API_KEY"@github.com/InnovAnon-Inc/HafrenHaver.git
 
     # NOW we should be able to push it
     git push origin gh-pages
