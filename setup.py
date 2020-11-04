@@ -12,8 +12,8 @@ conf_dict = read_configuration (conf_file)
 # Used for the long_description.  It's nice, because now 1) we have a top level
 # README file and 2) it's easier to type in the README file than to put a raw
 # string in below ...
-def read (dirname=None, fname):
-    if dirname is None: dirname = path.dirname (__file__)
+def read (fname):
+    dirname = path.dirname (__file__)
     with open (path.join (dirname, fname)) as f: return f.read ()
 
 def get_version ():
