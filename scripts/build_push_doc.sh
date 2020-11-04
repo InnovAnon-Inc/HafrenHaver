@@ -4,7 +4,7 @@ set -euxo pipefail
 # this is a hack, but we have to make sure we're only ever running this from
 # the top level of the package and not in the subdirectory...
 if [[ ! -f src/__init__.py ]]; then
-    echo "This must be run from the gh_doc_automation project directory"
+    echo 'This must be run from the gh_doc_automation project directory'
     exit 3
 fi
 
@@ -33,27 +33,27 @@ git config --global user.name "$GITHUB_API_USERNAME" > /dev/null 2>&1
 
 # remove all files that are not in the .git dir
 # TODO use a working command
-find . -not -name ".git/*" -type f -maxdepth 1 -delete
+find . -not -name '.git/*' -type f -maxdepth 1 -delete
 #find . -maxdepth 1 \( \( -name .git -o -name .venv \) -prune \) -o -delete
 
 # Remove the remaining directories. Some of these are artifacts of the LAST
 # gh-pages build, and others are remnants of the package itself
-declare -a leftover=(".cache/"
-                     ".idea/"
-                     "build/"
-                     "build_tools/"
-                     "doc/"
-                     "examples/"
-                     "gh_doc_automation/"
-                     "gh_doc_automation.egg-info/"
-                     "_downloads/"
-                     "_images/"
-                     "_modules/"
-                     "_sources/"
-                     "_static/"
-                     "auto_examples/"
-                     "includes"
-                     "modules/")
+declare -a leftover=('.cache/'
+                     '.idea/'
+                     'build/'
+                     'build_tools/'
+                     'doc/'
+                     'examples/'
+                     'gh_doc_automation/'
+                     'gh_doc_automation.egg-info/'
+                     '_downloads/'
+                     '_images/'
+                     '_modules/'
+                     '_sources/'
+                     '_static/'
+                     'auto_examples/'
+                     'includes'
+                     'modules/')
 
 # check for each left over file/dir and remove it
 for left in "${leftover[@]}"
@@ -71,7 +71,7 @@ find . \( \( -name .git -o -name .venv \) -prune \) -o -print
 # Add everything, get ready for commit. But only do it if we're on master
 if [[ "$CIRCLE_BRANCH" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
     git add --all
-    git commit -m "[ci skip] publishing updated documentation..."
+    git commit -m '[ci skip] publishing updated documentation...' || : # TODO
 
     # We have to re-add the origin with the GH_TOKEN credentials
     git remote rm origin
