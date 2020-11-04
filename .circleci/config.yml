@@ -34,8 +34,9 @@ jobs: # A basic unit of work in a run
       - run:
           name: Setting Up Project Environment
           command: |
-            sudo pip install pipenv
-            pipenv install
+            sudo python3 -m pip install --upgrade pip
+            sudo python3 -m pip install --upgrade pipenv
+            pipenv install 3.9
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
@@ -52,13 +53,11 @@ jobs: # A basic unit of work in a run
       - run:
           name: Generating Distribution Archive
           command: |
-            #python3 -m pip install --user --upgrade pip
             python3 -m pip install --user --upgrade setuptools wheel
             python3 setup.py sdist bdist_wheel
       - run:
           name: Uploading Distribution Archive
           command: |
-            #python3 -m pip install --user --upgrade pip
             python3 -m pip install --user --upgrade twine
             python3 -m twine upload --repository HafrenHaver dist/*
       - run:
