@@ -31,10 +31,12 @@ def get_version ():
     if vers_file.is_file ():
         with open (vers_file) as f: result = f.read ()
         #print ("result: %s" % result)
+        assert result
         return result
     result = run (["../scripts/version.sh"])
     result = str (result)
     #print ("result: %s" % result)
+    assert result
     return result
 
 # The full version, including alpha/beta/rc tags

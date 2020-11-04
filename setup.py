@@ -25,10 +25,12 @@ def get_version ():
         with open (vers_file) as f: result = f.read ()
         #result = str (result)
         print ("result: %s", result)
+        assert result
         return result
     result = run (["scripts/version.sh"])
     result = str (result)
     print ("result: %s", result)
+    assert result
     return result
 
 setup (
