@@ -61,7 +61,7 @@ jobs: # A basic unit of work in a run
             python3 -m pip install --user --upgrade twine
             echo '[testpypi]'                     >  ~/.pypirc
             echo 'username = __token__'           >> ~/.pypirc
-            echo "password = $TESTPYPI_API_TOKEN" >> ~/.pypirc
+            echo "password = $TESTPYPI_API_KEY" >> ~/.pypirc
             cat ~/.pypirc
             python3 -m twine upload --repository testpypi --verbose dist/*
       - run:
@@ -76,7 +76,7 @@ jobs: # A basic unit of work in a run
             python3 -m pip install --user --upgrade twine
             echo '[pypi]'                     >  ~/.pypirc
             echo 'username = __token__'       >> ~/.pypirc
-            echo "password = $PYPI_API_TOKEN" >> ~/.pypirc
+            echo "password = $PYPI_API_KEY" >> ~/.pypirc
             cat ~/.pypirc
             python3 -m twine upload --repository pypi --verbose dist/*
 
