@@ -22,6 +22,7 @@ copyright = '2020, Innovations Anonymous'
 author = 'Innovations Anonymous'
 
 # The full version, including alpha/beta/rc tags
+# TODO generate and read() version.txt
 release = '1.0.1'
 
 

@@ -67,7 +67,7 @@ jobs: # A basic unit of work in a run
           PIPENV_VENV_IN_PROJECT: true
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
-      - checkout # check out source code to working directory
+      #- checkout # check out source code to working directory
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
       - restore_cache:
@@ -121,7 +121,7 @@ jobs: # A basic unit of work in a run
           PIPENV_VENV_IN_PROJECT: true
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
-      - checkout # check out source code to working directory
+      #- checkout # check out source code to working directory
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
       - restore_cache:
@@ -159,7 +159,7 @@ jobs: # A basic unit of work in a run
           PIPENV_VENV_IN_PROJECT: true
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
-      - checkout # check out source code to working directory
+      #- checkout # check out source code to working directory
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
       - restore_cache:
