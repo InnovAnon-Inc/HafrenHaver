@@ -15,15 +15,21 @@ cleanversion="`git describe --tags --long | grep -o '^v[^.]*\.[^.-]*' | sed s/^v
 VERSION="$cleanversion.$revisioncount"
 echo -n $VERSION | tee ../VERSION
 if [[ -z "$VERSION" ]] ; then
-	print version is empty
+	print version is empty 1>&2
 	exit 2
 fi
-#[[ -n "$VERSION" ]]
+[[ -n "$VERSION" ]] || {
+	print version is empty 1>&2 ;
+	exit 4                      ;
+}
 
 VERIFY="`cat ../VERSION`"
 if [[ "$VERSION" -ne "$VERIFY" ]] ; then
-	print version mismatch
+	print version mismatch 1>&2
 	exit 3
 fi
-#[[ "$VERSION" -eq "$VERIFY" ]]
+[[ "$VERSION" -eq "$VERIFY" ]] || {
+	print version mismatch 1>&2 ;
+	exit 5                      ;
+}
 
