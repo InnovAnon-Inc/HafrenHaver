@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+from pathlib           import Path
 from os                import path
 from setuptools        import find_packages, setup
 from setuptools.config import read_configuration
@@ -19,6 +20,7 @@ def read (fname):
 def get_version ():
     vers_name = "VERSION"
     vers_file = path.join (path.dirname (__file__), vers_name)
+    vers_file = Path (vers_file)
     if vers_file.is_file ():
         with open (vers_file) as f: return f.read ()
     result = run (["scripts/version.sh"])

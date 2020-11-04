@@ -20,12 +20,14 @@ project = 'Hafren Haver'
 copyright = '2020, Innovations Anonymous'
 author = 'Innovations Anonymous'
 
+from pathlib    import Path
 from os         import path
 from subprocess import run
 
 def get_version ():
     vers_name = "VERSION"
     vers_file = path.join (path.dirname (__file__), "..", vers_name)
+    vers_file = Path (vers_file)
     if vers_file.is_file ():
         with open (vers_file) as f: return f.read ()
     result = run (["../scripts/version.sh"])
