@@ -15,7 +15,7 @@ def read (fname): return open (path.join (path.dirname (__file__), fname)).read 
 
 setup (
    name='HafrenHaver',
-   version='1.0.1',
+   version='1.0.2',
    description=('Goes on and on about the River Severn'),
    author='InnovAnon, Inc.',
    author_email='InnovAnon-Inc@protonmail.com',
@@ -40,8 +40,11 @@ setup (
     python_requires='>=3.6',
     #install_requires=['bar', 'greek'], #external packages as dependencies
     #extras_require={  # Optional
-    #    'dev': ['check-manifest'],
-    #    'test': ['coverage'],
+        #'dev': ['check-manifest'],
+        #'test': ['coverage'],
+        #'doc'  : ['sphinx'],
+        #'dev'  : ['setuptools', 'wheel', 'twine'],
+        #'test' : [],
     #},
     #dependency_links=["http://peak.telecommunity.com/snapshots/",],
     #package_data={  # Optional
