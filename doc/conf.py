@@ -29,9 +29,12 @@ def get_version ():
     vers_file = path.join (path.dirname (__file__), "..", vers_name)
     vers_file = Path (vers_file)
     if vers_file.is_file ():
-        with open (vers_file) as f: return f.read ()
+        with open (vers_file) as f: result = f.read ()
+        print ("result: %s" % result)
+        return result
     result = run (["../scripts/version.sh"])
     result = str (result)
+    print ("result: %s" % result)
     return result
 
 # The full version, including alpha/beta/rc tags
