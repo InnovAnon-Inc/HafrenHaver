@@ -15,7 +15,7 @@ def read (fname): return open (path.join (path.dirname (__file__), fname)).read 
 
 setup (
    name='HafrenHaver',
-   version='1.0',
+   version='1.0.0',
    description=('Goes on and on about the River Severn'),
    author='InnovAnon, Inc.',
    author_email='InnovAnon-Inc@protonmail.com',

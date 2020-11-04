@@ -69,7 +69,7 @@ jobs: # A basic unit of work in a run
           name: Installing Newly Uploaded Package
           command: |
             #python3 -m pip install --user --upgrade pip
-            #python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --no-deps HafrenHaver-InnovAnon-Inc
+            #python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --no-deps HafrenHaver
             python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver
       # TODO deploy servers (testing)
       # TODO integration test
