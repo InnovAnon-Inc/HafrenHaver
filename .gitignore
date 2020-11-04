@@ -1,7 +1,12 @@
+# VIM
+*.swp
+
+# machine-generated files
 *.pyc
+__pycache__/
+
+# our stuff
 *.cache
 *.key
 cache/
-Pipfile
-Pipfile.lock
-__pycache__/
+

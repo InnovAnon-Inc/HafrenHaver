@@ -1,0 +1,26 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+tatsu = "*"
+nltk = "*"
+podsixnet = "*"
+pygame = "*"
+astor = "*"
+datetime = "*"
+geocoder = "*"
+numpy = "*"
+pathlib = "*"
+requests = "*"
+setuptools = "*"
+wave = "*"
+geopy = "*"
+hilbertcurve = "*"
+skyfield = "*"
+
+[requires]
+python_version = "3.9"
