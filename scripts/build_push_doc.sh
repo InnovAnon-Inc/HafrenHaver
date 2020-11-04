@@ -78,7 +78,8 @@ if [[ "$CIRCLE_BRANCH" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
     git remote add origin https://"$GITHUB_API_USERNAME":"$GITHUB_API_KEY"@github.com/InnovAnon-Inc/HafrenHaver.git
 
     # NOW we should be able to push it
-    git push origin gh-pages
+    #git push origin gh-pages
+    git push --force origin gh-pages
 else
     echo "Not on master, so won't push doc"
 fi
