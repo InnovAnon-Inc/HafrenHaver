@@ -13,5 +13,5 @@ docs/_build/
 *.cache
 *.key
 cache/
-
+VERSION
 

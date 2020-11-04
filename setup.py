@@ -3,6 +3,7 @@
 from os                import path
 from setuptools        import find_packages, setup
 from setuptools.config import read_configuration
+from subprocess        import run
 
 conf_file = path.join (path.dirname (__file__), "setup.cfg")
 conf_dict = read_configuration (conf_file)
@@ -11,16 +12,25 @@ conf_dict = read_configuration (conf_file)
 # Used for the long_description.  It's nice, because now 1) we have a top level
 # README file and 2) it's easier to type in the README file than to put a raw
 # string in below ...
-def read (fname): return open (path.join (path.dirname (__file__), fname)).read ()
+def read (dirname=None, fname):
+    if dirname is None: dirname = path.dirname (__file__)
+    with open (path.join (dirname, fname)) as f: return f.read ()
+
+def get_version ():
+    vers_name = "VERSION"
+    vers_file = path.join (path.dirname (__file__), vers_name)
+    if vers_file.exists ():
+        with open (vers_file) as f: return f.read ()
+    result = run (["scripts/version.sh"])
+    return result
 
 setup (
-   name='HafrenHaver',
-   # TODO create version.txt if not exists, then read()
-   version='1.0.2',
+   name='HafrenHaver', # TODO can use spaces ?
+   version=get_version (),
    description=('Goes on and on about the River Severn'),
-   author='InnovAnon, Inc.',
+   author='Innovations Anonymous',
    author_email='InnovAnon-Inc@protonmail.com',
-   license='unlicense',
+   license='unlicense', # TODO can read LICENSE ?
    keywords='Innovations Anonymous Hafren Haver',
    url='https://InnovAnon-Inc.github.io/HafrenHaver',
    long_description=read ('README.md'),

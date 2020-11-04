@@ -14,16 +14,29 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'Hafren Haver'
 copyright = '2020, Innovations Anonymous'
 author = 'Innovations Anonymous'
 
+from os         import path
+from subprocess import run
+
+def read (dirname=None, fname):
+    if dirname is None: dirname = path.dirname (__file__)
+    with open (path.join (dirname, fname)) as f: return f.read ()
+
+def get_version ():
+    vers_name = "VERSION"
+    vers_file = path.join (path.dirname (__file__), "..", vers_name)
+    if vers_file.exists ():
+        with open (vers_file) as f: return f.read ()
+    result = run (["../scripts/version.sh"])
+    return result
+
 # The full version, including alpha/beta/rc tags
-# TODO generate and read() version.txt
-release = '1.0.2'
+release = get_version ()
 
 
 # -- General configuration ---------------------------------------------------
