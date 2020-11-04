@@ -59,6 +59,9 @@ jobs: # A basic unit of work in a run
           name: Uploading Distribution Archive
           command: |
             python3 -m pip install --user --upgrade twine
+            echo '[pypi]'                     >  ~/.pypirc
+            echo 'username = __token__'       >> ~/.pypirc
+            echo "password = $PYPI_API_TOKEN" >> ~/.pypirc
             python3 -m twine upload --repository HafrenHaver dist/*
       - run:
           name: Installing Newly Uploaded Package
