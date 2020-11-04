@@ -64,13 +64,13 @@ jobs: # A basic unit of work in a run
       - run:
           name: Installing Distribution Archive
           command: |
-            python3 -m pip uninstall HafrenHaver
+            python3 -m pip uninstall --yes HafrenHaver
             python3 -m pip   install --user --upgrade .
       # TODO integration tests
       - run:
           name: Uninstalling Distribution Archive
           command: |
-            python3 -m pip uninstall HafrenHaver
+            python3 -m pip uninstall --yes HafrenHaver
       - run:
           name: Uploading Distribution Archive Testing
           command: |
@@ -85,7 +85,7 @@ jobs: # A basic unit of work in a run
           command: |
             #python3 -m pip install --user --upgrade pip
             #python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --no-deps HafrenHaver
-            python3 -m pip uninstall HafrenHaver
+            python3 -m pip uninstall --yes HafrenHaver
             python3 -m pip   install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver
       # TODO integration tests
       # TODO deploy servers (testing)
