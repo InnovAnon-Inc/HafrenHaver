@@ -203,3 +203,43 @@ jobs: # A basic unit of work in a run
       # TODO deploy docs
       # TODO deploy servers (prod)
       
+
+
+
+
+
+
+
+
+workflows:
+  version: 2.0
+  do_everything:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - dist:
+          requires:
+            - test
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - site:
+          requires:
+            - test
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - deploy:
+          requires:
+            - dist
+            - site
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+
