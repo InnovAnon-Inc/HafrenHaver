@@ -56,8 +56,21 @@ jobs: # A basic unit of work in a run
             python3 -m pip install --user --upgrade setuptools wheel
             rm -rf dist/
             python3 setup.py sdist bdist_wheel --universal
+      - run:
+          name: Signing Distribution Archive
+          command: |
+            echo -e "$GPG_KEY" | gpg --import
             gpg --detach-sign -a dist/*
-      # TODO how to sign artifacts and upload siggy
+      - run:
+          name: Installing Distribution Archive
+          command: |
+            python3 -m pip uninstall --user HafrenHaver
+            python3 -m pip   install --user --upgrade .
+      # TODO integration tests
+      - run:
+          name: Uninstalling Distribution Archive
+          command: |
+            python3 -m pip uninstall --user HafrenHaver
       - run:
           name: Uploading Distribution Archive Testing
           command: |
@@ -72,9 +85,10 @@ jobs: # A basic unit of work in a run
           command: |
             #python3 -m pip install --user --upgrade pip
             #python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --no-deps HafrenHaver
-            python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver
+            python3 -m pip uninstall --user HafrenHaver
+            python3 -m pip   install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver
+      # TODO integration tests
       # TODO deploy servers (testing)
-      # TODO integration test
       - run:
           name: Uploading Distribution Archive Production
           command: |
@@ -84,5 +98,5 @@ jobs: # A basic unit of work in a run
             echo "password = $PYPI_API_KEY" >> ~/.pypirc
             cat ~/.pypirc
             python3 -m twine upload --repository pypi --verbose dist/*
-      # TODO deploy servers (prod)
       # TODO deploy docs
+      # TODO deploy servers (prod)
