@@ -12,5 +12,5 @@ revisioncount=`git log --oneline | wc -l`
 #cleanversion=${projectversion%%-*}
 cleanversion="`git describe --tags --long | grep -o '^v[^.]*\.[^.-]*' | sed s/^v//`"
 VERSION="$cleanversion.$revisioncount"
-echo $VERSION
+echo -n $VERSION | tee -a ../VERSION
 
