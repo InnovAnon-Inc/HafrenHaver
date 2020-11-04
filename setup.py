@@ -15,7 +15,9 @@ conf_dict = read_configuration (conf_file)
 # string in below ...
 def read (fname):
     dirname = path.dirname (__file__)
-    with open (path.join (dirname, fname)) as f: return f.read ()
+    with open (path.join (dirname, fname)) as f: result = f.read ()
+    assert result
+    return result
 
 def get_version ():
     vers_name = "VERSION"
@@ -24,13 +26,13 @@ def get_version ():
     if vers_file.is_file ():
         with open (vers_file, 'r') as f: result = f.read ()
         #result = str (result)
-        print ("result: %s", result)
+        #print ("result: %s", result)
         assert result
         if not result: raise Error ()
         return result
     result = run (["scripts/version.sh"])
     result = str (result)
-    print ("result: %s", result)
+    #print ("result: %s", result)
     assert result
     if not result: raise Error ()
     return result

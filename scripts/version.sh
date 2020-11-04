@@ -14,3 +14,6 @@ cleanversion="`git describe --tags --long | grep -o '^v[^.]*\.[^.-]*' | sed s/^v
 VERSION="$cleanversion.$revisioncount"
 echo -n $VERSION | tee ../VERSION
 
+VERIFY="`cat ../VERSION`"
+[[ "$VERSION" -eq "$VERIFY" ]]
+
