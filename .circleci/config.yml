@@ -62,7 +62,7 @@ jobs: # A basic unit of work in a run
             echo '[testpypi]'                 >  ~/.pypirc
             echo 'username = __token__'       >> ~/.pypirc
             echo "password = $PYPI_API_TOKEN" >> ~/.pypirc
-            python3 -m twine upload --repository testpypi dist/*
+            python3 -m twine upload --repository testpypi --verbose dist/*
       - run:
           name: Installing Newly Uploaded Package
           command: |
