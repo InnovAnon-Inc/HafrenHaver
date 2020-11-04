@@ -4,6 +4,7 @@
 # machine-generated files
 *.pyc
 __pycache__/
+#.venv/
 
 # sphinx
 docs/_build/

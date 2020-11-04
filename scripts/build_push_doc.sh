@@ -65,7 +65,7 @@ touch .nojekyll
 mv html/* ./
 rm -r html/
 
-find . \( -name .git -prune \) -o -print
+find . \( \( -name .git -o -name .venv \) -prune \) -o -print
 
 # Add everything, get ready for commit. But only do it if we're on master
 if [[ "$CIRCLE_BRANCH" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
