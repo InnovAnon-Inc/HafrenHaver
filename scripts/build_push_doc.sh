@@ -29,7 +29,7 @@ git pull origin gh-pages
 
 # Make sure to set the credentials!
 git config --global user.email "$GH_EMAIL" > /dev/null 2>&1
-git config --global user.name "$GITHUB_USERNAME" > /dev/null 2>&1
+git config --global user.name "$GITHUB_API_USERNAME" > /dev/null 2>&1
 
 # remove all files that are not in the .git dir
 find . -not -name ".git/*" -type f -maxdepth 1 -delete
@@ -71,7 +71,7 @@ if [[ "$CIRCLE_BRANCH" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
 
     # We have to re-add the origin with the GH_TOKEN credentials
     git remote rm origin
-    git remote add origin https://"$GITHUB_USERNAME":"$GITHUB_API_TOKEN"@github.com/"$GITHUB_USERNAME"/HafrenHaver.git
+    git remote add origin https://"$GITHUB_API_USERNAME":"$GITHUB_API_TOKEN"@github.com/"$GITHUB_API_USERNAME"/HafrenHaver.git
 
     # NOW we should be able to push it
     git push origin gh-pages
