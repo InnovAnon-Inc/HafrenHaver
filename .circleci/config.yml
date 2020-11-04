@@ -36,7 +36,7 @@ jobs: # A basic unit of work in a run
           command: |
             sudo python3 -m pip install --upgrade pip
             sudo python3 -m pip install --upgrade pipenv
-            pipenv install 3.9
+            pipenv install
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
