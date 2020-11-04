@@ -143,7 +143,7 @@ jobs: # A basic unit of work in a run
 
   site: # runs not using Workflows must have a `build` job as entry point 
     # directory where steps are run
-    working_directory: ~/circleci-HafrenHaver/doc
+    working_directory: ~/circleci-HafrenHaver
     docker: # run the steps with Docker
       # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
       - image: circleci/python:latest
