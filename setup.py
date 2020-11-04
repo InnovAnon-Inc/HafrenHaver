@@ -24,6 +24,7 @@ def get_version ():
     if vers_file.is_file ():
         with open (vers_file) as f: return f.read ()
     result = run (["scripts/version.sh"])
+    result = str (result)
     return result
 
 setup (
