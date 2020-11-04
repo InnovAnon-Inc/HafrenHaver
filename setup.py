@@ -26,7 +26,7 @@ setup (
    long_description=read ('README.md'),
    long_description_content_type="text/markdown",
    #packages=['src'],  #same as name
-   packages=find_packages (exclude=[".gitignore", "README.md", "LICENSE.md", "docs", "tests"]),
+   packages=find_packages (exclude=[".gitignore", "README.md", "LICENSE.md", "doc", "tests"]),
    scripts=[
             'scripts/sloc.sh',
             'scripts/watch_sloc.sh',
