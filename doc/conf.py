@@ -23,7 +23,7 @@ author = 'Innovations Anonymous'
 
 # The full version, including alpha/beta/rc tags
 # TODO generate and read() version.txt
-release = '1.0.1'
+release = '1.0.2'
 
 
 # -- General configuration ---------------------------------------------------

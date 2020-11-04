@@ -34,6 +34,7 @@ git config --global user.name "$GITHUB_API_USERNAME" > /dev/null 2>&1
 # remove all files that are not in the .git dir
 # TODO use a working command
 find . -not -name ".git/*" -type f -maxdepth 1 -delete
+#find . -maxdepth 1 \( \( -name .git -o -name .venv \) -prune \) -o -delete
 
 # Remove the remaining directories. Some of these are artifacts of the LAST
 # gh-pages build, and others are remnants of the package itself
