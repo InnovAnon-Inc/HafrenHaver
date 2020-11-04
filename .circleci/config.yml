@@ -76,6 +76,7 @@ jobs: # A basic unit of work in a run
       - run:
           name: Generating Documentation
           command: |
+            python3 -m pip install --user --upgrade sphinx
             scripts/build_push_doc.sh
       - run:
           name: Uploading Distribution Archive Testing
