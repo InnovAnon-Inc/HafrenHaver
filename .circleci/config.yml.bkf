@@ -1,0 +1,46 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+  jira:   circleci/jira@1.0.5
+
+jobs:
+  build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      #- python/load-cache
+      #- python/install-deps
+      #- python/save-cache
+      - run:
+          command: |
+            for k in src/*.py ; do [[ -x $k ]] || continue && python3 -m pipenv run $k ; done
+          name: Test
+  build-and-release:
+    executor: python/default
+    steps:
+      - checkout
+      #- python/load-cache
+      #- python/install-deps
+      #- python/save-cache
+      #- add_ssh_keys:
+      #    fingerprints:
+      #      - "SO:ME:FIN:G:ER:PR:IN:T"
+      - run:
+          command: |
+            #python3 -m pipenv shell
+            python3 setup.py sdist bdist_wheel
+            python3 -m twine upload --repository HafrenHaver dist/*
+          name: Release
+
+workflows:
+  version: 2.0
+  main:
+    jobs:
+      - build-and-test
+      - build-and-release:
+          requires:
+            - build-and-test
+          post-steps:
+            - jira/notify
+
