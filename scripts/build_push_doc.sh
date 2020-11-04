@@ -32,6 +32,7 @@ git config --global user.email "$GH_EMAIL" > /dev/null 2>&1
 git config --global user.name "$GITHUB_API_USERNAME" > /dev/null 2>&1
 
 # remove all files that are not in the .git dir
+# TODO use a working command
 find . -not -name ".git/*" -type f -maxdepth 1 -delete
 
 # Remove the remaining directories. Some of these are artifacts of the LAST
@@ -63,6 +64,8 @@ done
 touch .nojekyll
 mv html/* ./
 rm -r html/
+
+find . \( -name .git -prune \) -o -print
 
 # Add everything, get ready for commit. But only do it if we're on master
 if [[ "$CIRCLE_BRANCH" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
