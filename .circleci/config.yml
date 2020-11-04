@@ -4,7 +4,7 @@ orbs:
   jira: circleci/jira@1.0.5
 
 jobs: # A basic unit of work in a run
-  build: # runs not using Workflows must have a `build` job as entry point 
+  test: # runs not using Workflows must have a `build` job as entry point 
     # directory where steps are run
     working_directory: ~/circleci-HafrenHaver
     docker: # run the steps with Docker
@@ -36,6 +36,7 @@ jobs: # A basic unit of work in a run
           command: |
             sudo python3 -m pip install --upgrade pip
             sudo python3 -m pip install --upgrade pipenv
+            # TODO test deps
             pipenv install
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
@@ -77,6 +78,7 @@ jobs: # A basic unit of work in a run
           command: |
             sudo python3 -m pip install --upgrade pip
             sudo python3 -m pip install --upgrade pipenv
+            # TODO dist deps ?
             pipenv install
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
@@ -130,6 +132,7 @@ jobs: # A basic unit of work in a run
           command: |
             sudo python3 -m pip install --upgrade pip
             sudo python3 -m pip install --upgrade pipenv
+            # TODO doc deps
             pipenv install
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
@@ -167,6 +170,7 @@ jobs: # A basic unit of work in a run
           command: |
             sudo python3 -m pip install --upgrade pip
             sudo python3 -m pip install --upgrade pipenv
+            # TODO deploy deps
             pipenv install
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
