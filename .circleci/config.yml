@@ -56,16 +56,25 @@ jobs: # A basic unit of work in a run
             python3 -m pip install --user --upgrade setuptools wheel
             python3 setup.py sdist bdist_wheel
       - run:
-          name: Uploading Distribution Archive
+          name: Uploading Distribution Archive Testing
           command: |
             python3 -m pip install --user --upgrade twine
-            echo '[testpypi]'                 >  ~/.pypirc
-            echo 'username = __token__'       >> ~/.pypirc
-            echo "password = $PYPI_API_TOKEN" >> ~/.pypirc
+            echo '[testpypi]'                     >  ~/.pypirc
+            echo 'username = __token__'           >> ~/.pypirc
+            echo "password = $TESTPYPI_API_TOKEN" >> ~/.pypirc
             python3 -m twine upload --repository testpypi --verbose dist/*
       - run:
           name: Installing Newly Uploaded Package
           command: |
             #python3 -m pip install --user --upgrade pip
-            python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --no-deps HafrenHaver-InnovAnon-Inc
+            #python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --no-deps HafrenHaver-InnovAnon-Inc
+            python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver-InnovAnon-Inc
+      - run:
+          name: Uploading Distribution Archive Production
+          command: |
+            python3 -m pip install --user --upgrade twine
+            echo '[pypi]'                     >  ~/.pypirc
+            echo 'username = __token__'       >> ~/.pypirc
+            echo "password = $PYPI_API_TOKEN" >> ~/.pypirc
+            python3 -m twine upload --repository pypi --verbose dist/*
 
