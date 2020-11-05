@@ -36,7 +36,7 @@ def get_version ():
         return result
     result = run (["../scripts/version.sh"])
     result.check_returncode ()
-    result = str (result)
+    result = str (result.stdout)
     #print ("result: %s" % result)
     assert result
     if not result: raise Error ()
