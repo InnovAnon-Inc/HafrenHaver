@@ -71,7 +71,7 @@ setup (
         #'test': ['coverage'],
         'doc'  : ['sphinx'],
         'dev'  : ['setuptools', 'wheel', 'twine'],
-        'test' : [],
+        'test' : ['pytest'],
     },
     #dependency_links=["http://peak.telecommunity.com/snapshots/",],
     package_data={  # Optional
