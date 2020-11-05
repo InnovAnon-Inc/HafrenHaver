@@ -108,7 +108,12 @@ jobs: # A basic unit of work in a run
           command: |
             python3 -m pip uninstall --yes HafrenHaver
 
-
+      - run:
+          name: Sanity Check
+          command: |
+            VERSION=scripts/version.sh
+            [ -n "$VERSION" ]
+            echo VERSION: "$VERSION"
 
       - run:
           name: Uploading Distribution Archive Testing
