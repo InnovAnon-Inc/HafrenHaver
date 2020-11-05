@@ -2,6 +2,12 @@
 set -euxo pipefail
 
 cd "$(dirname "$(readlink -f "$0")")"
+
+if [[ -f ../VERSION ]] ; then
+	cat ../VERSION
+	exit 0
+fi
+
 [[ -f VERSION.in ]]
 majmin="`cat VERSION.in`"
 
