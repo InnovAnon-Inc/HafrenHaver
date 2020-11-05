@@ -26,6 +26,11 @@ jobs: # A basic unit of work in a run
           POSTGRES_DB: circle_test
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
+      - run:
+          name: Automatic Versioning
+          command: |
+            scripts/version.sh
+            cat VERSION
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
       - restore_cache:
@@ -68,6 +73,11 @@ jobs: # A basic unit of work in a run
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
+      - run:
+          name: Automatic Versioning
+          command: |
+            scripts/version.sh
+            cat VERSION
      #- run: git checkout HEAD
 
       - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -108,16 +118,16 @@ jobs: # A basic unit of work in a run
           command: |
             python3 -m pip uninstall --yes HafrenHaver
 
-      - run:
-          name: Sanity Check
-          command: |
-            scripts/version.sh
-            cat VERSION
+#      - run:
+#          name: Sanity Check
+#          command: |
+#            scripts/version.sh
+#            cat VERSION
 
       - run:
           name: Uploading Distribution Archive Testing
           command: |
-            #cat VERSION
+            cat VERSION
             python3 -m pip install --user --upgrade twine
             echo '[testpypi]'                   >  ~/.pypirc
             echo 'username = __token__'         >> ~/.pypirc
@@ -162,6 +172,11 @@ jobs: # A basic unit of work in a run
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
+      - run:
+          name: Automatic Versioning
+          command: |
+            scripts/version.sh
+            cat VERSION
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
       - restore_cache:

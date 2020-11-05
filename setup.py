@@ -20,23 +20,24 @@ def read (fname):
     return result
 
 def get_version ():
-    vers_name = "VERSION"
-    vers_file = path.join (path.dirname (__file__), vers_name)
-    vers_file = Path (vers_file)
-    if vers_file.is_file ():
-        with open (vers_file, 'r') as f: result = f.read ()
-        #result = str (result)
-        #print ("result: %s", result)
-        assert result
-        if not result: raise Error ()
-        return result
-    result = run (["scripts/version.sh"])
-    result.check_returncode ()
-    result = str (result.stdout)
-    #print ("result: %s", result)
-    assert result
-    if not result: raise Error ()
-    return result
+    return read ("VERSION")
+#    vers_name = "VERSION"
+#    vers_file = path.join (path.dirname (__file__), vers_name)
+#    vers_file = Path (vers_file)
+#    if vers_file.is_file ():
+#        with open (vers_file, 'r') as f: result = f.read ()
+#        #result = str (result)
+#        #print ("result: %s", result)
+#        assert result
+#        if not result: raise Error ()
+#        return result
+#    result = run (["scripts/version.sh"])
+#    result.check_returncode ()
+#    result = str (result.stdout)
+#    #print ("result: %s", result)
+#    assert result
+#    if not result: raise Error ()
+#    return result
 
 setup (
    name='HafrenHaver', # TODO can use spaces ?
