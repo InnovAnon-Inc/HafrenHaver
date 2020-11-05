@@ -4,6 +4,7 @@ set -euxo pipefail
 cd "$(dirname "$(readlink -f "$0")")"
 
 if [[ -f ../VERSION ]] ; then
+	[[ ! -s ../VERSION ]]
 	cat ../VERSION
 	exit 0
 fi
