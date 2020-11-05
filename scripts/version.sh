@@ -31,11 +31,11 @@ fi
 }
 
 VERIFY="`cat ../VERSION`"
-if [[ "$VERSION" -ne "$VERIFY" ]] ; then
+if [[ "$VERSION" != "$VERIFY" ]] ; then
 	print version mismatch 1>&2
 	exit 3
 fi
-[[ "$VERSION" -eq "$VERIFY" ]] || {
+[[ "$VERSION" == "$VERIFY" ]] || {
 	print version mismatch 1>&2 ;
 	exit 5                      ;
 }
