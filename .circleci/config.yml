@@ -118,7 +118,7 @@ jobs: # A basic unit of work in a run
       - run:
           name: Uploading Distribution Archive Testing
           command: |
-            cat VERSION
+            #cat VERSION
             python3 -m pip install --user --upgrade twine
             echo '[testpypi]'                   >  ~/.pypirc
             echo 'username = __token__'         >> ~/.pypirc
