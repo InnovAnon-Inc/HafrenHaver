@@ -66,6 +66,54 @@ setup (
     ],
     python_requires='>=3.6',
     #install_requires=['bar', 'greek'], #external packages as dependencies
+    install_requires=[
+        #'ast',
+        'astor',
+        #'bitarray',        # Python.h
+        #'bjorklund',       # internal to our project
+        #'cartopy',         # Python.h, mysql_config
+        'datetime',
+        #'enum',
+        #'ephem',           # Python.h
+        #'functools',       # Python.h
+        #'gasp',
+        'geocoder',
+        'geopy',
+        'hilbertcurve',
+        #'inspect',
+        #'itertools',
+        #'math',
+        #'matplotlib',      # Python.h
+        'nltk',
+        #'numba',           # Python.h, mysql_config
+        'numpy',
+        #'os',
+        'pathlib',
+        #'pattern',         # ?
+        #'PIL',
+        'podsixnet',
+        #'pyaudio',         # Python.h
+        #'pyephem_sunpath', # ephem
+        'pygame',
+        #'queue',
+        #'random',
+        #'re',
+        'requests',
+        #'scipy',           # ?
+        #'shutil',
+        'skyfield',
+        #'speech_recognition',
+        #'struct',
+        #'sys',
+        'tatsu',
+        #'tensorflow',
+        #'threading',
+        #'tkinter',
+        'wave',
+        #'wavebender',
+        #'weakref',
+        #'weatherbit',
+    ],
     extras_require={  # Optional
         #'dev': ['check-manifest'],
         #'test': ['coverage'],

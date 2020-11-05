@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ce8cdebd0d319a0b2a886ae28776d35111e246d1475cd0b7092898e32e4b6e4b"
+            "sha256": "2455e27eb70a16ecbba54b1e43a3775a91342adaf236723cd235cecef7c92671"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -90,6 +90,10 @@
             ],
             "index": "pypi",
             "version": "==2.0.0"
+        },
+        "hafrenhaver": {
+            "editable": true,
+            "path": "."
         },
         "hilbertcurve": {
             "hashes": [

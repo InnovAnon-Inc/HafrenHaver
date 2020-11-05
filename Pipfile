@@ -16,11 +16,11 @@ geocoder = "*"
 numpy = "*"
 pathlib = "*"
 requests = "*"
-setuptools = "*"
 wave = "*"
 geopy = "*"
 hilbertcurve = "*"
 skyfield = "*"
+hafrenhaver = {editable = true, path = "."}
 
 [requires]
 python_version = "3.9"
