@@ -72,7 +72,7 @@ setup (
         'doc'  : ['sphinx'],
         'dev'  : ['setuptools', 'wheel', 'twine'],
         'test' : [],
-    #},
+    },
     #dependency_links=["http://peak.telecommunity.com/snapshots/",],
     package_data={  # Optional
     #    'sample': ['package_data.dat'],
