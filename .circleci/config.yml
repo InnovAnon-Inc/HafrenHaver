@@ -43,8 +43,9 @@ jobs: # A basic unit of work in a run
             sudo python3 -m pip install --upgrade pipenv
             # TODO test deps
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
-            PIP_INSTALL_OPTION='-- -DCMAKE_BUILD_TYPE=Release' pipenv install -e .
+            #PIP_INSTALL_OPTION='-- -DCMAKE_BUILD_TYPE=Release' pipenv install -e .
             #pipenv install
+            pipenv install -e .
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
@@ -94,8 +95,9 @@ jobs: # A basic unit of work in a run
             sudo python3 -m pip install --upgrade pipenv
             # TODO dist deps ?
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
-            PIP_INSTALL_OPTION='-- -DCMAKE_BUILD_TYPE=Release' pipenv install -e .
+            #PIP_INSTALL_OPTION='-- -DCMAKE_BUILD_TYPE=Release' pipenv install -e .
             #pipenv install
+            pipenv install -e .
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
@@ -193,8 +195,9 @@ jobs: # A basic unit of work in a run
             sudo python3 -m pip install --upgrade pipenv
             # TODO doc deps
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
-            PIP_INSTALL_OPTION='-- -DCMAKE_BUILD_TYPE=Release' pipenv install -e .
+            #PIP_INSTALL_OPTION='-- -DCMAKE_BUILD_TYPE=Release' pipenv install -e .
             #pipenv install
+            pipenv install -e .
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
