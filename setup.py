@@ -65,7 +65,7 @@ setup (
         "Topic :: Utilities",
     ],
     python_requires='>=3.6',
-    install_requires=['bar', 'greek'], #external packages as dependencies
+    #install_requires=['bar', 'greek'], #external packages as dependencies
     extras_require={  # Optional
         #'dev': ['check-manifest'],
         #'test': ['coverage'],
