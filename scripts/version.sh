@@ -12,8 +12,8 @@ fi
 [[ -f VERSION.in ]]
 majmin="`cat VERSION.in`"
 
-[[ ! -z "`git tag`" ]]                                 || git tag v$majmin
-git describe --tags --long | grep -q '^v[^.]*\.[^.-]*' || git tag v$majmin
+[[ ! -z "`git tag`" ]]                                 || git tag "v$majmin"
+git describe --tags --long | grep -q '^v[^.]*\.[^.-]*' || git tag "v$majmin"
 
 revisioncount=`git log --oneline | wc -l`
 #projectversion=`git describe --tags --long`
