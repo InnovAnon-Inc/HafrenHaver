@@ -68,7 +68,7 @@ jobs: # A basic unit of work in a run
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
-      - run: git checkout HEAD
+     #- run: git checkout HEAD
 
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
@@ -111,9 +111,8 @@ jobs: # A basic unit of work in a run
       - run:
           name: Sanity Check
           command: |
-            VERSION=scripts/version.sh
-            [ -n "$VERSION" ]
-            echo VERSION: "$VERSION"
+            scripts/version.sh
+            cat VERSION
 
       - run:
           name: Uploading Distribution Archive Testing
@@ -187,66 +186,66 @@ jobs: # A basic unit of work in a run
 
 
 
-  deploy: # runs not using Workflows must have a `build` job as entry point 
-    # directory where steps are run
-    working_directory: ~/circleci-HafrenHaver
-    docker: # run the steps with Docker
-      # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
-      - image: circleci/python:latest
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
-        environment: # environment variables for primary container
-          PIPENV_VENV_IN_PROJECT: true
-          DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
-    steps: # steps that comprise the `build` job
-      - checkout # check out source code to working directory
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
-      - restore_cache:
-      # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-      - run:
-          name: Setting Up Project Environment
-          command: |
-            sudo python3 -m pip install --upgrade pip
-            sudo python3 -m pip install --upgrade pipenv
-            # TODO deploy deps
-            pipenv install
-      - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-          paths:
-            - "venv"
-      - run:
-          name: Uploading Distribution Archive Testing
-          command: |
-            python3 -m pip install --user --upgrade twine
-            echo '[testpypi]'                   >  ~/.pypirc
-            echo 'username = __token__'         >> ~/.pypirc
-            echo "password = $TESTPYPI_API_KEY" >> ~/.pypirc
-            #cat ~/.pypirc
-            python3 -m twine upload --repository testpypi --verbose dist/*
-      - run:
-          name: Installing Newly Uploaded Package
-          command: |
-            #python3 -m pip install --user --upgrade pip
-            #python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --no-deps HafrenHaver
-            python3 -m pip uninstall --yes HafrenHaver
-            python3 -m pip   install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver
-      # TODO integration tests
-      # TODO deploy servers (testing)
-      
-      - run:
-          name: Uploading Distribution Archive Production
-          command: |
-            python3 -m pip install --user --upgrade twine
-            echo '[pypi]'                     >  ~/.pypirc
-            echo 'username = __token__'       >> ~/.pypirc
-            echo "password = $PYPI_API_TOKEN" >> ~/.pypirc
-            #cat ~/.pypirc
-            python3 -m twine upload --repository pypi --verbose dist/*
-      # TODO deploy docs
-      # TODO deploy servers (prod)
+#  deploy: # runs not using Workflows must have a `build` job as entry point 
+#    # directory where steps are run
+#    working_directory: ~/circleci-HafrenHaver
+#    docker: # run the steps with Docker
+#      # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
+#      - image: circleci/python:latest
+#        auth:
+#          username: $DOCKERHUB_USERNAME
+#          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+#        environment: # environment variables for primary container
+#          PIPENV_VENV_IN_PROJECT: true
+#          DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
+#    steps: # steps that comprise the `build` job
+#      - checkout # check out source code to working directory
+#      - run: sudo chown -R circleci:circleci /usr/local/bin
+#      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
+#      - restore_cache:
+#      # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+#          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+#      - run:
+#          name: Setting Up Project Environment
+#          command: |
+#            sudo python3 -m pip install --upgrade pip
+#            sudo python3 -m pip install --upgrade pipenv
+#            # TODO deploy deps
+#            pipenv install
+#      - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
+#          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+#          paths:
+#            - "venv"
+#      - run:
+#          name: Uploading Distribution Archive Testing
+#          command: |
+#            python3 -m pip install --user --upgrade twine
+#            echo '[testpypi]'                   >  ~/.pypirc
+#            echo 'username = __token__'         >> ~/.pypirc
+#            echo "password = $TESTPYPI_API_KEY" >> ~/.pypirc
+#            #cat ~/.pypirc
+#            python3 -m twine upload --repository testpypi --verbose dist/*
+#      - run:
+#          name: Installing Newly Uploaded Package
+#          command: |
+#            #python3 -m pip install --user --upgrade pip
+#            #python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --no-deps HafrenHaver
+#            python3 -m pip uninstall --yes HafrenHaver
+#            python3 -m pip   install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver
+#      # TODO integration tests
+#      # TODO deploy servers (testing)
+#      
+#      - run:
+#          name: Uploading Distribution Archive Production
+#          command: |
+#            python3 -m pip install --user --upgrade twine
+#            echo '[pypi]'                     >  ~/.pypirc
+#            echo 'username = __token__'       >> ~/.pypirc
+#            echo "password = $PYPI_API_TOKEN" >> ~/.pypirc
+#            #cat ~/.pypirc
+#            python3 -m twine upload --repository pypi --verbose dist/*
+#      # TODO deploy docs
+#      # TODO deploy servers (prod)
       
 
 

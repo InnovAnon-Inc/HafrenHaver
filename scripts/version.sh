@@ -20,8 +20,8 @@ revisioncount=`git log --oneline | wc -l`
 #cleanversion=${projectversion%%-*}
 cleanversion="`git describe --tags --long | grep -o '^v[^.]*\.[^.-]*' | sed s/^v//`"
 VERSION="$cleanversion.$revisioncount"
-echo -n $VERSION
-#echo -n $VERSION | tee ../VERSION
+#echo -n $VERSION
+echo -n $VERSION | tee ../VERSION
 if [[ -z "$VERSION" ]] ; then
 	print version is empty 1>&2
 	exit 2
@@ -30,7 +30,7 @@ fi
 	print version is empty 1>&2 ;
 	exit 4                      ;
 }
-exit 0
+#exit 0
 
 VERIFY="`cat ../VERSION`"
 if [[ "$VERSION" != "$VERIFY" ]] ; then
