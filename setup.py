@@ -51,10 +51,11 @@ setup (
    long_description=read ('README.md'),
    long_description_content_type="text/markdown",
    #packages=['src'],  #same as name
-   packages=find_packages (exclude=[".gitignore", "README.md", "LICENSE.md", "doc", "tests"]),
+   packages=find_packages (exclude=[".git", ".gitignore", ".circleci", "README.md", "LICENSE", "doc", "scripts", "tests"]),
    scripts=[
             'scripts/sloc.sh',
             'scripts/watch_sloc.sh',
+            'scripts/version.sh',
            ],
    classifiers=[
         "Programming Language :: Python :: 3",
@@ -64,18 +65,19 @@ setup (
         "Topic :: Utilities",
     ],
     python_requires='>=3.6',
-    #install_requires=['bar', 'greek'], #external packages as dependencies
-    #extras_require={  # Optional
+    install_requires=['bar', 'greek'], #external packages as dependencies
+    extras_require={  # Optional
         #'dev': ['check-manifest'],
         #'test': ['coverage'],
-        #'doc'  : ['sphinx'],
-        #'dev'  : ['setuptools', 'wheel', 'twine'],
-        #'test' : [],
+        'doc'  : ['sphinx'],
+        'dev'  : ['setuptools', 'wheel', 'twine'],
+        'test' : [],
     #},
     #dependency_links=["http://peak.telecommunity.com/snapshots/",],
-    #package_data={  # Optional
+    package_data={  # Optional
     #    'sample': ['package_data.dat'],
-    #},
+        'version': ['scripts/VERSION.in']
+    },
     #entry_points={  # Optional
     #    'console_scripts': [
     #        'sample=sample:main',
