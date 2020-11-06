@@ -115,7 +115,7 @@ setup (
     extras_require={  # Optional
         #'dev': ['check-manifest'],
         #'test': ['coverage'],
-        'test' : ['pytest'],
+        'test' : ['pytest', 'pytest-html', 'pytest-xdist'],
         'site' : ['sphinx'],
         'dist' : ['setuptools', 'wheel', 'twine'],
     },
