@@ -54,7 +54,8 @@ jobs: # A basic unit of work in a run
       - run:
           name: Running Tests
           command: |
-            find src/ -iname 'test_*.py' -exec pipenv run python '{}' \;
+            #find src/   -iname 'test_*.py' -exec pipenv run python '{}' \;
+            find tests/ -iname '*.py'      -exec pipenv run python '{}' \;
       - run:
           name: Security Check
           command: |
@@ -112,9 +113,10 @@ jobs: # A basic unit of work in a run
       - run:
           name: Generating Distribution Archive
           command: |
-            python3 -m pip install --user --upgrade setuptools wheel
+            #python3 -m pip install --user --upgrade setuptools wheel
             rm -rf dist/
-            python3 setup.py sdist bdist_wheel --universal
+            #python3 setup.py sdist bdist_wheel --universal
+            python3 -m pipenv run setup.py sdist bdist_wheel --universal
       - run:
           name: Signing Distribution Archive
           command: |
@@ -141,12 +143,13 @@ jobs: # A basic unit of work in a run
           name: Uploading Distribution Archive Testing
           command: |
             cat VERSION
-            python3 -m pip install --user --upgrade twine
+            #python3 -m pip install --user --upgrade twine
             echo '[testpypi]'                   >  ~/.pypirc
             echo 'username = __token__'         >> ~/.pypirc
             echo "password = $TESTPYPI_API_KEY" >> ~/.pypirc
             #cat ~/.pypirc
-            python3 -m twine upload --repository testpypi --verbose dist/*
+            #python3 -m twine upload --repository testpypi --verbose dist/*
+            python3 -m pipenv run twine upload --repository testpypi --verbose dist/*
       - run:
           name: Installing Newly Uploaded Package
           command: |
@@ -160,12 +163,13 @@ jobs: # A basic unit of work in a run
       - run:
           name: Uploading Distribution Archive Production
           command: |
-            python3 -m pip install --user --upgrade twine
+            #python3 -m pip install --user --upgrade twine
             echo '[pypi]'                     >  ~/.pypirc
             echo 'username = __token__'       >> ~/.pypirc
             echo "password = $PYPI_API_TOKEN" >> ~/.pypirc
             #cat ~/.pypirc
-            python3 -m twine upload --repository pypi --verbose dist/*
+            #python3 -m twine upload --repository pypi --verbose dist/*
+            python3 -m pipenv run twine upload --repository pypi --verbose dist/*
       # TODO deploy docs
       # TODO deploy servers (prod)
 
@@ -213,8 +217,9 @@ jobs: # A basic unit of work in a run
       - run:
           name: Generating Documentation
           command: |
-            python3 -m pip install --user --upgrade sphinx
-            scripts/build_push_doc.sh
+            #python3 -m pip install --user --upgrade sphinx
+            #scripts/build_push_doc.sh
+            python3 -m pipenv run scripts/build_push_doc.sh
 
 
 
