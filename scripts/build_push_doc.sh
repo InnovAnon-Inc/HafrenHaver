@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 set -euxo pipefail
 
+V=-v
+
 # this is a hack, but we have to make sure we're only ever running this from
 # the top level of the package and not in the subdirectory...
 if [[ ! -f src/HafrenHaver/__init__.py ]]; then
@@ -17,7 +19,7 @@ make clean html EXAMPLES_PATTERN=ex_*
 cd ..
 
 # move the docs to the top-level directory, stash for checkout
-mv doc/_build/html ./
+mv $V doc/_build/html ./
 
 # html/ will stay there actually...
 git config user.email "$GH_EMAIL"
@@ -56,29 +58,26 @@ declare -a leftover=('.cache/'
                      'auto_examples/'
                      'includes'
                      'modules/'
-	             '_autosummary/',
+	             '_autosummary'
 	             'tests/'
 	             'old/'
 	             #'.circleci/'
+		     #'.venv/'
 )
 
-pwd
-set +e
+set +x
 # check for each left over file/dir and remove it
-for left in "${leftover[@]}"
-do
+for left in "${leftover[@]}" ; do
     #rm -r "$left" || echo "$left does not exist; will not remove"
-    #rm -rf "$left"
     [[ -e "$left" ]] || continue
     echo "removing $left"
     rm -r "$left"
 done
-set -e
-ls -a
+set -x
 
 # we need this empty file for git not to try to build a jekyll project
 touch .nojekyll
-mv html/* ./
+mv $V html/* ./
 rm -r html/
 
 find . \( \( -name .git -o -name .venv \) -prune \) -o -print
