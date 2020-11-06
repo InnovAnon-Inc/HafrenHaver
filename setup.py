@@ -62,6 +62,7 @@ setup (
             'scripts/sloc.sh',
             'scripts/watch_sloc.sh',
             'scripts/version.sh',
+            'scripts/subtree.sh',
            ],
    classifiers=[
         "Programming Language :: Python :: 3 :: Only",
