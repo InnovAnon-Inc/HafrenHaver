@@ -16,6 +16,6 @@ doc/_build/
 # our stuff
 *.cache
 *.key
-src/cache/
+*/cache/*
 VERSION
 
