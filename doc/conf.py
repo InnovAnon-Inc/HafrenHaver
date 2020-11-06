@@ -85,6 +85,8 @@ autosummary_generate = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
+#html_logo = _static/logo.png
+
 source_suffix = ['.rst', '.md']
 master_doc = 'index'
 

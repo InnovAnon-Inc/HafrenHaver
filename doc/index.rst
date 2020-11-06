@@ -17,6 +17,9 @@ Welcome to Hafren Haver's documentation!
 
 .. automodule:: HafrenHaver
    :members:
+   :private-members:
+   :special-members:
+   :inherited-members:
    :show-inheritance:
 
 Indices and tables
