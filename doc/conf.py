@@ -62,9 +62,18 @@ release = get_version ()
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.todo',
-    'sphinx.ext.githubpages',
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosectionlabel',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
+    'sphinx.ext.githubpages',
+    #'sphinx.ext.graphviz',
+    'sphinx.ext.inheritance_diagram',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.linkcode',
+    'sphinx.ext.imgmath',
+    'sphinx.ext.todo',
     'sphinx.ext.viewcode',
 ]
 
