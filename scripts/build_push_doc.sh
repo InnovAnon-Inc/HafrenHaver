@@ -65,7 +65,8 @@ declare -a leftover=('.cache/'
 # check for each left over file/dir and remove it
 for left in "${leftover[@]}"
 do
-    rm -r "$left" || echo "$left does not exist; will not remove"
+    #rm -r "$left" || echo "$left does not exist; will not remove"
+    rm -rf "$left"
 done
 
 # we need this empty file for git not to try to build a jekyll project
