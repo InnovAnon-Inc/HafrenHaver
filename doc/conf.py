@@ -22,7 +22,7 @@ author = 'Innovations Anonymous'
 
 from pathlib    import Path
 from os         import path
-from subprocess import run
+#from subprocess import run
 
 def read ():
     vers_name = "VERSION.in"

@@ -1,13 +1,13 @@
 #! /usr/bin/env python3
 
-from pathlib           import Path
+#from pathlib           import Path
 from os                import path
 from setuptools        import find_packages, setup
-from setuptools.config import read_configuration
-from subprocess        import run
+#from setuptools.config import read_configuration
+#from subprocess        import run
 
-conf_file = path.join (path.dirname (__file__), "setup.cfg")
-conf_dict = read_configuration (conf_file)
+#conf_file = path.join (path.dirname (__file__), "setup.cfg")
+#conf_dict = read_configuration (conf_file)
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
@@ -19,8 +19,7 @@ def read (fname):
     assert result
     return result
 
-def get_version ():
-    return read ("VERSION")
+def get_version (): return read ("VERSION")
 #    vers_name = "VERSION"
 #    vers_file = path.join (path.dirname (__file__), vers_name)
 #    vers_file = Path (vers_file)
