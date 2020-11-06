@@ -46,8 +46,8 @@ declare -a leftover=('.cache/'
                      'build_tools/'
                      'doc/'
                      'examples/'
-                     'gh_doc_automation/'
-                     'gh_doc_automation.egg-info/'
+                     'HafrenHaver/'
+                     'HafrenHaver.egg-info/'
                      '_downloads/'
                      '_images/'
                      '_modules/'
@@ -55,7 +55,8 @@ declare -a leftover=('.cache/'
                      '_static/'
                      'auto_examples/'
                      'includes'
-                     'modules/')
+                     'modules/'
+	             '_autosummary')
 
 # check for each left over file/dir and remove it
 for left in "${leftover[@]}"
