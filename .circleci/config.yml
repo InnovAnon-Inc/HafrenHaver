@@ -45,7 +45,7 @@ jobs: # A basic unit of work in a run
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #PIP_INSTALL_OPTION='-- -DCMAKE_BUILD_TYPE=Release' pipenv install -e .
             #pipenv install
-            pipenv install '.[test]'
+            python3 -m pipenv install '.[test]'
             #pipenv install -e .
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
@@ -55,7 +55,9 @@ jobs: # A basic unit of work in a run
           name: Running Tests
           command: |
             #find src/   -iname 'test_*.py' -exec pipenv run python '{}' \;
-            find tests/ -iname '*.py'      -exec pipenv run python '{}' \;
+            #find tests/ -iname '*.py'      -exec pipenv run python '{}' \;
+            python3 -m pipenv run pytest -k tests run
+            #python3 -m pipenv run pytest -k run
       - run:
           name: Security Check
           command: |
@@ -104,7 +106,7 @@ jobs: # A basic unit of work in a run
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #PIP_INSTALL_OPTION='-- -DCMAKE_BUILD_TYPE=Release' pipenv install -e .
             #pipenv install
-            pipenv install '.[dist]'
+            python3 -m pipenv install '.[dist]'
             #pipenv install -e .
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
@@ -208,7 +210,7 @@ jobs: # A basic unit of work in a run
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #PIP_INSTALL_OPTION='-- -DCMAKE_BUILD_TYPE=Release' pipenv install -e .
             #pipenv install
-            pipenv install '.[site]'
+            python3 -m pipenv install '.[site]'
             #pipenv install -e .
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
