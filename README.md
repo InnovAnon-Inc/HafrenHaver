@@ -11,9 +11,15 @@ Arcane Audio-Visual Computations
 
 [![License Summary](https://img.shields.io/github/license/InnovAnon-Inc/HafrenHaver?color=%23FF1100&label=Free%20Code%20for%20a%20Free%20World%21&logo=InnovAnon%2C%20Inc.&logoColor=%23FF1133&style=plastic)](https://tldrlegal.com/license/unlicense#summary)
 
-![Python Version](https://img.shields.io/github/pipenv/locked/python-version/InnovAnon-Inc/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
-
-![Corporate Logo](https://i.imgur.com/UD8y4Is.gif)
+![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/InnovAnon-Inc/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
+![PyPI - Implementation](https://img.shields.io/pypi/implementation/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
+![PyPI - Downloads](https://img.shields.io/pypi/dd/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
+![PyPI - Format](https://img.shields.io/pypi/format/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
+![PyPI - Status](https://img.shields.io/pypi/status/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
+![PyPI - License](https://img.shields.io/pypi/l/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
+![PyPI](https://img.shields.io/pypi/v/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
 
 (Work in progress...)
 
@@ -336,3 +342,4 @@ Other code, obviously, retains the original licenses.
 # Innovations Anonymous
 Free Code for a Free World!
 ==========
+![Corporate Logo](https://i.imgur.com/UD8y4Is.gif)
