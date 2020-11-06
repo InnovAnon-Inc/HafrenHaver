@@ -20,6 +20,8 @@ cd ..
 mv doc/_build/html ./
 
 # html/ will stay there actually...
+git config user.email "$GH_EMAIL"
+git config user.name  "$GITHUB_API_USERNAME"
 git stash
 
 # checkout gh-pages, remove everything but .git, pop the stash
