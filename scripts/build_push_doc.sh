@@ -62,12 +62,19 @@ declare -a leftover=('.cache/'
 	             #'.circleci/'
 )
 
+pwd
+set +e
 # check for each left over file/dir and remove it
 for left in "${leftover[@]}"
 do
     #rm -r "$left" || echo "$left does not exist; will not remove"
-    rm -rf "$left"
+    #rm -rf "$left"
+    [[ -e "$left" ]] || continue
+    echo "removing $left"
+    rm -r "$left"
 done
+set -e
+ls -a
 
 # we need this empty file for git not to try to build a jekyll project
 touch .nojekyll
