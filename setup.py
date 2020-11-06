@@ -38,6 +38,10 @@ def get_version (): return read ("VERSION")
 #    if not result: raise Error ()
 #    return result
 
+from glob    import glob
+from os.path import basename
+from os.path import splitext
+
 setup (
    name='HafrenHaver', # TODO can use spaces ?
    version=get_version (),
@@ -45,12 +49,15 @@ setup (
    author='Innovations Anonymous',
    author_email='InnovAnon-Inc@protonmail.com',
    license='unlicense',
-   keywords='Innovations Anonymous Hafren Haver',
+   keywords=['InnovAnon', 'Innovations', 'Anonymous', 'Hafren Haver'],
    url='https://InnovAnon-Inc.github.io/HafrenHaver',
    long_description=read ('README.md'),
    long_description_content_type="text/markdown",
-   #packages=['src'], # same as name
-   packages=find_packages (exclude=[".git", ".gitignore", ".circleci", "README.md", "LICENSE", "doc", "scripts", "tests", "src/cache", "__pycache__", "build", "HafrenHaver.egg-info", "old", ".venv"]),
+   packages=find_packages ('src', exclude=[".gitignore", "README.md", "cache"]),
+   package_dir={ '' : 'src' },
+   py_modules=[splitext (basename (path))[0] for path in glob ('src/*.py')],
+   include_package_data=True,
+   zip_safe=False,
    scripts=[
             'scripts/sloc.sh',
             'scripts/watch_sloc.sh',
@@ -58,10 +65,18 @@ setup (
            ],
    classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: Unlicense",
-        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.9",
+        'Programming Language :: Python :: Implementation :: CPython',
+        #'Programming Language :: Python :: Implementation :: PyPy',
+
+        #"Operating System :: OS Independent",
+        'Operating System :: Unix',
+        'Operating System :: POSIX',
+
         "Development Status :: 3 - Alpha",
+        "License :: OSI Approved :: Unlicense",
         "Topic :: Utilities",
+        'Intended Audience :: Developers',
     ],
     python_requires='>=3.6',
     install_requires=[ #external packages as dependencies
@@ -119,6 +134,7 @@ setup (
         'site' : ['sphinx'], # sphinx.ext.todo, sphinx.ext.githubpages
         'dist' : ['setuptools', 'wheel', 'twine'],
     },
+    setup_requires=['pytest-runner'],
     #dependency_links=["http://peak.telecommunity.com/snapshots/",],
     package_data={  # Optional
     #    'sample': ['package_data.dat'],
@@ -132,6 +148,7 @@ setup (
     project_urls={  # Optional
         'Source'     : 'https://github.com/InnovAnon-Inc/HafrenHaver',
         'Bug Reports': 'https://github.com/InnovAnon-Inc/HafrenHaver/issues',
+        #'Changelog'  : 'https://github.com/InnovAnon-Inc/HafrenHaver/blob/master/CHANGELOG.rst',
         'CIS'        : 'https://app.circleci.com/pipelines/github/InnovAnon-Inc/HafrenHaver',
         'Funding'    : 'https://www.patreon.com/InnovAnon',
         'Say Thanks!': 'https://saythanks.io/to/InnovAnon-Inc%40protonmail.com',
