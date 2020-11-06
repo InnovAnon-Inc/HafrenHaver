@@ -26,12 +26,12 @@ git stash
 
 # checkout gh-pages, remove everything but .git, pop the stash
 # switch into the gh-pages branch
-git checkout gh-pages
+git checkout    gh-pages
 git pull origin gh-pages
 
 # Make sure to set the credentials!
-git config --global user.email "$GH_EMAIL" > /dev/null 2>&1
-git config --global user.name "$GITHUB_API_USERNAME" > /dev/null 2>&1
+git config --global user.email "$GH_EMAIL"            > /dev/null 2>&1
+git config --global user.name  "$GITHUB_API_USERNAME" > /dev/null 2>&1
 
 # remove all files that are not in the .git dir
 # TODO use a working command
@@ -56,7 +56,7 @@ declare -a leftover=('.cache/'
                      'auto_examples/'
                      'includes'
                      'modules/'
-	             '_autosummary',
+	             '_autosummary/',
 	             'src/'
 	             'tests/'
 	             'old/'
