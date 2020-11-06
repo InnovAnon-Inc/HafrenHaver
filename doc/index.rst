@@ -10,6 +10,8 @@ Welcome to Hafren Haver's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. automodule:: HafrenHaver
+   :members:
 
 
 Indices and tables

@@ -131,7 +131,7 @@ setup (
         #'dev': ['check-manifest'],
         #'test': ['coverage'],
         'test' : ['pytest', 'pytest-html', 'pytest-xdist'],
-        'site' : ['sphinx'], # sphinx.ext.todo, sphinx.ext.githubpages
+        'site' : ['sphinx', 'sphinx_theme'], # sphinx.ext.todo, sphinx.ext.githubpages
         'dist' : ['setuptools', 'wheel', 'twine'],
     },
     setup_requires=['pytest-runner'],
