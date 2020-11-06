@@ -45,12 +45,12 @@ setup (
    description=('Goes on and on about the River Severn'),
    author='Innovations Anonymous',
    author_email='InnovAnon-Inc@protonmail.com',
-   license='unlicense', # TODO can read LICENSE ?
+   license='unlicense',
    keywords='Innovations Anonymous Hafren Haver',
    url='https://InnovAnon-Inc.github.io/HafrenHaver',
    long_description=read ('README.md'),
    long_description_content_type="text/markdown",
-   #packages=['src'],  #same as name
+   #packages=['src'], # same as name
    packages=find_packages (exclude=[".git", ".gitignore", ".circleci", "README.md", "LICENSE", "doc", "scripts", "tests", "src/cache", "__pycache__", "build", "HafrenHaver.egg-info", "old", ".venv"]),
    scripts=[
             'scripts/sloc.sh',
@@ -59,14 +59,13 @@ setup (
            ],
    classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: Unlicense",
         "Operating System :: OS Independent",
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
     ],
     python_requires='>=3.6',
-    #install_requires=['bar', 'greek'], #external packages as dependencies
-    install_requires=[
+    install_requires=[ #external packages as dependencies
         #'ast',
         'astor',
         #'bitarray',        # Python.h
@@ -124,7 +123,7 @@ setup (
     #dependency_links=["http://peak.telecommunity.com/snapshots/",],
     package_data={  # Optional
     #    'sample': ['package_data.dat'],
-        'version': ['scripts/VERSION.in']
+        'version': ['scripts/VERSION.in'],
     },
     #entry_points={  # Optional
     #    'console_scripts': [
@@ -132,11 +131,11 @@ setup (
     #    ],
     #},
     project_urls={  # Optional
+        'Source'     : 'https://github.com/InnovAnon-Inc/HafrenHaver',
         'Bug Reports': 'https://github.com/InnovAnon-Inc/HafrenHaver/issues',
+        'CIS'        : 'https://app.circleci.com/pipelines/github/InnovAnon-Inc/HafrenHaver',
         'Funding'    : 'https://www.patreon.com/InnovAnon',
         'Say Thanks!': 'https://saythanks.io/to/InnovAnon-Inc%40protonmail.com',
-        'Source'     : 'https://github.com/InnovAnon-Inc/HafrenHaver',
-        'CIS'        : 'https://app.circleci.com/pipelines/github/InnovAnon-Inc/HafrenHaver',
     },
 )
 
