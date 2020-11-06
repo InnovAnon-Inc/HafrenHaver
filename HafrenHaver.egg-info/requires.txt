@@ -13,12 +13,12 @@ skyfield
 tatsu
 wave
 
-[dev]
+[dist]
 setuptools
 wheel
 twine
 
-[doc]
+[site]
 sphinx
 
 [test]

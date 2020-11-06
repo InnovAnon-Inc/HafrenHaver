@@ -20,7 +20,7 @@ wave = "*"
 geopy = "*"
 hilbertcurve = "*"
 skyfield = "*"
-hafrenhaver = {editable = true, path = "."}
+hafrenhaver = {extras = ["dist"], path = "."}
 
 [requires]
 python_version = "3.9"

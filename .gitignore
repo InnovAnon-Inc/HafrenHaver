@@ -1,17 +1,21 @@
 # VIM
 *.swp
+*~
 
 # machine-generated files
 *.pyc
 __pycache__/
-#.venv/
+build/
+HafrenHaver.egg-info/
+.venv/
+#pyproject.toml
 
 # sphinx
-docs/_build/
+doc/_build/
 
 # our stuff
 *.cache
 *.key
-cache/
+src/cache/
 VERSION
 

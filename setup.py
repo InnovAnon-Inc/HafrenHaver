@@ -51,7 +51,7 @@ setup (
    long_description=read ('README.md'),
    long_description_content_type="text/markdown",
    #packages=['src'],  #same as name
-   packages=find_packages (exclude=[".git", ".gitignore", ".circleci", "README.md", "LICENSE", "doc", "scripts", "tests"]),
+   packages=find_packages (exclude=[".git", ".gitignore", ".circleci", "README.md", "LICENSE", "doc", "scripts", "tests", "src/cache", "__pycache__", "build", "HafrenHaver.egg-info", "old", ".venv"]),
    scripts=[
             'scripts/sloc.sh',
             'scripts/watch_sloc.sh',
@@ -117,9 +117,9 @@ setup (
     extras_require={  # Optional
         #'dev': ['check-manifest'],
         #'test': ['coverage'],
-        'doc'  : ['sphinx'],
-        'dev'  : ['setuptools', 'wheel', 'twine'],
         'test' : ['pytest'],
+        'site' : ['sphinx'],
+        'dist' : ['setuptools', 'wheel', 'twine'],
     },
     #dependency_links=["http://peak.telecommunity.com/snapshots/",],
     package_data={  # Optional

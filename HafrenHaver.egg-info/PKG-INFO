@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: HafrenHaver
-Version: 1.0.186
+Version: 1.0.188
 Summary: Goes on and on about the River Severn
 Home-page: https://InnovAnon-Inc.github.io/HafrenHaver
 Author: Innovations Anonymous
@@ -345,6 +345,6 @@ Classifier: Development Status :: 3 - Alpha
 Classifier: Topic :: Utilities
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
-Provides-Extra: doc
-Provides-Extra: dev
 Provides-Extra: test
+Provides-Extra: site
+Provides-Extra: dist
