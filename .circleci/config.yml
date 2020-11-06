@@ -116,7 +116,7 @@ jobs: # A basic unit of work in a run
             #python3 -m pip install --user --upgrade setuptools wheel
             rm -rf dist/
             #python3 setup.py sdist bdist_wheel --universal
-            python3 -m pipenv run setup.py sdist bdist_wheel --universal
+            python3 -m pipenv run python setup.py sdist bdist_wheel --universal
       - run:
           name: Signing Distribution Archive
           command: |
