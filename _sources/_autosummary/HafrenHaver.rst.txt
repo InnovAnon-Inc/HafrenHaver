@@ -38,6 +38,7 @@
    HafrenHaver.av
    HafrenHaver.bar_cadence
    HafrenHaver.bjorklund
+   HafrenHaver.bjorklund_old
    HafrenHaver.brain_waves
    HafrenHaver.buf
    HafrenHaver.cache
