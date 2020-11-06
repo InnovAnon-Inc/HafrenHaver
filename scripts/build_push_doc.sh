@@ -56,7 +56,11 @@ declare -a leftover=('.cache/'
                      'auto_examples/'
                      'includes'
                      'modules/'
-	             '_autosummary')
+	             '_autosummary',
+	             'src/'
+	             'tests/'
+	             'old/'
+	             '.circleci/')
 
 # check for each left over file/dir and remove it
 for left in "${leftover[@]}"
