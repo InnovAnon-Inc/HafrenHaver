@@ -77,6 +77,7 @@ setup (
 
         "Development Status :: 3 - Alpha",
         'License :: Public Domain',
+        'License :: OSI Approved :: MIT License',
 
         'Topic :: Artistic Software',
         'Topic :: Education :: Computer Aided Instruction (CAI)',
