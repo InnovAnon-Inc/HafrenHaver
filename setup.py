@@ -64,19 +64,38 @@ setup (
             'scripts/version.sh',
            ],
    classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.9",
         'Programming Language :: Python :: Implementation :: CPython',
         #'Programming Language :: Python :: Implementation :: PyPy',
+        'Programming Language :: Other', # hallang
+        'Programming Language :: Unix Shell',
 
         #"Operating System :: OS Independent",
-        'Operating System :: Unix',
-        'Operating System :: POSIX',
+        'Operating System :: POSIX :: Linux',
 
         "Development Status :: 3 - Alpha",
-        "License :: OSI Approved :: Unlicense",
-        "Topic :: Utilities",
-        'Intended Audience :: Developers',
+        'License :: Public Domain',
+
+        'Topic :: Artistic Software',
+        'Topic :: Education :: Computer Aided Instruction (CAI)',
+        'Topic :: Multimedia :: Graphics',
+        'Topic :: Multimedia :: Sound/Audio :: Sound Synthesis',
+        'Topic :: Religion',
+        'Topic :: Scientific/Engineering :: Human Machine Interfaces',
+        'Topic :: Software Development :: Libraries :: pygame',
+        #'Topic :: Software Development :: Version Control :: Git',
+        #"Topic :: Utilities",
+
+        #'Intended Audience :: Developers',
+        'Intended Audience :: Education',
+        #'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Religion',
+        'Intended Audience :: Science/Research',
+
+        'Framework :: Matplotlib',
+        'Framework :: Pytest',
+        'Framework :: Sphinx',
     ],
     python_requires='>=3.6',
     install_requires=[ #external packages as dependencies
