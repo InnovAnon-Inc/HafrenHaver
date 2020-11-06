@@ -86,6 +86,10 @@ autosummary_generate = True
 templates_path = ['_templates']
 
 html_logo = '_static/logo.png'
+#html_title = ''
+html_short_title = 'HH doc'
+html_baseurl = 'https://InnovAnon-Inc.github.io/HafrenHaver'
+html_favicon = '_static/favicon-32x32.ico'
 
 source_suffix = ['.rst', '.md']
 master_doc = 'index'
