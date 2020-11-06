@@ -8,14 +8,12 @@ __pycache__/
 build/
 HafrenHaver.egg-info/
 .venv/
-#pyproject.toml
 
 # sphinx
-doc/_build/
+#doc/_build/
 
 # our stuff
-*.cache
-*.key
-*/cache/*
+#*.cache
+#*.key
 VERSION
 
