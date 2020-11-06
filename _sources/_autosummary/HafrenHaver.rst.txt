@@ -1,0 +1,127 @@
+﻿HafrenHaver
+===========
+
+.. automodule:: HafrenHaver
+  
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst                 <-- add this line
+   :recursive:
+
+   HafrenHaver.aggregator
+   HafrenHaver.angle_app
+   HafrenHaver.angled_circle
+   HafrenHaver.app
+   HafrenHaver.artwork
+   HafrenHaver.atp
+   HafrenHaver.audio_gui
+   HafrenHaver.av
+   HafrenHaver.bar_cadence
+   HafrenHaver.bjorklund
+   HafrenHaver.brain_waves
+   HafrenHaver.buf
+   HafrenHaver.cache
+   HafrenHaver.cadence
+   HafrenHaver.chromatic
+   HafrenHaver.circle_app
+   HafrenHaver.circled_angle
+   HafrenHaver.circled_circle
+   HafrenHaver.circled_polygon
+   HafrenHaver.circled_square
+   HafrenHaver.client
+   HafrenHaver.composite_app
+   HafrenHaver.constants
+   HafrenHaver.counting
+   HafrenHaver.cropping_app
+   HafrenHaver.decorated_gui
+   HafrenHaver.draw
+   HafrenHaver.fractal_test_0
+   HafrenHaver.fractal_test_00
+   HafrenHaver.fractal_test_1
+   HafrenHaver.fractal_test_10
+   HafrenHaver.fractal_test_2
+   HafrenHaver.fractal_test_20
+   HafrenHaver.fractal_test_3
+   HafrenHaver.fractal_test_30
+   HafrenHaver.fractal_test_4
+   HafrenHaver.geom
+   HafrenHaver.geometry
+   HafrenHaver.gps
+   HafrenHaver.gps_app
+   HafrenHaver.gps_client
+   HafrenHaver.gps_server
+   HafrenHaver.gui
+   HafrenHaver.hal
+   HafrenHaver.hallang
+   HafrenHaver.hallib
+   HafrenHaver.hilbjork
+   HafrenHaver.key
+   HafrenHaver.lc
+   HafrenHaver.magic_circle
+   HafrenHaver.main
+   HafrenHaver.map_app
+   HafrenHaver.mode
+   HafrenHaver.moon_app
+   HafrenHaver.network
+   HafrenHaver.neural_style_transfer
+   HafrenHaver.numerology
+   HafrenHaver.orientation
+   HafrenHaver.pager
+   HafrenHaver.pattern
+   HafrenHaver.pexels_pager
+   HafrenHaver.pexels_results
+   HafrenHaver.phrase_cadence
+   HafrenHaver.pixabay_pager
+   HafrenHaver.pixabay_results
+   HafrenHaver.play
+   HafrenHaver.polygon_app
+   HafrenHaver.polygoned_circle
+   HafrenHaver.prefetcher
+   HafrenHaver.pygameplotlib
+   HafrenHaver.random_util
+   HafrenHaver.recursive_composite
+   HafrenHaver.recycler
+   HafrenHaver.resize_gui
+   HafrenHaver.rest
+   HafrenHaver.results
+   HafrenHaver.rotation
+   HafrenHaver.scale
+   HafrenHaver.scalelib
+   HafrenHaver.section_cadence
+   HafrenHaver.section_type
+   HafrenHaver.segment_cadence
+   HafrenHaver.server
+   HafrenHaver.solfeggio
+   HafrenHaver.song_cadence
+   HafrenHaver.song_cadence0
+   HafrenHaver.song_structure
+   HafrenHaver.square_app
+   HafrenHaver.squared_circle
+   HafrenHaver.stat_chart
+   HafrenHaver.tempo
+   HafrenHaver.text_ring
+   HafrenHaver.time_app
+   HafrenHaver.triangle
+   HafrenHaver.xmas_tree
+
+

@@ -1,0 +1,6 @@
+HafrenHaver.section\_type
+=========================
+
+.. currentmodule:: HafrenHaver.section_type
+
+.. automodule:: HafrenHaver.section_type

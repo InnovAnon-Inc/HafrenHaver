@@ -1,0 +1,6 @@
+HafrenHaver.scalelib
+====================
+
+.. currentmodule:: HafrenHaver.scalelib
+
+.. automodule:: HafrenHaver.scalelib

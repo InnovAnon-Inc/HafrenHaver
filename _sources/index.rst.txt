@@ -15,12 +15,7 @@ Welcome to Hafren Haver's documentation!
    :template: custom-module-template.rst
    :recursive:
 
-.. automodule:: HafrenHaver
-   :members:
-   :private-members:
-   :special-members:
-   :inherited-members:
-   :show-inheritance:
+   HafrenHaver
 
 Indices and tables
 ==================

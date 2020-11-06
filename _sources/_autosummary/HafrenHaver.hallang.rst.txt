@@ -1,0 +1,6 @@
+HafrenHaver.hallang
+===================
+
+.. currentmodule:: HafrenHaver.hallang
+
+.. automodule:: HafrenHaver.hallang

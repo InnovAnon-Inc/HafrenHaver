@@ -1,0 +1,6 @@
+HafrenHaver.lc
+==============
+
+.. currentmodule:: HafrenHaver.lc
+
+.. automodule:: HafrenHaver.lc

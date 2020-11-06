@@ -1,0 +1,6 @@
+HafrenHaver.pager
+=================
+
+.. currentmodule:: HafrenHaver.pager
+
+.. automodule:: HafrenHaver.pager

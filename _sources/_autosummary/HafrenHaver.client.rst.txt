@@ -1,0 +1,6 @@
+HafrenHaver.client
+==================
+
+.. currentmodule:: HafrenHaver.client
+
+.. automodule:: HafrenHaver.client

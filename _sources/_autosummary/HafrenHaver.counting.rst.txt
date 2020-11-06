@@ -1,0 +1,6 @@
+HafrenHaver.counting
+====================
+
+.. currentmodule:: HafrenHaver.counting
+
+.. automodule:: HafrenHaver.counting

@@ -1,0 +1,6 @@
+HafrenHaver.pattern
+===================
+
+.. currentmodule:: HafrenHaver.pattern
+
+.. automodule:: HafrenHaver.pattern

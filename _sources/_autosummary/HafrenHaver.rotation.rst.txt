@@ -1,0 +1,6 @@
+HafrenHaver.rotation
+====================
+
+.. currentmodule:: HafrenHaver.rotation
+
+.. automodule:: HafrenHaver.rotation

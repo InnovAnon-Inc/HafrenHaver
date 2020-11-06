@@ -1,0 +1,6 @@
+HafrenHaver.cache
+=================
+
+.. currentmodule:: HafrenHaver.cache
+
+.. automodule:: HafrenHaver.cache

@@ -1,0 +1,6 @@
+HafrenHaver.triangle
+====================
+
+.. currentmodule:: HafrenHaver.triangle
+
+.. automodule:: HafrenHaver.triangle

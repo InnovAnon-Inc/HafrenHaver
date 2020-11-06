@@ -1,0 +1,6 @@
+HafrenHaver.numerology
+======================
+
+.. currentmodule:: HafrenHaver.numerology
+
+.. automodule:: HafrenHaver.numerology
