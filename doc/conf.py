@@ -71,7 +71,7 @@ extensions = [
     #'sphinx.ext.graphviz',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.linkcode',
+    #'sphinx.ext.linkcode',
     'sphinx.ext.imgmath',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
