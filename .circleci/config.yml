@@ -56,8 +56,8 @@ jobs: # A basic unit of work in a run
           command: |
             #find src/   -iname 'test_*.py' -exec pipenv run python '{}' \;
             #find tests/ -iname '*.py'      -exec pipenv run python '{}' \;
-            python3 -m pipenv run pytest -k tests run
-            #python3 -m pipenv run pytest -k run
+            python3 -m pipenv run pytest -k tests src
+            #python3 -m pipenv run pytest -k src
       - run:
           name: Security Check
           command: |
