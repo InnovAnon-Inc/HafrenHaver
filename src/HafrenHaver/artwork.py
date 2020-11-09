@@ -11,6 +11,29 @@ class Artwork:
 		f = lambda n, kwargs: self.recycler.req (n, **kwargs)
 		return starmap (f, queries)
 
+# TODO cycle
+# TODO fade transitions... maybe based on rate limit X isochronic
+
+
+
+class ArtworkServer (PlayerServer, Artwork):
+	def __init__ (self, *args, **kwargs):
+		PlayerServer.__init__ (self, *args, **kwargs)
+		Artwork     .__init__ (self, *args, **kwargs)
+
+class ArtworkClient (Client, Artwork):
+	def __init__ (self, *args, **kwargs):
+		Client .__init__ (self, *args, **kwargs)
+		Artwork.__init__ (self, *args, **kwargs)
+
+
+
+
+
+
+
+
+
 	# TODO pagination
 	# TODO cache how many results have been consumed by each consumer... when a consumer exhausts results, 
 	# pages[qs, lang, orientation, category, min_width, min_height, colors, safesearch, order]

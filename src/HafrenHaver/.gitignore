@@ -1,4 +1,5 @@
 *.cache
 *.key
 cache/
+__pycache__/
 

@@ -75,7 +75,8 @@ setup (
         #"Operating System :: OS Independent",
         'Operating System :: POSIX :: Linux',
 
-        "Development Status :: 3 - Alpha",
+		'Development Status :: 2 - Pre-Alpha',
+        #"Development Status :: 3 - Alpha",
         'License :: Public Domain',
         'License :: OSI Approved :: MIT License',
 

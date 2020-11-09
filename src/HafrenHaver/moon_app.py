@@ -478,7 +478,7 @@ if __name__ == "__main__":
 	def main ():
 		a = CircleMoonApp ()
 		n = a.notify_bg # cb for artwork client to set background of moon app
-		#b = ArtworkClient (n)
+		b = ArtworkClient (n)
 		#a.notify_art = b.notify_request # cb for moon app to request background from artwork client
 		def new_loop (events, keys):
 			self = a
