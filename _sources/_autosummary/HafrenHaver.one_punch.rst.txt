@@ -1,0 +1,6 @@
+HafrenHaver.one\_punch
+======================
+
+.. currentmodule:: HafrenHaver.one_punch
+
+.. automodule:: HafrenHaver.one_punch

@@ -33,6 +33,8 @@
    HafrenHaver.angled_circle
    HafrenHaver.app
    HafrenHaver.artwork
+   HafrenHaver.artwork_client
+   HafrenHaver.artwork_server
    HafrenHaver.atp
    HafrenHaver.audio_gui
    HafrenHaver.av
@@ -86,6 +88,7 @@
    HafrenHaver.network
    HafrenHaver.neural_style_transfer
    HafrenHaver.numerology
+   HafrenHaver.one_punch
    HafrenHaver.orientation
    HafrenHaver.pager
    HafrenHaver.pattern
