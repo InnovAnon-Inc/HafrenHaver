@@ -472,14 +472,14 @@ class CircleMoonApp (CircleApp, MoonApp):
 
 if __name__ == "__main__":
 	#from gps_client import GPSClient
-	#from artwork_client import ArtworkClient
+	from artwork_client import ArtworkClient
 	from hal import HAL9000
 
 	def main ():
 		a = CircleMoonApp ()
 		n = a.notify_bg # cb for artwork client to set background of moon app
 		b = ArtworkClient (n)
-		#a.notify_art = b.notify_request # cb for moon app to request background from artwork client
+		a.notify_art = b.notify_request # cb for moon app to request background from artwork client
 		def new_loop (events, keys):
 			self = a
 			time = self.time

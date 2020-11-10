@@ -2,7 +2,7 @@
 
 from itertools import starmap
 
-from recycler import Recycler, default_recycler
+from recycler import Recycler
 
 # cid, [(n, kwargs)...] => [res...]
 class Artwork:
@@ -11,20 +11,16 @@ class Artwork:
 		f = lambda n, kwargs: self.recycler.req (n, **kwargs)
 		return starmap (f, queries)
 
+from recycler import default_recycler
+
+def default_artwork (cb, *args, **kwargs):
+	a = default_recycler (cb, *args, **kwargs)
+	b = Artwork (a)
+	return b
+			
 # TODO cycle
 # TODO fade transitions... maybe based on rate limit X isochronic
 
-
-
-class ArtworkServer (PlayerServer, Artwork):
-	def __init__ (self, *args, **kwargs):
-		PlayerServer.__init__ (self, *args, **kwargs)
-		Artwork     .__init__ (self, *args, **kwargs)
-
-class ArtworkClient (Client, Artwork):
-	def __init__ (self, *args, **kwargs):
-		Client .__init__ (self, *args, **kwargs)
-		Artwork.__init__ (self, *args, **kwargs)
 
 
 
@@ -126,7 +122,7 @@ if __name__ == "__main__":
 				#print ("reset    : %s" % (a.get_reset     (),))
 			a = default_aggregator (cb)
 			print ("a: %s" % (a,))
-		else:
+		elif False:
 			def cb (r):
 				p  = r.req (n=2, qs=('test',))
 				
@@ -148,6 +144,20 @@ if __name__ == "__main__":
 				#print ("remaining: %s" % (a.get_remaining (),))
 				#print ("reset    : %s" % (a.get_reset     (),))
 			r = default_recycler (cb)
+			print ("r: %s" % (r,))
+		else:
+			def cb (r):
+				p  = r.req (n=2, qs=('test',))
+				
+				print (p)
+				print ()
+				for h in p:
+					print (h)
+					print ()
+					
+				p  = r.req (n=2, qs=('test',))
+				print (len (tuple (p)))
+			r = default_artwork (cb)
 			print ("r: %s" % (r,))
 	main ()
 	quit ()
