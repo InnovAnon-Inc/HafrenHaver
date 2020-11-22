@@ -8,6 +8,7 @@ from recycler import Recycler
 class Artwork:
 	def __init__ (self, recycler): self.recycler = recycler
 	def req (self, *queries):
+		print ("recycler: %s" % (self.recycler,))
 		f = lambda n, kwargs: self.recycler.req (n, **kwargs)
 		return starmap (f, queries)
 

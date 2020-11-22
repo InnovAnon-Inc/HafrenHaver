@@ -26,6 +26,8 @@ jobs: # A basic unit of work in a run
           POSTGRES_DB: circle_test
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
+      - run: git submodule sync
+      - run: git submodule update --init
       - run:
           name: Automatic Versioning
           command: |
@@ -84,6 +86,8 @@ jobs: # A basic unit of work in a run
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
+      - run: git submodule sync
+      - run: git submodule update --init
       - run:
           name: Automatic Versioning
           command: |
@@ -188,6 +192,8 @@ jobs: # A basic unit of work in a run
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
+      - run: git submodule sync
+      - run: git submodule update --init
       - run:
           name: Automatic Versioning
           command: |
