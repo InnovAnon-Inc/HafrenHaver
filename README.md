@@ -19,6 +19,10 @@ Arcane Audio-Visual Computations
 ![PyPI - License](https://img.shields.io/pypi/l/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
 ![PyPI](https://img.shields.io/pypi/v/HafrenHaver?color=FF1100&logo=InnovAnon-Inc&logoColor=FF1133&style=plastic)
 
+![Dependent repos (via libraries.io)](https://img.shields.io/librariesio/dependent-repos/pypi/HafrenHaver?color=FF1100&style=plastic)
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/pypi/HafrenHaver?color=FF1100&style=plastic)
+![Libraries.io SourceRank](https://img.shields.io/librariesio/sourcerank/pypi/HafrenHaver?style=plastic)
+
 (Work in progress...)
 
 Proof of concept for InnovAnon's Human Programming Technology;
