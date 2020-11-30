@@ -78,6 +78,7 @@
    HafrenHaver.hallang
    HafrenHaver.hallib
    HafrenHaver.hilbjork
+   HafrenHaver.isochronic
    HafrenHaver.key
    HafrenHaver.lc
    HafrenHaver.magic_circle
