@@ -306,7 +306,7 @@ jobs: # A basic unit of work in a run
 
 
 workflows:
-  version: 2.0
+  #version: 2.0
   do_everything:
     jobs:
       - test:
