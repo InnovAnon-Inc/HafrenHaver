@@ -70,8 +70,9 @@ jobs: # A basic unit of work in a run
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test-results
           destination: tr1
-      #- slack/status:
-      #    fail_only: true
+      - slack/status:
+          event: fail
+          template: basic_fail_1
 
 
 
@@ -178,8 +179,9 @@ jobs: # A basic unit of work in a run
             python3 -m pipenv run twine upload --repository pypi --verbose dist/*
       # TODO deploy docs
       # TODO deploy servers (prod)
-      #- slack/status:
-      #    fail_only: true
+      - slack/status:
+          event: fail
+          template: basic_fail_1
 
 
 
@@ -229,7 +231,8 @@ jobs: # A basic unit of work in a run
             #scripts/build_push_doc.sh
             python3 -m pipenv run scripts/build_push_doc.sh
       - slack/status:
-      #    fail_only: true
+          event: fail
+          template: basic_fail_1
 
 
 
