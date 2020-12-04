@@ -314,7 +314,7 @@ workflows:
             branches:
               ignore:
                 - gh-pages
-          context: github personal access token
+          context: "github personal access token"
       #- dist:
       #    requires:
       #      - test
@@ -329,7 +329,7 @@ workflows:
             branches:
               ignore:
                 - gh-pages
-          context: github personal access token
+          context: "github personal access token"
       #- deploy:
       #    requires:
       #      - dist
@@ -345,7 +345,7 @@ workflows:
             branches:
               ignore:
                 - gh-pages
-          context: github personal access token
+          context: "github personal access token"
 
 # TODO this seems like a more "proper" workflow
 #  jobs:
