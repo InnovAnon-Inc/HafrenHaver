@@ -2,7 +2,7 @@ version: 2.1 # use CircleCI 2.0
 
 orbs:
   jira: circleci/jira@1.0.5
-  slack: circleci/slack@4.1.3
+  #slack: circleci/slack@4.1.3
 
 jobs: # A basic unit of work in a run
   test: # runs not using Workflows must have a `build` job as entry point 
