@@ -10,7 +10,8 @@ jobs: # A basic unit of work in a run
     working_directory: ~/circleci-HafrenHaver
     docker: # run the steps with Docker
       # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
-      - image: circleci/python:latest
+      #- image: circleci/python:latest
+      - image: innovanon/doom-base
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
@@ -81,7 +82,8 @@ jobs: # A basic unit of work in a run
     working_directory: ~/circleci-HafrenHaver
     docker: # run the steps with Docker
       # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
-      - image: circleci/python:latest
+      #- image: circleci/python:latest
+      - image: innovanon/doom-base
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
@@ -190,7 +192,8 @@ jobs: # A basic unit of work in a run
     working_directory: ~/circleci-HafrenHaver
     docker: # run the steps with Docker
       # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
-      - image: circleci/python:latest
+      #- image: circleci/python:latest
+      - image: innovanon/doom-base
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
