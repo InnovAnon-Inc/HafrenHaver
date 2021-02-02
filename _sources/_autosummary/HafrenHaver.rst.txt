@@ -28,6 +28,7 @@
    :template: custom-module-template.rst                 <-- add this line
    :recursive:
 
+   HafrenHaver.a
    HafrenHaver.aggregator
    HafrenHaver.angle_app
    HafrenHaver.angled_circle
