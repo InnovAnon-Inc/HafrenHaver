@@ -45,6 +45,7 @@ jobs: # A basic unit of work in a run
           command: |
             #sudo python3 -m pip install --upgrade pip
             python3 -m pip install --upgrade pip
+            python3 -m pip install --upgrade pyenv
             #sudo python3 -m pip install --upgrade pipenv
             python3 -m pip install --upgrade pipenv
             # TODO test deps
@@ -113,6 +114,7 @@ jobs: # A basic unit of work in a run
           command: |
             #sudo python3 -m pip install --upgrade pip
             python3 -m pip install --upgrade pip
+            python3 -m pip install --upgrade pyenv
             #sudo python3 -m pip install --upgrade pipenv
             python3 -m pip install --upgrade pipenv
             # TODO dist deps ?
@@ -223,6 +225,7 @@ jobs: # A basic unit of work in a run
           command: |
             #sudo python3 -m pip install --upgrade pip
             python3 -m pip install --upgrade pip
+            python3 -m pip install --upgrade pyenv
             #sudo python3 -m pip install --upgrade pipenv
             python3 -m pip install --upgrade pipenv
             # TODO doc deps
