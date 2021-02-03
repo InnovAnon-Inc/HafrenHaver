@@ -11,7 +11,7 @@ jobs: # A basic unit of work in a run
     docker: # run the steps with Docker
       # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
       #- image: circleci/python:latest
-      - image: innovanon/doom-base
+      - image: innovanon/python
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
@@ -43,7 +43,6 @@ jobs: # A basic unit of work in a run
       - run:
           name: Setting Up Project Environment
           command: |
-            apt install -y python3-pip
             #sudo python3 -m pip install --upgrade pip
             python3 -m pip install --upgrade pip
             #sudo python3 -m pip install --upgrade pipenv
@@ -86,7 +85,7 @@ jobs: # A basic unit of work in a run
     docker: # run the steps with Docker
       # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
       #- image: circleci/python:latest
-      - image: innovanon/doom-base
+      - image: innovanon/python
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
@@ -112,7 +111,6 @@ jobs: # A basic unit of work in a run
       - run:
           name: Setting Up Project Environment
           command: |
-            apt install -y python3-pip
             #sudo python3 -m pip install --upgrade pip
             python3 -m pip install --upgrade pip
             #sudo python3 -m pip install --upgrade pipenv
@@ -199,7 +197,7 @@ jobs: # A basic unit of work in a run
     docker: # run the steps with Docker
       # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
       #- image: circleci/python:latest
-      - image: innovanon/doom-base
+      - image: innovanon/python
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
@@ -223,7 +221,6 @@ jobs: # A basic unit of work in a run
       - run:
           name: Setting Up Project Environment
           command: |
-            apt install -y python3-pip
             #sudo python3 -m pip install --upgrade pip
             python3 -m pip install --upgrade pip
             #sudo python3 -m pip install --upgrade pipenv
