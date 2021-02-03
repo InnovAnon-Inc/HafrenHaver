@@ -43,6 +43,7 @@ jobs: # A basic unit of work in a run
       - run:
           name: Setting Up Project Environment
           command: |
+            apt install -y python3-pip
             #sudo python3 -m pip install --upgrade pip
             python3 -m pip install --upgrade pip
             #sudo python3 -m pip install --upgrade pipenv
@@ -111,6 +112,7 @@ jobs: # A basic unit of work in a run
       - run:
           name: Setting Up Project Environment
           command: |
+            apt install -y python3-pip
             #sudo python3 -m pip install --upgrade pip
             python3 -m pip install --upgrade pip
             #sudo python3 -m pip install --upgrade pipenv
@@ -221,6 +223,7 @@ jobs: # A basic unit of work in a run
       - run:
           name: Setting Up Project Environment
           command: |
+            apt install -y python3-pip
             #sudo python3 -m pip install --upgrade pip
             python3 -m pip install --upgrade pip
             #sudo python3 -m pip install --upgrade pipenv
