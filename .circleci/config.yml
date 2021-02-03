@@ -28,8 +28,9 @@ jobs: # A basic unit of work in a run
           POSTGRES_DB: circle_test
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
-      - run: git submodule sync
-      - run: git submodule update --init
+      #- run: $SHELL -l -c 'git submodule sync'
+      #- run: $SHELL -l -c 'git submodule update --init'
+      - run: $SHELL -l -c "git submodule sync && git submodule update --init"
       - run:
           name: Automatic Versioning
           command: |
@@ -48,7 +49,7 @@ jobs: # A basic unit of work in a run
             # TODO test deps
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #pipenv install
-            python3 -m pipenv install '.[test]'
+            $SHELL -l -c "python3 -m pipenv install '.[test]'"
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
@@ -60,11 +61,11 @@ jobs: # A basic unit of work in a run
             #find tests/ -iname '*.py'      -exec pipenv run python '{}' \;
             #python3 -m pipenv run pytest tests
             #python3 -m pipenv run pytest src
-            python3 -m pipenv run pytest
+            $SHELL -l -c "python3 -m pipenv run pytest"
       - run:
           name: Security Check
           command: |
-            python3 -m pipenv check
+            $SHELL -l -c "python3 -m pipenv check"
             # TODO store results
       - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results
@@ -92,8 +93,9 @@ jobs: # A basic unit of work in a run
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
-      - run: git submodule sync
-      - run: git submodule update --init
+      #- run: git submodule sync
+      #- run: git submodule update --init
+      - run: $SHELL -l -c "git submodule sync && git submodule update --init"
       - run:
           name: Automatic Versioning
           command: |
@@ -114,7 +116,7 @@ jobs: # A basic unit of work in a run
             # TODO dist deps ?
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #pipenv install
-            python3 -m pipenv install '.[dist]'
+            $SHELL -l -c "python3 -m pipenv install '.[dist]'"
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
@@ -125,7 +127,7 @@ jobs: # A basic unit of work in a run
             #python3 -m pip install --user --upgrade setuptools wheel
             rm -rf dist/
             #python3 setup.py sdist bdist_wheel --universal
-            python3 -m pipenv run python setup.py sdist bdist_wheel --universal
+            $SHELL -l -c "python3 -m pipenv run python setup.py sdist bdist_wheel --universal"
       - run:
           name: Signing Distribution Archive
           command: |
@@ -134,13 +136,13 @@ jobs: # A basic unit of work in a run
       - run:
           name: Installing Distribution Archive
           command: |
-            python3 -m pip uninstall --yes HafrenHaver
-            python3 -m pip   install --user --upgrade .
+            $SHELL -l -c "python3 -m pip uninstall --yes HafrenHaver"
+            $SHELL -l -c "python3 -m pip   install --user --upgrade ."
       # TODO integration tests
       - run:
           name: Uninstalling Distribution Archive
           command: |
-            python3 -m pip uninstall --yes HafrenHaver
+            $SHELL -l -c "python3 -m pip uninstall --yes HafrenHaver"
 
 #      - run:
 #          name: Sanity Check
@@ -158,14 +160,14 @@ jobs: # A basic unit of work in a run
             echo "password = $TESTPYPI_API_KEY" >> ~/.pypirc
             #cat ~/.pypirc
             #python3 -m twine upload --repository testpypi --verbose dist/*
-            python3 -m pipenv run twine upload --repository testpypi --verbose dist/*
+            $SHELL -l -c "python3 -m pipenv run twine upload --repository testpypi --verbose dist/*"
       - run:
           name: Installing Newly Uploaded Package
           command: |
             #python3 -m pip install --user --upgrade pip
             #python3 -m pip install --user --upgrade --index-url https://test.pypi.org/simple/ --no-deps HafrenHaver
-            python3 -m pip uninstall --yes HafrenHaver
-            python3 -m pip   install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver
+            $SHELL -l -c "python3 -m pip uninstall --yes HafrenHaver"
+            $SHELL -l -c "python3 -m pip   install --user --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple HafrenHaver"
       # TODO integration tests
       # TODO deploy servers (testing)
       
@@ -178,7 +180,7 @@ jobs: # A basic unit of work in a run
             echo "password = $PYPI_API_TOKEN" >> ~/.pypirc
             #cat ~/.pypirc
             #python3 -m twine upload --repository pypi --verbose dist/*
-            python3 -m pipenv run twine upload --repository pypi --verbose dist/*
+            $SHELL -l -c "python3 -m pipenv run twine upload --repository pypi --verbose dist/*"
       # TODO deploy docs
       # TODO deploy servers (prod)
       #- slack/status:
@@ -202,8 +204,9 @@ jobs: # A basic unit of work in a run
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
-      - run: git submodule sync
-      - run: git submodule update --init
+      #- run: git submodule sync
+      #- run: git submodule update --init
+      - run: $SHELL -l -c "git submodule sync && git submodule update --init"
       - run:
           name: Automatic Versioning
           command: |
@@ -222,7 +225,7 @@ jobs: # A basic unit of work in a run
             # TODO doc deps
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #pipenv install
-            python3 -m pipenv install '.[site]'
+            $SHELL -l -c "python3 -m pipenv install '.[site]'"
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
@@ -232,7 +235,7 @@ jobs: # A basic unit of work in a run
           command: |
             #python3 -m pip install --user --upgrade sphinx
             #scripts/build_push_doc.sh
-            python3 -m pipenv run scripts/build_push_doc.sh
+            $SHELL -l -c "python3 -m pipenv run scripts/build_push_doc.sh"
       #- slack/status:
       #    event: fail
       #    template: basic_fail_1
