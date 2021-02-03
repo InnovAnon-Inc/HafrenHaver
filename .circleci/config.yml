@@ -44,10 +44,7 @@ jobs: # A basic unit of work in a run
           name: Setting Up Project Environment
           command: |
             #sudo python3 -m pip install --upgrade pip
-            python3 -m pip install --upgrade pip
-            python3 -m pip install --upgrade pyenv
             #sudo python3 -m pip install --upgrade pipenv
-            python3 -m pip install --upgrade pipenv
             # TODO test deps
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #pipenv install
@@ -113,10 +110,7 @@ jobs: # A basic unit of work in a run
           name: Setting Up Project Environment
           command: |
             #sudo python3 -m pip install --upgrade pip
-            python3 -m pip install --upgrade pip
-            python3 -m pip install --upgrade pyenv
             #sudo python3 -m pip install --upgrade pipenv
-            python3 -m pip install --upgrade pipenv
             # TODO dist deps ?
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #pipenv install
@@ -224,10 +218,7 @@ jobs: # A basic unit of work in a run
           name: Setting Up Project Environment
           command: |
             #sudo python3 -m pip install --upgrade pip
-            python3 -m pip install --upgrade pip
-            python3 -m pip install --upgrade pyenv
             #sudo python3 -m pip install --upgrade pipenv
-            python3 -m pip install --upgrade pipenv
             # TODO doc deps
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #pipenv install
