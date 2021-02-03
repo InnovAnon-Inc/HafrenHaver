@@ -49,7 +49,7 @@ jobs: # A basic unit of work in a run
             # TODO test deps
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #pipenv install
-            $SHELL -l -c "python3 -m pipenv install -y '.[test]'"
+            $SHELL -l -c "yes | python3 -m pipenv install -y '.[test]'"
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
@@ -116,7 +116,7 @@ jobs: # A basic unit of work in a run
             # TODO dist deps ?
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #pipenv install
-            $SHELL -l -c "python3 -m pipenv install -y '.[dist]'"
+            $SHELL -l -c "yes | python3 -m pipenv install -y '.[dist]'"
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
@@ -225,7 +225,7 @@ jobs: # A basic unit of work in a run
             # TODO doc deps
             #PIP_INSTALL_OPTION="$PIP_INSTALL_OPTION" pipenv install
             #pipenv install
-            $SHELL -l -c "python3 -m pipenv install -y '.[site]'"
+            $SHELL -l -c "yes | python3 -m pipenv install -y '.[site]'"
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
