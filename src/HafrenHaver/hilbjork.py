@@ -28,7 +28,9 @@ def hilbjork (p, N, k, rev=False, rot=0): # p := #iteration, N := #dim, pts := u
 	#print ("pts: %s" % (pts,))
 	
 	hb  = HilbertCurve (p, N)                                           # map from 2-space to 1-space
-	ds  = map (hb.distance_from_coordinates, pts)                       # get distances
+	#ds  = map (hb.distance_from_coordinates, pts)                       # get distances
+	#ds  = map (hb.distances_from_points, pts)                       # get distances
+	ds  = map (hb.distance_from_point, pts)                       # get distances
 	
 	bj  = bjorklund (npt, k)                                            # evenly distribute ornaments along space-filling curve
 	if rev: bj = bj[::-1]
@@ -39,7 +41,9 @@ def hilbjork (p, N, k, rev=False, rot=0): # p := #iteration, N := #dim, pts := u
 	f   = lambda bj, ds: ds
 	ds  = starmap (f, ds)                                               # remove bjorklund information
 	
-	pts = map (hb.coordinates_from_distance, ds)                        # map from 1-space to 2-space
+	#pts = map (hb.coordinates_from_distance, ds)                        # map from 1-space to 2-space
+	#pts = map (hb.points_from_distances, ds)                        # map from 1-space to 2-space
+	pts = map (hb.point_from_distance, ds)                        # map from 1-space to 2-space
 	f   = lambda pt: tuple (pt)
 	pts = map (f, pts)
 	pts = tuple (pts)

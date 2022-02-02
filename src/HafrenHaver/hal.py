@@ -20,7 +20,7 @@ class HAL9000 (AudioGUI): # Heuristically Programmed ALgorithmic Computer
 		m = self.m
 		print ("HAL is adjusting for ambient noise")
 		# https://www.codesofinterest.com/2017/04/energy-threshold-calibration-in-speech-recognition.html
-		with self.m as source: r.adjust_for_ambient_noise (source)
+		#with self.m as source: r.adjust_for_ambient_noise (source)
 		r.dynamic_energy_threshold = True
 		print ("HAL is online")
 		

@@ -1,0 +1,15 @@
+#! /usr/bin/env cython3
+#cython: language_level=3
+
+cimport cython as cy
+cimport numpy as cp
+import  numpy as np
+
+#cimport mpi4py
+#from mpi4py     import MPI
+#from mpi4py_map import map
+
+#cdef public cy.int[:,::1] tuple_chain_from_iterable(cy.int[:,:,::1] r)
+
+cdef public cy.int[:,::1] polygon_helper(cy.int beats, cy.int nvertex, cy.int offset)
+

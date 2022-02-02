@@ -1,0 +1,81 @@
+#! /usr/bin/env cython3
+#cython: language_level=3
+
+cimport cython as cy
+cimport numpy as cp
+import  numpy as np
+
+#cimport mpi4py
+#from mpi4py     import MPI
+#from mpi4py_map import map
+
+import numba as nb
+#from numba import jit
+
+from itertools import chain, product
+
+from cache cimport mem
+
+#@vectorize()
+#cdef inline cy.int[:,::1] tuple_chain_from_iterable(cy.int[:,:,::1] r): return np.fromiter(chain.from_iterable(r))
+cdef inline object tuple_chain_from_iterable(cy.int[:,:,::1] r): return tuple(chain.from_iterable(r))
+#cdef object tcfi = np.ufunc(tuple_chain_from_iterable)
+
+cdef inline cy.int[:,::1] polygon_helper_kernel(cy.int beats, cy.int nvertex, cy.int offset, object f):
+	cdef cy.int[:,::1] base = np.array(offset, dtype=np.intc).reshape(1, 1)
+	if nvertex == 1: return base
+
+	cdef cy.int[:]     offs = np.arange(offset+1, beats-(nvertex-1)+1, dtype=np.intc)
+
+	cdef object        ret1 = tuple(map(f, offs))
+	#cdef int[:,:,::1]  ret1  = f(offs)
+	#cdef int[:,:,::1]  ret1  = np.fromiter(ret1a, dtype=np.intc)
+	#cdef object]  ret1  = np.fromiter(ret1a, dtype=object)
+	#cdef int[:,:,::1]  ret1  = np.array(ret1a, dtype=object)
+	print("ret1: %s" % (ret1,), flush=True)
+
+	cdef object        ret2 = tuple(chain.from_iterable(ret1))
+	#cdef int[:,::1]    ret2  = np.fromiter(chain.from_iterable(ret1), dtype=np.intc)
+	#cdef int[:,::1]    ret2  = ret1.reshape(2,)
+	print("ret2: %s" % (ret2,), flush=True)
+
+	cdef object        ret3 = product(base, ret2)
+	#cdef cy.int[:,:,::1]  ret3 = np.fromiter(product(base, ret2), dtype=np.intc)
+	#print("ret3: %s" % (ret3,), flush=True)
+
+	cdef object        ret4 = tuple(map(tuple_chain_from_iterable, ret3))
+	#cdef cy.int[:,::1] ret4  = tcfi(ret3)
+	print("ret4: %s" % (ret4,), flush=True)
+
+	cdef cy.int[:,::1] ret5 = np.array(ret4, dtype=np.intc)
+	#cdef cy.int[:,::1] ret5 = np.fromiter(ret3, dtype=np.intc)
+	print("ret5: %s" % (ret5,), flush=True)
+	assert len(ret5) != 0
+	return ret5
+
+cdef class F(object): # Callable ?
+	cdef object g
+	cdef cy.int beats
+	cdef cy.int nvertex
+	def __cinit__(object self, object g, cy.int beats, cy.int nvertex):
+		self.g       = g
+		self.beats   = beats
+		self.nvertex = nvertex
+	#@np.vectorize(int[:,::1](int))
+	#@nb.guvectorize([(object,int)])
+	def __call__(object self, cy.int off):
+		g = self.g
+		return g(g, self.beats, self.nvertex, off)
+
+#@jit
+def polygon_helper_impl0(g:object, beats:cy.int, nvertex:cy.int, offset:cy.int)->cy.int[:,::1]:
+	#cdef object f = lambda off: g(g, beats, nvertex-1, off)
+	#cdef object F = np.ufunc(f)
+	cdef object f = F(g, beats, nvertex-1)
+	return polygon_helper_kernel(beats, nvertex, offset, f)
+
+cdef object polygon_helper_impl = mem.cache(polygon_helper_impl0)
+
+cdef inline cy.int[:,::1] polygon_helper(cy.int beats, cy.int nvertex, cy.int offset):
+	return polygon_helper_impl(polygon_helper_impl, beats, nvertex, offset)
+
