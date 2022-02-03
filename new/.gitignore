@@ -1,2 +1,8 @@
 cache/
+*.so
+*.c
+*.h
+build/
+__pycache__/
+main
 
